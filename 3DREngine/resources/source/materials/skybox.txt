@@ -1,0 +1,12 @@
+skybox
+texture_right skybox/right.jpg
+texture_left skybox/left.jpg
+texture_top skybox/top.jpg
+texture_bottom skybox/bottom.jpg
+texture_front skybox/front.jpg
+texture_back skybox/back.jpg
+depth 0
+unlit 1
+lit 0
+shadow 0
+hud 0

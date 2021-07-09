@@ -1,0 +1,10 @@
+lit
+diffuse helmet.png
+specular helmet_spec.png
+normal helmet_norm.png
+shininess 32.0
+depth 1
+unlit 0
+lit 1
+shadow 1
+hud 0
