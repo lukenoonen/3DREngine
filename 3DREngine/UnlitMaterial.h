@@ -10,11 +10,10 @@ class CUnlitMaterial : public CMaterial
 public:
 	DECLARE_CLASS( CUnlitMaterial, CMaterial );
 
-	CUnlitMaterial( CTexture *pDiffuse, const glm::vec2 &vecTextureScale, const char *sPath, unsigned int uiDrawFlags );
+	CUnlitMaterial( CTexture *pDiffuse, const glm::vec2 &vecTextureScale, const char *sPath );
+	virtual ~CUnlitMaterial();
 
-	virtual bool Use( void );
-
-	virtual ShaderType_t GetShaderType( void ) const;
+	virtual void Use( void );
 
 private:
 	CTexture *m_pDiffuse;

@@ -1,7 +1,7 @@
 #include "LitMaterial.h"
-#include "TextureManager.h"
 #include "RenderManager.h"
 #include "ShaderManager.h"
+#include "AssetManager.h"
 
 const char *g_sCSMShadowMapNames[] =
 {
@@ -11,81 +11,93 @@ const char *g_sCSMShadowMapNames[] =
 	"u_sShadowMap[3]",
 };
 
-CLitMaterial::CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, CTexture *pNormal, float flShininess, const glm::vec2 &vecTextureScale, const char *sPath, unsigned int uiDrawFlags ) : BaseClass( sPath, uiDrawFlags )
+CLitMaterial::CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, CTexture *pNormal, float flShininess, const glm::vec2 &vecTextureScale, const char *sPath ) : BaseClass( sPath )
 {
 	m_pDiffuse = pDiffuse;
 	m_pSpecular = pSpecular;
 	m_pNormal = pNormal;
+
+	m_pDiffuse->Activate();
+	m_pSpecular->Activate();
+	m_pNormal->Activate();
+
 	m_flShininess = flShininess;
 
 	m_vecTextureScale = vecTextureScale;
+
+	SetShaderType( RENDERPASS_SHADOW_DIR, SHADERTYPE_SHADOW_DIR );
+	SetShaderType( RENDERPASS_SHADOW_POINT, SHADERTYPE_SHADOW_POINT );
+	SetShaderType( RENDERPASS_SHADOW_SPOT, SHADERTYPE_SHADOW_SPOT );
+	SetShaderType( RENDERPASS_SHADOW_CSM, SHADERTYPE_SHADOW_CSM );
+	SetShaderType( RENDERPASS_DEPTH, SHADERTYPE_DEPTH );
+	SetShaderType( RENDERPASS_LIT_DIR, SHADERTYPE_LIT_DIR );
+	SetShaderType( RENDERPASS_LIT_POINT, SHADERTYPE_LIT_POINT );
+	SetShaderType( RENDERPASS_LIT_SPOT, SHADERTYPE_LIT_SPOT );
+	SetShaderType( RENDERPASS_LIT_CSM, SHADERTYPE_LIT_CSM );
 }
 
-bool CLitMaterial::Use( void )
+CLitMaterial::~CLitMaterial()
 {
-	if (!BaseClass::Use())
-		return false;
+	m_pDiffuse->Inactivate();
+	m_pSpecular->Inactivate();
+	m_pNormal->Inactivate();
 
-	CShader *pShader = pShaderManager->GetShader( GetShaderType() );
+	pAssetManager->CheckTexture( m_pDiffuse );
+	pAssetManager->CheckTexture( m_pSpecular );
+	pAssetManager->CheckTexture( m_pNormal );
+}
 
-	if (UTIL_strcmp( GetPath(), "br1ck.3mt" ) == 0)
+void CLitMaterial::Use( void )
+{
+	BaseClass::Use();
+
+	RenderPass_t tRenderPass = pRenderManager->GetRenderPass();
+	switch (tRenderPass)
 	{
-		pShader->SetValue( "u_vecTextureScale", g_vec2One );
-		pShader->SetValue( "u_sDiffuse", pRenderManager->GetShadowMapIndex( 0 ) );
-		pShader->SetValue( "u_bUseSpecular", false );
-		pShader->SetValue( "u_bUseNormal", false );
-		pShader->SetValue( "u_flShininess", 1.0f );
-		if (pShaderManager->GetShaderSubType() == SHADERSUBTYPE_CSM)
-		{
-			for (unsigned int i = 0; i < 4; i++)
-				pShader->SetValue( g_sCSMShadowMapNames[i], pRenderManager->GetShadowMapIndex( i ) );
-		}
-		else
-		{
-			pShader->SetValue( "u_sShadowMap", pRenderManager->GetShadowMapIndex( 0 ) );
-		}
-	}
-	else
+	case RENDERPASS_LIT_DIR:
+	case RENDERPASS_LIT_POINT:
+	case RENDERPASS_LIT_SPOT:
+	case RENDERPASS_LIT_CSM:
 	{
-		pShader->SetValue( "u_vecTextureScale", m_vecTextureScale );
+		pShaderManager->SetValue( "u_vecTextureScale", m_vecTextureScale );
 
-		pShader->SetValue( "u_sDiffuse", pTextureManager->BindTexture( m_pDiffuse->GetID(), GL_TEXTURE_2D ) );
+		pShaderManager->SetValue( "u_sDiffuse", pAssetManager->BindTexture( m_pDiffuse->GetID(), GL_TEXTURE_2D ) );
 
-		if (m_pSpecular)
+		if (pShaderManager->GetShaderQuality() != SHADERQUALITY_LOW)
 		{
-			pShader->SetValue( "u_bUseSpecular", true );
-			pShader->SetValue( "u_sSpecular", pTextureManager->BindTexture( m_pSpecular->GetID(), GL_TEXTURE_2D ) );
-		}
-		else
-		{
-			pShader->SetValue( "u_bUseSpecular", false );
+			if (m_pSpecular)
+			{
+				pShaderManager->SetValue( "u_bUseSpecular", true );
+				pShaderManager->SetValue( "u_sSpecular", pAssetManager->BindTexture( m_pSpecular->GetID(), GL_TEXTURE_2D ) );
+			}
+			else
+			{
+				pShaderManager->SetValue( "u_bUseSpecular", false );
+			}
 		}
 		if (m_pNormal)
 		{
-			pShader->SetValue( "u_bUseNormal", true );
-			pShader->SetValue( "u_sNormal", pTextureManager->BindTexture( m_pNormal->GetID(), GL_TEXTURE_2D ) );
+			pShaderManager->SetValue( "u_bUseNormal", true );
+			pShaderManager->SetValue( "u_sNormal", pAssetManager->BindTexture( m_pNormal->GetID(), GL_TEXTURE_2D ) );
 		}
 		else
 		{
-			pShader->SetValue( "u_bUseNormal", false );
+			pShaderManager->SetValue( "u_bUseNormal", false );
 		}
-		pShader->SetValue( "u_flShininess", m_flShininess );
+		pShaderManager->SetValue( "u_flShininess", m_flShininess );
 
-		if (pShaderManager->GetShaderSubType() == SHADERSUBTYPE_CSM)
+		if (pShaderManager->GetShaderShadow() == SHADERSHADOW_TRUE)
 		{
-			for (unsigned int i = 0; i < 4; i++)
-				pShader->SetValue( g_sCSMShadowMapNames[i], pRenderManager->GetShadowMapIndex( i ) );
-		}
-		else
-		{
-			pShader->SetValue( "u_sShadowMap", pRenderManager->GetShadowMapIndex( 0 ) );
+			if (tRenderPass == RENDERPASS_LIT_CSM)
+			{
+				for (unsigned int i = 0; i < 4; i++)
+					pShaderManager->SetValue( g_sCSMShadowMapNames[i], pRenderManager->GetShadowMapIndex( i ) );
+			}
+			else
+			{
+				pShaderManager->SetValue( "u_sShadowMap", pRenderManager->GetShadowMapIndex( 0 ) );
+			}
 		}
 	}
-
-	return true;
-}
-
-ShaderType_t CLitMaterial::GetShaderType( void ) const
-{
-	return SHADERTYPE_LIT;
+	}
 }

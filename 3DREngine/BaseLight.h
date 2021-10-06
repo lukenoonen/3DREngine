@@ -13,8 +13,6 @@ public:
 
 	virtual bool IsLight( void ) const;
 
-	virtual bool CastShadows( void ) const;
-
 	virtual void CalculateShadows( void );
 	virtual void ActivateLight( void );
 

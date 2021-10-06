@@ -2,21 +2,20 @@
 #define TEXTURE_H
 
 #include "Global.h"
+#include "BaseAsset.h"
 
-class CTexture
+class CTexture : public CBaseAsset
 {
 public:
-	DECLARE_CLASS_NOBASE( CTexture );
+	DECLARE_CLASS( CTexture, CBaseAsset );
 
 	CTexture( unsigned int uiID, const char *sPath );
-	~CTexture();
+	virtual ~CTexture();
 
-	unsigned int GetID( void );
-	const char *GetPath( void );
+	unsigned int GetID( void ) const;
 
 private:
 	unsigned int m_uiID;
-	char *m_sPath;
 };
 
 #endif // TEXTURE_H

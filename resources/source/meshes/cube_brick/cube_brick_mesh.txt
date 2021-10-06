@@ -1,0 +1,4 @@
+type mesh;
+name cube_brick;
+geometry cube.3gm;
+material brick.3mt;

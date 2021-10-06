@@ -1,84 +1,132 @@
 #include "FileManager.h"
-#include <fstream>
-#include <Windows.h>
-
-bool CC_Load( const std::vector<const char *> &command )
-{
-	if (command.size() == 0)
-	{
-		char sFilename[MAX_PATH];
-		ZeroMemory( &sFilename, sizeof( sFilename ) );
-
-		OPENFILENAME ofn;
-		ZeroMemory( &ofn, sizeof( ofn ) );
-		ofn.lStructSize = sizeof( ofn );
-		ofn.hwndOwner = NULL;
-		ofn.lpstrFilter = "\0Config Files\0*.cfg";
-		ofn.lpstrFile = sFilename;
-		ofn.nMaxFile = MAX_PATH;
-		ofn.lpstrTitle = "Select a File";
-		ofn.lpstrDefExt = ".sit";
-		ofn.Flags = OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-
-		if (GetOpenFileNameA( &ofn ))
-			pFileManager->Load( sFilename );
-	}
-	else
-	{
-		pFileManager->Load( command[0] );
-	}
-	return true;
-}
-CConCommand cc_load( "load", CC_Load, "load (file name)" );
 
 CFileManager::CFileManager()
 {
-	Load( "resources/config/autoexec.cfg" );
+
 }
 
-void CFileManager::Load( const char *sFileName )
+CFileManager::~CFileManager()
 {
-	const char *pExtension = UTIL_extn( sFileName );
-
-	bool bSuccess = false;
-
-	if (pExtension)
+	while (!m_pFiles.empty())
 	{
-		if (UTIL_strcmp( "cfg", pExtension ) == 0)
-			bSuccess = LoadConfig( sFileName );
+		m_pFiles.top()->close();
+		delete m_pFiles.top();
+		m_pFiles.pop();
+	}
+}
+
+bool CFileManager::ReadEntireFile( const char *sFilePath, char *&sData )
+{
+	if (!OpenFile( sFilePath ))
+		return false;
+
+	m_pFiles.top()->ignore( std::numeric_limits<std::streamsize>::max() );
+	unsigned int uiSize = (unsigned int)m_pFiles.top()->gcount();
+	m_pFiles.top()->clear();
+	m_pFiles.top()->seekg( 0, std::ios_base::beg );
+
+	bool bSuccess = Read( sData, uiSize );
+	CloseFile();
+
+	return bSuccess;
+}
+
+#include <iostream>
+
+bool CFileManager::OpenFile( const char *sFilePath )
+{
+	const char *sExtension = UTIL_extn( sFilePath );
+	if (!sExtension)
+		return false;
+
+	int iFlags = std::ios::in;
+
+	const char *sPrePath = NULL;
+	if (UTIL_streq( sExtension, "cfg" ))
+		sPrePath = "resources/config/";
+	else if (UTIL_streq( sExtension, "vs" ) || UTIL_streq( sExtension, "gs" ) || UTIL_streq( sExtension, "fs" ) || UTIL_streq( sExtension, "sh" ))
+		sPrePath = "resources/shaders/";
+	else
+	{
+		iFlags |= std::ios::binary;
+		if (UTIL_streq( sExtension, "3an" ))
+			sPrePath = "resources/animations/";
+		else if (UTIL_streq( sExtension, "3gm" ))
+			sPrePath = "resources/geometry/";
+		else if (UTIL_streq( sExtension, "3im" ))
+			sPrePath = "resources/images/";
+		else if (UTIL_streq( sExtension, "3mt" ))
+			sPrePath = "resources/materials/";
+		else if (UTIL_streq( sExtension, "3ms" ))
+			sPrePath = "resources/meshes/";
+		else if (UTIL_streq( sExtension, "3md" ))
+			sPrePath = "resources/models/";
+		else if (UTIL_streq( sExtension, "3tx" ))
+			sPrePath = "resources/textures/";
+		else if (UTIL_streq( sExtension, "3sk" ))
+			sPrePath = "resources/skeletons/";
 	}
 
-	//if (!bSuccess)
-	//	pHUDManager->AddConsoleEntry( FONTTYPE_NORMAL, c_red, "Unable to load file %s!", sFileName );
+	if (!sPrePath)
+		return false;
+
+	char *sFullPath = UTIL_stradd( sPrePath, sFilePath );
+	m_pFiles.push( new std::fstream( sFullPath, iFlags ) );
+	delete[] sFullPath;
+
+	if (m_pFiles.top()->is_open())
+		return true;
+
+	delete m_pFiles.top();
+	m_pFiles.pop();
+	return false;
 }
 
-bool CFileManager::LoadConfig( const char *sFileName )
+bool CFileManager::CloseFile( void )
 {
-	if (UTIL_strcmp( "cfg", UTIL_extn( sFileName ) ) != 0)
+	if (m_pFiles.empty())
 		return false;
 
-	// pHUDManager->AddConsoleEntry( FONTTYPE_NORMAL, c_white, "Loading config file %s...", sFileName );
+	m_pFiles.top()->close();
+	delete m_pFiles.top();
+	m_pFiles.pop();
+	return true;
+}
 
-	std::fstream fConfigFile( sFileName, std::ios::in );
+bool CFileManager::Read( char *&sData )
+{
+	unsigned int uiSize;
+	return UTIL_Read( *m_pFiles.top(), &uiSize, 1, unsigned int ) && Read( sData, uiSize );
+}
 
-	if (!fConfigFile.is_open())
+bool CFileManager::Read( unsigned char *&sData )
+{
+	unsigned int uiSize;
+	return UTIL_Read( *m_pFiles.top(), &uiSize, 1, unsigned int ) && Read( sData, uiSize );
+}
+
+bool CFileManager::Read( char *&sData, unsigned int uiSize )
+{
+	sData = new char[uiSize + 1];
+	if (!UTIL_Read( *m_pFiles.top(), sData, uiSize, char ))
+	{
+		delete[] sData;
 		return false;
+	}
 
-	int iLength = 0;
-	while (fConfigFile.get() != EOF)
-		iLength++;
+	sData[uiSize] = '\0';
+	return true;
+}
 
-	fConfigFile.clear();
-	fConfigFile.seekg( 0, fConfigFile.beg );
+bool CFileManager::Read( unsigned char *&sData, unsigned int uiSize )
+{
+	sData = new unsigned char[uiSize + 1];
+	if (!UTIL_Read( *m_pFiles.top(), sData, uiSize, char ))
+	{
+		delete[] sData;
+		return false;
+	}
 
-	char *sFileContents = new char[iLength + 1];
-	fConfigFile.read( sFileContents, iLength );
-	sFileContents[iLength] = '\0';
-
-	fConfigFile.close();
-
-	CCommandProcesser::ProcessCommand( sFileContents );
-
-	delete[] sFileContents;
+	sData[uiSize] = '\0';
 	return true;
 }

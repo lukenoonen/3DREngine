@@ -1,0 +1,546 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <UTIL.h>
+#include <SharedDefs.h>
+#include <vector>
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <unordered_map>
+#include <set>
+#include "TextFileReader.h"
+#include <filesystem>
+
+bool g_bDebug = false;
+bool g_bHelp = false;
+bool g_bNoMaterial = false;
+bool g_bNoMaterialController = false;
+const char *g_sFilePath = NULL;
+
+std::unordered_map<std::string, unsigned int> g_uiNodeMapping;
+std::unordered_map<std::string, unsigned int> g_uiBoneMapping;
+unsigned int g_uiNumBones = 0;
+unsigned int g_uiNodeMaxIndex = 0;
+
+static inline glm::mat4 mat4_cast( const aiMatrix4x4 &m ) { return glm::transpose( glm::make_mat4( &m.a1 ) ); }
+
+void ProcessMesh( unsigned int iIndex, aiMesh *pMesh, std::fstream &fOutput )
+{
+	if (pMesh->HasBones())
+	{
+		for (unsigned int i = 0; i < pMesh->mNumBones; i++)
+		{
+			std::string sBoneName( pMesh->mBones[i]->mName.data );
+			if (g_uiBoneMapping.find( sBoneName ) == g_uiBoneMapping.end())
+			{
+				UTIL_Write( fOutput, "b", 1, char );
+
+				g_uiBoneMapping[sBoneName] = g_uiNumBones++;
+
+				glm::mat4 matOffset = mat4_cast( pMesh->mBones[i]->mOffsetMatrix );
+				UTIL_Write( fOutput, &matOffset, 1, glm::mat4 );
+			}
+		}
+	}
+
+	UTIL_Write( fOutput, "m", 1, char );
+	UTIL_Write( fOutput, &pMesh->mNumVertices, 1, unsigned int );
+	for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
+	{
+		UTIL_Write( fOutput, &pMesh->mVertices[i].x, 1, float );
+		UTIL_Write( fOutput, &pMesh->mVertices[i].y, 1, float );
+		UTIL_Write( fOutput, &pMesh->mVertices[i].z, 1, float );
+		UTIL_Write( fOutput, &pMesh->mNormals[i].x, 1, float );
+		UTIL_Write( fOutput, &pMesh->mNormals[i].y, 1, float );
+		UTIL_Write( fOutput, &pMesh->mNormals[i].z, 1, float );
+		UTIL_Write( fOutput, &pMesh->mTangents[i].x, 1, float );
+		UTIL_Write( fOutput, &pMesh->mTangents[i].y, 1, float );
+		UTIL_Write( fOutput, &pMesh->mTangents[i].z, 1, float );
+		UTIL_Write( fOutput, &pMesh->mBitangents[i].x, 1, float );
+		UTIL_Write( fOutput, &pMesh->mBitangents[i].y, 1, float );
+		UTIL_Write( fOutput, &pMesh->mBitangents[i].z, 1, float );
+		UTIL_Write( fOutput, &pMesh->mTextureCoords[0][i].x, 1, float );
+		UTIL_Write( fOutput, &pMesh->mTextureCoords[0][i].y, 1, float );
+
+		if (pMesh->HasBones())
+		{
+			std::vector<unsigned int> uiBoneIDs;
+			std::vector<float> flBoneWeights;
+
+			for (unsigned int j = 0; j < pMesh->mNumBones; j++)
+			{
+				unsigned int uiNumWeights = pMesh->mBones[j]->mNumWeights;
+				aiVertexWeight *pWeights = pMesh->mBones[j]->mWeights;
+				for (unsigned int k = 0; k < uiNumWeights; k++)
+				{
+					if (pWeights[k].mVertexId == i)
+					{
+						std::string sBoneName( pMesh->mBones[j]->mName.data );
+						uiBoneIDs.push_back( g_uiBoneMapping[sBoneName] );
+						flBoneWeights.push_back( pWeights[k].mWeight );
+						break;
+					}
+				}
+			}
+
+			unsigned int iNumAffectingBones = uiBoneIDs.size();
+			UTIL_Write( fOutput, &iNumAffectingBones, 1, unsigned int );
+			for (unsigned int j = 0; j < iNumAffectingBones; j++)
+			{
+				UTIL_Write( fOutput, &uiBoneIDs[j], 1, unsigned int );
+				UTIL_Write( fOutput, &flBoneWeights[j], 1, float );
+			}
+		}
+		else
+		{
+			unsigned int uiTemp = 0;
+			UTIL_Write( fOutput, &uiTemp, 1, unsigned int );
+		}
+	}
+
+	UTIL_Write( fOutput, &pMesh->mNumFaces, 1, unsigned int );
+	for (unsigned int i = 0; i < pMesh->mNumFaces; i++)
+	{
+		const aiFace &face = pMesh->mFaces[i];
+		UTIL_Write( fOutput, &face.mNumIndices, 1, unsigned int );
+		for (unsigned int j = 0; j < face.mNumIndices; j++)
+			UTIL_Write( fOutput, &face.mIndices[j], 1, unsigned int );
+	}
+}
+
+void ProcessNode( unsigned int iIndex, aiNode *pNode, std::fstream &fOutput )
+{
+	std::string sNodeName = pNode->mName.C_Str();
+	if (!sNodeName.empty())
+		g_uiNodeMapping[sNodeName] = iIndex;
+
+	UTIL_Write( fOutput, "n", 1, char );
+
+	UTIL_Write( fOutput, &iIndex, 1, unsigned int );
+
+	bool bShouldWriteNode = g_uiBoneMapping.find( sNodeName ) != g_uiBoneMapping.end();
+	UTIL_Write( fOutput, &bShouldWriteNode, 1, bool );
+
+	if (bShouldWriteNode)
+		UTIL_Write( fOutput, &g_uiBoneMapping[sNodeName], 1, unsigned int );
+
+	glm::mat4 matTransform = mat4_cast( pNode->mTransformation );
+	UTIL_Write( fOutput, &matTransform, 1, glm::mat4 );
+
+	UTIL_Write( fOutput, &pNode->mNumMeshes, 1, unsigned int );
+	for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
+		UTIL_Write( fOutput, &pNode->mMeshes[i], 1, unsigned int );
+
+	unsigned int uiPrevNodeMaxIndex = g_uiNodeMaxIndex;
+	g_uiNodeMaxIndex += pNode->mNumChildren;
+
+	UTIL_Write( fOutput, &pNode->mNumChildren, 1, unsigned int );
+	for (unsigned int i = 0; i < pNode->mNumChildren; i++)
+	{
+		unsigned int uiWriteIndex = uiPrevNodeMaxIndex + i + 1;
+		UTIL_Write( fOutput, &uiWriteIndex, 1, unsigned int );
+	}
+
+	for (unsigned int i = 0; i < pNode->mNumChildren; i++)
+		ProcessNode( uiPrevNodeMaxIndex + i + 1, pNode->mChildren[i], fOutput );
+}
+
+bool ProcessAnimationNode( aiNodeAnim *pNodeAnim, std::fstream &fAnimationFile )
+{
+	std::string sNodeName = pNodeAnim->mNodeName.C_Str();
+	if (g_uiNodeMapping.find( sNodeName ) == g_uiNodeMapping.end())
+	{
+		if (g_bDebug)
+			std::cout << "Cannot find associated node '" << sNodeName << "' in animation node!\n";
+
+		return false;
+	}
+
+	UTIL_Write( fAnimationFile, &g_uiNodeMapping[sNodeName], 1, unsigned int );
+
+	UTIL_Write( fAnimationFile, &pNodeAnim->mNumPositionKeys, 1, unsigned int );
+	for (unsigned int i = 0; i < pNodeAnim->mNumPositionKeys; i++)
+	{
+		float flWriteTime = (float)pNodeAnim->mPositionKeys[i].mTime;
+		UTIL_Write( fAnimationFile, &flWriteTime, 1, float );
+		UTIL_Write( fAnimationFile, &pNodeAnim->mPositionKeys[i].mValue.x, 1, float );
+		UTIL_Write( fAnimationFile, &pNodeAnim->mPositionKeys[i].mValue.y, 1, float );
+		UTIL_Write( fAnimationFile, &pNodeAnim->mPositionKeys[i].mValue.z, 1, float );
+	}
+
+	UTIL_Write( fAnimationFile, &pNodeAnim->mNumRotationKeys, 1, unsigned int );
+	for (unsigned int i = 0; i < pNodeAnim->mNumRotationKeys; i++)
+	{
+		float flWriteTime = (float)pNodeAnim->mRotationKeys[i].mTime;
+		UTIL_Write( fAnimationFile, &flWriteTime, 1, float );
+		UTIL_Write( fAnimationFile, &pNodeAnim->mRotationKeys[i].mValue.w, 1, float );
+		UTIL_Write( fAnimationFile, &pNodeAnim->mRotationKeys[i].mValue.x, 1, float );
+		UTIL_Write( fAnimationFile, &pNodeAnim->mRotationKeys[i].mValue.y, 1, float );
+		UTIL_Write( fAnimationFile, &pNodeAnim->mRotationKeys[i].mValue.z, 1, float );
+	}
+
+	UTIL_Write( fAnimationFile, &pNodeAnim->mNumScalingKeys, 1, unsigned int );
+	for (unsigned int i = 0; i < pNodeAnim->mNumScalingKeys; i++)
+	{
+		float flWriteTime = (float)pNodeAnim->mScalingKeys[i].mTime;
+		UTIL_Write( fAnimationFile, &flWriteTime, 1, float );
+		UTIL_Write( fAnimationFile, &pNodeAnim->mScalingKeys[i].mValue.x, 1, float );
+		UTIL_Write( fAnimationFile, &pNodeAnim->mScalingKeys[i].mValue.y, 1, float );
+		UTIL_Write( fAnimationFile, &pNodeAnim->mScalingKeys[i].mValue.z, 1, float );
+	}
+
+	return true;
+}
+
+void ProcessAnimation( unsigned int iIndex, aiAnimation *pAnimation, const std::string &sRootPath, const std::string &sAnimationName )
+{
+	std::string sAnimationFile;
+	if (!pAnimation->mName.C_Str() || !*pAnimation->mName.C_Str())
+		sAnimationFile = sRootPath + sAnimationName + std::to_string( iIndex ) + ".3an";
+	else
+		sAnimationFile = sRootPath + pAnimation->mName.C_Str() + ".3an";
+
+	std::fstream fAnimationFile( sAnimationFile, std::ios::out | std::ios::binary );
+
+	float flWriteDuration = (float)pAnimation->mDuration;
+	UTIL_Write( fAnimationFile, &flWriteDuration, 1, float );
+	float flWriteTicksPerSecond = (float)pAnimation->mTicksPerSecond;
+	UTIL_Write( fAnimationFile, &flWriteTicksPerSecond, 1, float );
+
+	for (unsigned int i = 0; i < pAnimation->mNumChannels; i++)
+		ProcessAnimationNode( pAnimation->mChannels[i], fAnimationFile );
+
+	fAnimationFile.close();
+}
+
+
+unsigned int GatherFlags( CTextFileReader *pSourceFileInformation )
+{
+	unsigned int uiDrawFlags = 0;
+	bool bFlagIsOn;
+	if (pSourceFileInformation->GetBool( "depth", bFlagIsOn ))
+	{
+		if (bFlagIsOn)
+			uiDrawFlags |= FL_RENDERPASS_DEPTH;
+	}
+	if (pSourceFileInformation->GetBool( "unlit", bFlagIsOn ))
+	{
+		if (bFlagIsOn)
+			uiDrawFlags |= FL_RENDERPASS_UNLIT;
+	}
+	if (pSourceFileInformation->GetBool( "lit", bFlagIsOn ))
+	{
+		if (bFlagIsOn)
+			uiDrawFlags |= FL_RENDERPASS_LIT;
+	}
+	if (pSourceFileInformation->GetBool( "shadow", bFlagIsOn ))
+	{
+		if (bFlagIsOn)
+			uiDrawFlags |= FL_RENDERPASS_SHADOW;
+	}
+	if (pSourceFileInformation->GetBool( "hud", bFlagIsOn ))
+	{
+		if (bFlagIsOn)
+			uiDrawFlags |= FL_RENDERPASS_HUD;
+	}
+	
+	return uiDrawFlags;
+}
+
+bool CreateAnimationController( const std::string &sName, CTextFileReader *pSourceFileInformation )
+{
+	unsigned int uiAnimationsIndex = pSourceFileInformation->GetIndex( "animations" );
+	if (!pSourceFileInformation->IsValidTerm( uiAnimationsIndex ))
+	{
+		// Error
+		return false;
+	}
+
+	unsigned int uiAnimationsCount = pSourceFileInformation->GetUnsignedInt( uiAnimationsIndex + 1 );
+	uiAnimationsIndex += 2;
+
+	std::vector<std::string> sAnimationNames( uiAnimationsCount );
+	std::vector<unsigned int> uiNexAnimation( uiAnimationsCount );
+
+	for (unsigned int i = 0; i < uiAnimationsCount; i++)
+	{
+		unsigned int uiIndex = pSourceFileInformation->GetInt( uiAnimationsIndex + i * 3 );
+		sAnimationNames[uiIndex] = pSourceFileInformation->GetTerm( uiAnimationsIndex + i * 3 + 1 );
+		uiNexAnimation[uiIndex] = pSourceFileInformation->GetUnsignedInt( uiAnimationsIndex + i * 3 + 2 );
+	}
+
+	std::string sAnimationControllerOutputPath( sName + ".3ac" );
+	std::fstream fAnimationControllerOutput( sAnimationControllerOutputPath, std::ios::out | std::ios::binary );
+
+	for (unsigned int i = 0; i < uiAnimationsCount; i++)
+	{
+		unsigned int uiSize;
+		uiSize = (unsigned int)sAnimationNames[i].size();
+		UTIL_Write( fAnimationControllerOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fAnimationControllerOutput, sAnimationNames[i].c_str(), sAnimationNames[i].size(), char );
+		UTIL_Write( fAnimationControllerOutput, &uiNexAnimation[i], 1, unsigned int );
+	}
+
+	fAnimationControllerOutput.close();
+
+	return true;
+}
+
+bool CreateMaterial( const std::string &sName, CTextFileReader *pSourceFileInformation )
+{
+	std::string sShader;
+	if (!pSourceFileInformation->GetTerm( "shader", sShader ))
+	{
+		// Error
+		return false;
+	}
+
+	ShaderType_t tShaderType = UTIL_ShaderNameToType( sShader.c_str() );
+
+	switch (tShaderType)
+	{
+	case SHADERTYPE_LIT:
+	case SHADERTYPE_UNLIT:
+	case SHADERTYPE_SKYBOX:
+	case SHADERTYPE_COLORHUD:
+		break;
+	default:
+		// Error
+		return false;
+	}
+
+	std::string sMaterialOutputPath( sName + ".3mt" );
+	std::fstream fMaterialOutput( sMaterialOutputPath, std::ios::out | std::ios::binary );
+
+	UTIL_Write( fMaterialOutput, &tShaderType, 1, ShaderType_t );
+
+	switch (tShaderType)
+	{
+	case SHADERTYPE_LIT:
+	{
+		std::string sDiffuse( "" );
+		std::string sSpecular( "" );
+		std::string sNormal( "" );
+		float flShininess = 16.0f;
+		glm::vec2 vecTextureScale( 1.0f );
+		unsigned int uiDrawFlags = GatherFlags( pSourceFileInformation );
+		pSourceFileInformation->GetTerm( "diffuse", sDiffuse );
+		pSourceFileInformation->GetTerm( "specular", sSpecular );
+		pSourceFileInformation->GetTerm( "normal", sNormal );
+		pSourceFileInformation->GetFloat( "shininess", flShininess );
+		pSourceFileInformation->GetVec2( "scale", vecTextureScale );
+
+		unsigned int uiSize;
+		uiSize = (unsigned int)sDiffuse.size();
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sDiffuse.c_str(), sDiffuse.size(), char );
+		uiSize = (unsigned int)sSpecular.size();
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sSpecular.c_str(), sSpecular.size(), char );
+		uiSize = (unsigned int)sNormal.size();
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sNormal.c_str(), sNormal.size(), char );
+		UTIL_Write( fMaterialOutput, &flShininess, 1, float );
+		UTIL_Write( fMaterialOutput, &vecTextureScale, 1, glm::vec2 );
+		UTIL_Write( fMaterialOutput, &uiDrawFlags, 1, unsigned int );
+		break;
+	}
+	case SHADERTYPE_UNLIT:
+	{
+		std::string sDiffuse( "" );
+		glm::vec2 vecTextureScale( 1.0f );
+		unsigned int uiDrawFlags = GatherFlags( pSourceFileInformation );
+		pSourceFileInformation->GetTerm( "diffuse", sDiffuse );
+		pSourceFileInformation->GetVec2( "scale", vecTextureScale );
+
+		unsigned int uiSize;
+		uiSize = (unsigned int)sDiffuse.size();
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sDiffuse.c_str(), sDiffuse.size(), char );
+		UTIL_Write( fMaterialOutput, &vecTextureScale, 1, glm::vec2 );
+		UTIL_Write( fMaterialOutput, &uiDrawFlags, 1, unsigned int );
+		break;
+	}
+	case SHADERTYPE_SKYBOX:
+	{
+		std::string sRight( "" );
+		std::string sLeft( "" );
+		std::string sTop( "" );
+		std::string sBottom( "" );
+		std::string sBack( "" );
+		std::string sFront( "" );
+		unsigned int uiDrawFlags = GatherFlags( pSourceFileInformation );
+		pSourceFileInformation->GetTerm( "right", sRight );
+		pSourceFileInformation->GetTerm( "right", sLeft );
+		pSourceFileInformation->GetTerm( "right", sTop );
+		pSourceFileInformation->GetTerm( "right", sBottom );
+		pSourceFileInformation->GetTerm( "right", sBack );
+		pSourceFileInformation->GetTerm( "right", sFront );
+
+		unsigned int uiSize;
+		uiSize = (unsigned int)sRight.size();
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sRight.c_str(), sRight.size(), char );
+		uiSize = (unsigned int)sLeft.size();
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sLeft.c_str(), sLeft.size(), char );
+		uiSize = (unsigned int)sTop.size();
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sBottom.c_str(), sBottom.size(), char );
+		uiSize = (unsigned int)sBottom.size();
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sTop.c_str(), sTop.size(), char );
+		uiSize = (unsigned int)sBack.size();
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sFront.c_str(), sFront.size(), char );
+		uiSize = (unsigned int)sFront.size();
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sBack.c_str(), sBack.size(), char );
+		UTIL_Write( fMaterialOutput, &uiDrawFlags, 1, unsigned int );
+		break;
+	}
+	case SHADERTYPE_COLORHUD:
+	{
+		glm::vec3 vecColor;
+		unsigned int uiDrawFlags = GatherFlags( pSourceFileInformation );
+		pSourceFileInformation->GetVec3( "color", vecColor );
+
+		UTIL_Write( fMaterialOutput, &vecColor, 1, glm::vec3 );
+		UTIL_Write( fMaterialOutput, &uiDrawFlags, 1, unsigned int );
+		break;
+	}
+	}
+
+	return true;
+}
+
+bool CreateMaterialController( const std::string &sName, CTextFileReader *pSourceFileInformation )
+{
+	unsigned int uiMaterialsIndex = pSourceFileInformation->GetIndex( "materials" );
+	if (!pSourceFileInformation->IsValidTerm( uiMaterialsIndex ))
+	{
+		// Error
+		return false;
+	}
+
+	unsigned int uiMaterialsCount = pSourceFileInformation->GetUnsignedInt( uiMaterialsIndex + 1 );
+	uiMaterialsIndex += 2;
+
+	std::vector<std::string> sMaterialNames( uiMaterialsCount );
+
+	for (unsigned int i = 0; i < uiMaterialsCount; i++)
+	{
+		unsigned int uiIndex = pSourceFileInformation->GetInt( uiMaterialsIndex + i * 2 );
+		sMaterialNames[uiIndex] = pSourceFileInformation->GetTerm( uiMaterialsIndex + i * 2 + 1 );
+	}
+
+	std::string sMaterialControllerOutputPath( sName + ".3mc" );
+	std::fstream fMaterialControllerOutput( sMaterialControllerOutputPath, std::ios::out | std::ios::binary );
+
+	for (unsigned int i = 0; i < uiMaterialsCount; i++)
+	{
+		unsigned int uiSize;
+		uiSize = (unsigned int)sMaterialNames[i].size();
+		UTIL_Write( fMaterialControllerOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialControllerOutput, sMaterialNames[i].c_str(), sMaterialNames[i].size(), char );
+	}
+
+	fMaterialControllerOutput.close();
+
+	return true;
+}
+
+bool CreateModel( const std::string &sName, CTextFileReader *pSourceFileInformation )
+{
+	std::string sModel;
+	if (!pSourceFileInformation->GetTerm( "model", sModel ))
+	{
+		// Error
+		return false;
+	}
+
+
+}
+
+bool CreateTexture( const std::string &sName, CTextFileReader *pSourceFileInformation )
+{
+
+}
+
+int main( int iArgC, const char *sArgV[] )
+{
+	for (unsigned int i = 1; i < (unsigned int)iArgC; i++)
+	{
+		const char *sArgument = sArgV[i];
+		if (*sArgument == '-')
+		{
+			sArgument++;
+			if (!g_bDebug && UTIL_strcmp( sArgument, "debug" ) == 0)
+				g_bDebug = true;
+			else if (!g_bHelp && UTIL_strcmp( sArgument, "help" ) == 0)
+				g_bHelp = true;
+			else if (!g_bNoMaterial && UTIL_strcmp( sArgument, "nomaterial" ) == 0)
+				g_bNoMaterial = true;
+			else if (!g_bNoMaterialController && UTIL_strcmp( sArgument, "nomaterialcontroller" ) == 0)
+				g_bNoMaterialController = true;
+			else
+				std::cout << "Invalid parameter: " << sArgument << ", use parameter -help for assistance.\n";
+		}
+		else if (!g_sFilePath)
+		{
+			g_sFilePath = sArgument;
+		}
+	}
+
+	if (g_bHelp)
+		std::cout << "3DRAsset is a tool used for compiling assets for 3DREngine-based programs.\nTo use this program, run it with a sourrce file as an argument. If the source file is of a proper format, this program will output the associated compiled file(s) with the proper file extension(s).\nParameters for this program are:\n-debug, which provides a detailed program output;\n-help, which display this information;\n-nomaterial, which prevents the compilation of materials;\n-nomaterialcontroller, which prevents the compilation of material controllers;\nFor information on how to format source files, please follow the instructions located in the reademe.\n";
+
+	if (g_sFilePath)
+	{
+		CTextFileReader *pSourceFileInformation = new CTextFileReader( g_sFilePath );
+		if (!pSourceFileInformation->WasSuccessfulRead())
+		{
+			// Error
+		}
+
+		std::string sType;
+		if (!pSourceFileInformation->GetTerm( "type", sType ))
+		{
+			// Error
+		}
+
+		std::string sName;
+		if (!pSourceFileInformation->GetTerm( "name", sName ))
+		{
+			// Error
+		}
+
+		if (sType == "animationcontroller")
+		{
+			CreateAnimationController( sName, pSourceFileInformation );
+		}
+		else if (sType == "material")
+		{
+			CreateMaterial( sName, pSourceFileInformation );
+		}
+		else if (sType == "materialcontroller")
+		{
+			CreateMaterialController( sName, pSourceFileInformation );
+		}
+		else if (sType == "model")
+		{
+			CreateModel( sName, pSourceFileInformation );
+		}
+		else if (sType == "texture")
+		{
+			CreateTexture( sName, pSourceFileInformation );
+		}
+		else
+		{
+			// Error
+		}
+	}
+}

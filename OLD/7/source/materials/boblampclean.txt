@@ -1,0 +1,9 @@
+type materialcontroller;
+materials
+{ index 0; name body.3mt; }
+{ index 1; name face.3mt; }
+{ index 2; name helmet.3mt; }
+{ index 3; name grill.3mt; }
+{ index 4; name rgrill.3mt; }
+{ index 5; name body.3mt; };
+name boblampclean;

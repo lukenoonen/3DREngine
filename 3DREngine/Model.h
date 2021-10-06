@@ -2,42 +2,36 @@
 #define MODEL_H
 
 #include "Global.h"
-#include "Shader.h"
+#include "BaseAsset.h"
 #include "Mesh.h"
-#include "ModelNode.h"
+#include "Skeleton.h"
 #include "Animation.h"
+#include "RenderManager.h"
 
-#include "MaterialController.h"
-#include "AnimationController.h"
-
-class CModel
+class CModel : public CBaseAsset
 {
 public:
-	DECLARE_CLASS_NOBASE( CModel );
+	DECLARE_CLASS( CModel, CBaseAsset );
 
-	CModel( const char *sPath, const std::vector<CMesh *> &pMeshes, const std::vector<CModelNode *> &pModelNodes, const std::vector<glm::mat4> &matBoneOffsets );
-	~CModel();
+	CModel( const std::vector<CMesh *> &pMeshes, const std::vector<CAnimation *> &pAnimations, CSkeleton *pSkeleton, const char *sPath );
+	virtual ~CModel();
 
-	void Draw( CMaterialController *pMaterialController );
+	bool ShouldDraw( void ) const;
 
-	void UpdateAnimation( CAnimationController *pAnimationController );
+	void Draw( void );
 
-	const char *GetPath( void );
+	bool IsAnimated( void ) const;
+	bool IsValidAnimation( unsigned int uiIndex ) const;
 
-	unsigned int GetBoneTransformSize( void );
-    
+	void SetUpBoneTransforms( std::vector<glm::mat4> &matBoneTransforms );
+	float UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, unsigned int uiAnimationIndex, float flAnimationTime, float flAnimationTimeScale );
+	
 private:
-
-	void ReadNodeHierarchy( CAnimationController *pAnimationController, CAnimation *pAnimation, float flAnimationTime, unsigned int uiNodeIndex, const glm::mat4 &matParentTransform );
-
-	char *m_sPath;
-
 	std::vector<CMesh *> m_pMeshes;
-	std::vector<CModelNode *> m_pModelNodes;
-
-	std::vector<glm::mat4> m_matBoneOffsets;
-
-	glm::mat4 m_matGlobalInverseTransform;
+	std::vector<CAnimation *> m_pAnimations;
+	CSkeleton *m_pSkeleton;
+	bool m_bShouldDraw[RENDERPASS_COUNT];
+	bool m_bIsAnimated;
 };
 
 #endif // MODEL_H

@@ -10,11 +10,10 @@ class CLitMaterial : public CMaterial
 public:
 	DECLARE_CLASS( CLitMaterial, CMaterial );
 
-	CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, CTexture *pNormal, float flShininess, const glm::vec2 &vecTextureScale, const char *sPath, unsigned int uiDrawFlags );
+	CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, CTexture *pNormal, float flShininess, const glm::vec2 &vecTextureScale, const char *sPath );
+	virtual ~CLitMaterial();
 
-	virtual bool Use( void );
-
-	virtual ShaderType_t GetShaderType( void ) const;
+	virtual void Use( void );
 
 private:
 	CTexture *m_pDiffuse;

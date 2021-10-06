@@ -1,0 +1,4 @@
+type mesh;
+name boblampclean_body0;
+geometry boblampclean0.3gm;
+material body.3mt;

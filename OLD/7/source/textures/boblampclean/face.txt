@@ -1,0 +1,5 @@
+type texture;
+name face;
+wrap repeat;
+filter true;
+image face.3im;

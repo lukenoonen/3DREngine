@@ -4,6 +4,7 @@
 #include "GlobalManager.h"
 #include "RenderManager.h"
 #include "ShaderManager.h"
+#include "CommandManager.h"
 
 CConFloat cf_r_fov( "r_fov", 90.0f );
 CConFloat cf_r_near( "r_near", 0.1f );

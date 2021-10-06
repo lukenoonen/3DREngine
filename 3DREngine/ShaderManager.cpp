@@ -1,50 +1,45 @@
 #include "ShaderManager.h"
-#include <UTIL.h>
-#include <stdio.h>
+#include "CommandManager.h"
 
-bool CC_S_Quality( const std::vector<const char *> &sCommands )
+bool CC_S_Quality( CTextItem *pCommand )
 {
-	if (sCommands.size() < 1)
+	if (pCommand->GetTextTermCount() < 2)
 		return false;
 
-	int iQuality = UTIL_atoi( sCommands[0] );
-	if (iQuality <= (int)SHADERQUALITY_DEFAULT || iQuality >= (int)SHADERQUALITY_COUNT)
+	CTextTerm *pTextTerm = pCommand->GetTextTerm( 1 );
+	if (!pTextTerm->IsUnsignedIntFormat())
 		return false;
 
-	pShaderManager->SetShaderQuality( (ShaderQuality_t)iQuality );
+	unsigned char ucQuality = (unsigned char)pTextTerm->GetUnsignedInt();
+	if (ucQuality < SHADERQUALITY_LOW || ucQuality >= SHADERQUALITY_COUNT)
+		return false;
+
+	pShaderManager->SetShaderQuality( (ShaderQuality_t)ucQuality );
 	return true;
 }
 CConCommand cc_s_quality( "s_quality", CC_S_Quality );
 
 CShaderManager::CShaderManager()
 {
-	m_pActiveShader = NULL;
+	m_pActiveSubShader = NULL;
 
-	m_tOverrideShaderType = SHADERTYPE_INVALID;
-	m_tShaderSubType = SHADERSUBTYPE_DEFAULT;
-	m_tShaderQuality = SHADERQUALITY_DEFAULT;
+	m_tShaderQuality = SHADERQUALITY_HIGH;
+	m_tShaderAnimate = SHADERANIMATE_FALSE;
+	m_tShaderShadow = SHADERSHADOW_FALSE;
 
 	for (unsigned int i = 0; i < SHADERTYPE_COUNT; i++)
 	{
-		char sVertexShader[260];
-		char sGeometryShader[260];
-		char sFragmentShader[260];
+		char *sVertexPath = UTIL_stradd( g_sShaderNames[i], ".vs" );
+		char *sGeometryPath = UTIL_stradd( g_sShaderNames[i], ".gs" );
+		char *sFragmentPath = UTIL_stradd( g_sShaderNames[i], ".fs" );
+		m_pShaders[i] = new CShader( sVertexPath, sGeometryPath, sFragmentPath );
+		delete[] sVertexPath;
+		delete[] sGeometryPath;
+		delete[] sFragmentPath;
 
-		sprintf_s( sVertexShader, sizeof( sVertexShader ), "resources/shaders/%s.vs", g_sShaderNames[i] );
-		sprintf_s( sGeometryShader, sizeof( sGeometryShader ), "resources/shaders/%s.gs", g_sShaderNames[i] );
-		sprintf_s( sFragmentShader, sizeof( sFragmentShader ), "resources/shaders/%s.fs", g_sShaderNames[i] );
-
-		for (unsigned int j = 0; j < SHADERSUBTYPE_COUNT; j++)
+		if (!m_pShaders[i]->IsSuccess())
 		{
-			for (unsigned int k = 0; k < SHADERQUALITY_COUNT; k++)
-			{
-				m_pShaders[i][j][k] = new CShader( sVertexShader, sGeometryShader, sFragmentShader, (ShaderSubType_t)j, (ShaderQuality_t)k );
-				if (!m_pShaders[i][j][k]->IsSuccess())
-				{
-					delete m_pShaders[i][j][k];
-					m_pShaders[i][j][k] = NULL;
-				}
-			}
+			// TODO: Abort!!
 		}
 	}
 
@@ -60,26 +55,9 @@ CShaderManager::CShaderManager()
 CShaderManager::~CShaderManager()
 {
 	for (unsigned int i = 0; i < SHADERTYPE_COUNT; i++)
-	{
-		for (unsigned int j = 0; j < SHADERSUBTYPE_COUNT; j++)
-		{
-			for (unsigned int k = 0; k < SHADERQUALITY_COUNT; k++)
-			{
-				if (m_pShaders[i][j][k])
-					delete m_pShaders[i][j][k];
-			}
-		}
-	}
+		delete m_pShaders[i];
 
 	glDeleteBuffers( UBO_COUNT, m_uiUBOs );
-}
-
-CShader *CShaderManager::GetShader( ShaderType_t tShaderType ) const
-{
-	if (m_pShaders[tShaderType][m_tShaderSubType][m_tShaderQuality])
-		return m_pShaders[tShaderType][m_tShaderSubType][m_tShaderQuality];
-
-	return m_pShaders[tShaderType][m_tShaderSubType][SHADERQUALITY_DEFAULT];
 }
 
 void CShaderManager::SetUniformBufferObject( UniformBufferObjects_t tBufferObject, unsigned int uiIndex, const void *pData )
@@ -94,19 +72,85 @@ void CShaderManager::SetUniformBufferObject( UniformBufferObjects_t tBufferObjec
 	glBufferSubData( GL_UNIFORM_BUFFER, g_pUBOParamOffsets[tBufferObject][uiIndex] + g_pUBOParamSizes[tBufferObject][uiIndex] * uiParamIndex, g_pUBOParamSizes[tBufferObject][uiIndex] * uiParams, pData );
 }
 
-void CShaderManager::SetShaderSubType( ShaderSubType_t tShaderSubType )
-{
-	m_tShaderSubType = tShaderSubType;
-}
-
-ShaderSubType_t CShaderManager::GetShaderSubType( void ) const
-{
-	return m_tShaderSubType;
-}
-
 void CShaderManager::SetShaderQuality( ShaderQuality_t tShaderQuality )
 {
 	m_tShaderQuality = tShaderQuality;
+}
+
+void CShaderManager::SetShaderAnimate( ShaderAnimate_t tShaderAnimate )
+{
+	m_tShaderAnimate = tShaderAnimate;
+}
+
+void CShaderManager::SetShaderShadow( ShaderShadow_t tShaderShadow )
+{
+	m_tShaderShadow = tShaderShadow;
+}
+
+void CShaderManager::Use( ShaderType_t tShaderType )
+{
+	m_pActiveSubShader = m_pShaders[tShaderType]->GetSubShader( m_tShaderQuality, m_tShaderAnimate, m_tShaderShadow );
+	m_pActiveSubShader->Use();
+}
+
+void CShaderManager::SetValue( const char *sName, bool bValue )
+{
+	glUniform1i( m_pActiveSubShader->GetLocation( sName ), (int)bValue );
+}
+
+void CShaderManager::SetValue( const char *sName, int iValue )
+{
+	glUniform1i( m_pActiveSubShader->GetLocation( sName ), iValue );
+}
+
+void CShaderManager::SetValue( const char *sName, float flValue )
+{
+	glUniform1f( m_pActiveSubShader->GetLocation( sName ), flValue );
+}
+
+void CShaderManager::SetValue( const char *sName, const glm::vec2 &vecValue )
+{
+	glUniform2fv( m_pActiveSubShader->GetLocation( sName ), 1, &vecValue[0] );
+}
+
+void CShaderManager::SetValue( const char *sName, float x, float y )
+{
+	glUniform2f( m_pActiveSubShader->GetLocation( sName ), x, y );
+}
+
+void CShaderManager::SetValue( const char *sName, const glm::vec3 &vecValue )
+{
+	glUniform3fv( m_pActiveSubShader->GetLocation( sName ), 1, &vecValue[0] );
+}
+
+void CShaderManager::SetValue( const char *sName, float x, float y, float z )
+{
+	glUniform3f( m_pActiveSubShader->GetLocation( sName ), x, y, z );
+}
+
+void CShaderManager::SetValue( const char *sName, const glm::vec4 &vecValue )
+{
+	glUniform4fv( m_pActiveSubShader->GetLocation( sName ), 1, &vecValue[0] );
+}
+
+void CShaderManager::SetValue( const char *sName, float x, float y, float z, float w )
+{
+	glUniform4f( m_pActiveSubShader->GetLocation( sName ), x, y, z, w );
+}
+
+void CShaderManager::SetValue( const char *sName, const glm::mat2 &matValue )
+{
+	glUniformMatrix2fv( m_pActiveSubShader->GetLocation( sName ), 1, GL_FALSE, &matValue[0][0] );
+}
+
+void CShaderManager::SetValue( const char *sName, const glm::mat3 &matValue )
+{
+	glUniformMatrix3fv( m_pActiveSubShader->GetLocation( sName ), 1, GL_FALSE, &matValue[0][0] );
+}
+
+void CShaderManager::SetValue( const char *sName, const glm::mat4 &matValue )
+{
+	glUniformMatrix4fv( m_pActiveSubShader->GetLocation( sName ), 1, GL_FALSE, &matValue[0][0] );
 }
 
 ShaderQuality_t CShaderManager::GetShaderQuality( void ) const
@@ -114,25 +158,12 @@ ShaderQuality_t CShaderManager::GetShaderQuality( void ) const
 	return m_tShaderQuality;
 }
 
-void CShaderManager::SetOverrideShader( ShaderType_t tShaderType )
+ShaderAnimate_t CShaderManager::GetShaderAnimate( void ) const
 {
-	m_tOverrideShaderType = tShaderType;
+	return m_tShaderAnimate;
 }
 
-CShader *CShaderManager::GetOverrideShader( void ) const
+ShaderShadow_t CShaderManager::GetShaderShadow( void ) const
 {
-	if (m_tOverrideShaderType != SHADERTYPE_INVALID)
-		return GetShader( m_tOverrideShaderType );
-
-	return NULL;
-}
-
-void CShaderManager::SetActiveShader( CShader *pShader )
-{
-	m_pActiveShader = pShader;
-}
-
-CShader *CShaderManager::GetActiveShader( void ) const
-{
-	return m_pActiveShader;
+	return m_tShaderShadow;
 }

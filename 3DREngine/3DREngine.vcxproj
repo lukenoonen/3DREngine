@@ -19,25 +19,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedProp.cpp" />
     <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="AnimationController.cpp" />
-    <ClCompile Include="AnimationManager.cpp" />
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BaseAnimated.cpp" />
+    <ClCompile Include="BaseAsset.cpp" />
     <ClCompile Include="BaseDrawable.cpp" />
     <ClCompile Include="BaseEntity.cpp" />
-    <ClCompile Include="BaseHUDElement.cpp" />
-    <ClCompile Include="BaseHUDTransform.cpp" />
     <ClCompile Include="BaseLight.cpp" />
     <ClCompile Include="BaseModeled.cpp" />
     <ClCompile Include="BaseTransform.cpp" />
     <ClCompile Include="BaseWorld.cpp" />
-    <ClCompile Include="ColorHUDMaterial.cpp" />
-    <ClCompile Include="CommandProcessor.cpp" />
+    <ClCompile Include="CommandManager.cpp" />
     <ClCompile Include="CSMLight.cpp" />
     <ClCompile Include="DirLight.cpp" />
     <ClCompile Include="DirLightShadow.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="GlobalManager.cpp" />
@@ -45,12 +44,8 @@
     <ClCompile Include="LitMaterial.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="MaterialController.cpp" />
-    <ClCompile Include="MaterialHUDElement.cpp" />
-    <ClCompile Include="MaterialManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="ModelNode.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PointLight.cpp" />
@@ -58,47 +53,42 @@
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="SkyboxMaterial.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="SpotLightShadow.cpp" />
-    <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="StaticProp.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="UnlitMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimatedProp.h" />
     <ClInclude Include="Animation.h" />
-    <ClInclude Include="AnimationController.h" />
-    <ClInclude Include="AnimationManager.h" />
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="BaseAnimated.h" />
+    <ClInclude Include="BaseAsset.h" />
     <ClInclude Include="BaseDrawable.h" />
     <ClInclude Include="BaseEntity.h" />
-    <ClInclude Include="BaseHUDElement.h" />
-    <ClInclude Include="BaseHUDTransform.h" />
     <ClInclude Include="BaseLight.h" />
     <ClInclude Include="BaseModeled.h" />
     <ClInclude Include="BaseTransform.h" />
     <ClInclude Include="BaseWorld.h" />
-    <ClInclude Include="CommandProcessor.h" />
+    <ClInclude Include="CommandManager.h" />
     <ClInclude Include="CSMLight.h" />
     <ClInclude Include="DirLight.h" />
     <ClInclude Include="DirLightShadow.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="GlobalManager.h" />
-    <ClInclude Include="ColorHUDMaterial.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LitMaterial.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="MaterialController.h" />
-    <ClInclude Include="MaterialHUDElement.h" />
-    <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelNode.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PointLight.h" />
@@ -107,13 +97,13 @@
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="Skeleton.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="SkyboxMaterial.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="SpotLightShadow.h" />
-    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="StaticProp.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="UnlitMaterial.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -172,8 +162,8 @@
     <LibraryPath>D:\Extra_Games\Development\3DREngine\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\Extra_Games\Development\3DREngine\shared;D:\Extra_Games\Development\3DREngine\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Extra_Games\Development\3DREngine\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -222,6 +212,8 @@
       <SDLCheck>true</SDLCheck>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -16,97 +12,98 @@
     <Filter Include="Header Files\Managers">
       <UniqueIdentifier>{5c45a996-93e7-4249-9ea6-7d6de83d47d0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Managers">
-      <UniqueIdentifier>{98fd1756-2e13-487c-bd64-e9e82b03fe95}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Materials">
-      <UniqueIdentifier>{37299c28-c3d8-406a-992f-e5ce9fa0ac51}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Materials">
-      <UniqueIdentifier>{187074c6-7f13-4bc8-a9b2-ca4a0a2b8632}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Models">
-      <UniqueIdentifier>{30a0b83b-85f9-4a8a-8afd-53638df3eda5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Models">
-      <UniqueIdentifier>{e8603160-ac5b-4f73-a6d9-829e91045d7b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Entities">
       <UniqueIdentifier>{6c758628-4bff-4e8f-abfd-74ab14e88606}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Entities">
-      <UniqueIdentifier>{5da98d4e-97ab-4cc3-8687-7ee5e71877a2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Controllers">
-      <UniqueIdentifier>{99c5aff1-4327-4432-af45-587124e8e20a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Controllers">
-      <UniqueIdentifier>{8a92bdcb-493a-4c7d-b901-5a8e8db3197e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Entities\Lights">
       <UniqueIdentifier>{d9c695b3-f87f-4c2f-97d5-3b685e9eb1d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Assets">
+      <UniqueIdentifier>{5e71aab4-f48f-43ca-967f-b553e9138282}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Assets\Material">
+      <UniqueIdentifier>{759339fb-21ae-451d-a430-532e1b3fd933}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shaders">
+      <UniqueIdentifier>{3fa65e1f-b3c7-4b83-b594-907c6a5201b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Global">
+      <UniqueIdentifier>{c04a1335-c540-4fe9-b2a3-79e5fae67e35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Assets\OLD">
+      <UniqueIdentifier>{cf8bccc5-db5b-4c27-963a-957bdfc03f06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Assets\Animation">
+      <UniqueIdentifier>{9dab2842-9b26-4104-89fd-7bc125f2d277}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Assets\Geometry">
+      <UniqueIdentifier>{69d3626d-d3e2-4575-9804-1e7004992a2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Assets\Mesh">
+      <UniqueIdentifier>{c293c4b2-f22c-40e5-8ac5-f13a7b578a23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Assets\Model">
+      <UniqueIdentifier>{bf128016-d714-41a3-8d86-5b51d5ac1102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Assets\Skeleton">
+      <UniqueIdentifier>{70fdbe81-91b2-4e1a-86c9-68aaf8f73bfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Assets\Texture">
+      <UniqueIdentifier>{ee12742a-9c79-4350-b488-3a2e73ff9327}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Managers">
+      <UniqueIdentifier>{98fd1756-2e13-487c-bd64-e9e82b03fe95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities">
+      <UniqueIdentifier>{5da98d4e-97ab-4cc3-8687-7ee5e71877a2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Entities\Lights">
       <UniqueIdentifier>{4262a5ab-1ee5-4114-aa66-00fcfd37f40d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Entities\HUD">
-      <UniqueIdentifier>{48f06508-6ccf-43d2-ae26-c15d2ee15621}</UniqueIdentifier>
+    <Filter Include="Source Files\Assets">
+      <UniqueIdentifier>{8c296c61-2961-404c-96dd-18a0b433eda9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Entities\HUD">
-      <UniqueIdentifier>{935efa8d-74a7-4a42-98ff-0ae9024786bf}</UniqueIdentifier>
+    <Filter Include="Source Files\Assets\Texture">
+      <UniqueIdentifier>{beef33a3-81af-48b3-818d-7856d71f9f81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Assets\Model">
+      <UniqueIdentifier>{f11df96c-988b-42ed-b7ba-f976c93e7e8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Assets\Material">
+      <UniqueIdentifier>{219b0e4a-6601-4dc2-a3e4-1573a4da2c13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Assets\Animation">
+      <UniqueIdentifier>{ccc352f4-7111-479f-bdf6-62e187002ff1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Assets\OLD">
+      <UniqueIdentifier>{d1ba9127-f752-410f-8985-babe6e2b0654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Assets\Mesh">
+      <UniqueIdentifier>{936ec458-8315-4218-a722-2d278903c7c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Assets\Geometry">
+      <UniqueIdentifier>{45e4da8e-be70-41ea-82ef-681c4362912f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Assets\Skeleton">
+      <UniqueIdentifier>{5c712cf8-69e3-4ee0-9181-03d545accae4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{65353fa0-ed51-4876-80b9-cb1a05a395ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Global">
+      <UniqueIdentifier>{fddc6cd1-dde3-4e18-930c-67c8f7691829}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stb_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialManager.cpp">
-      <Filter>Source Files\Managers</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
-      <Filter>Source Files\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="LitMaterial.cpp">
-      <Filter>Source Files\Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="UnlitMaterial.cpp">
-      <Filter>Source Files\Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files\Materials</Filter>
-    </ClCompile>
     <ClCompile Include="GlobalManager.cpp">
       <Filter>Source Files\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelManager.cpp">
-      <Filter>Source Files\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelNode.cpp">
-      <Filter>Source Files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationManager.cpp">
-      <Filter>Source Files\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Source Files\Models</Filter>
     </ClCompile>
     <ClCompile Include="BaseEntity.cpp">
       <Filter>Source Files\Entities</Filter>
@@ -123,29 +120,14 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="CommandProcessor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Global.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FileManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
     <ClCompile Include="Skybox.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="SkyboxMaterial.cpp">
-      <Filter>Source Files\Materials</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialController.cpp">
-      <Filter>Source Files\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationController.cpp">
-      <Filter>Source Files\Controllers</Filter>
     </ClCompile>
     <ClCompile Include="BaseAnimated.cpp">
       <Filter>Source Files\Entities</Filter>
@@ -177,76 +159,79 @@
     <ClCompile Include="PointLightShadow.cpp">
       <Filter>Source Files\Entities\Lights</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseHUDElement.cpp">
-      <Filter>Source Files\Entities\HUD</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialHUDElement.cpp">
-      <Filter>Source Files\Entities\HUD</Filter>
-    </ClCompile>
     <ClCompile Include="BaseWorld.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
     <ClCompile Include="BaseTransform.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="BaseHUDTransform.cpp">
-      <Filter>Source Files\Entities\HUD</Filter>
+    <ClCompile Include="CommandManager.cpp">
+      <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="ColorHUDMaterial.cpp">
-      <Filter>Source Files\Materials</Filter>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Assets\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Assets\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="LitMaterial.cpp">
+      <Filter>Source Files\Assets\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files\Assets\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxMaterial.cpp">
+      <Filter>Source Files\Assets\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="UnlitMaterial.cpp">
+      <Filter>Source Files\Assets\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files\Global</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Source Files\Global</Filter>
+    </ClCompile>
+    <ClCompile Include="Global.cpp">
+      <Filter>Source Files\Global</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseAsset.cpp">
+      <Filter>Source Files\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelNode.cpp">
+      <Filter>Source Files\Assets\OLD</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Assets\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files\Assets\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>Source Files\Assets\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>Source Files\Assets\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedProp.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticProp.cpp">
+      <Filter>Source Files\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialManager.h">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="TextureManager.h">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="LitMaterial.h">
-      <Filter>Header Files\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="UnlitMaterial.h">
-      <Filter>Header Files\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files\Materials</Filter>
-    </ClInclude>
     <ClInclude Include="GlobalManager.h">
       <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelManager.h">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelNode.h">
-      <Filter>Header Files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationManager.h">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Header Files\Models</Filter>
     </ClInclude>
     <ClInclude Include="BaseEntity.h">
       <Filter>Header Files\Entities</Filter>
@@ -263,35 +248,14 @@
     <ClInclude Include="InputManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="CommandProcessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PreGlobal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FileManager.h">
       <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="Math.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Skybox.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="SkyboxMaterial.h">
-      <Filter>Header Files\Materials</Filter>
-    </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialController.h">
-      <Filter>Header Files\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationController.h">
-      <Filter>Header Files\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="BaseAnimated.h">
       <Filter>Header Files\Entities</Filter>
@@ -323,23 +287,71 @@
     <ClInclude Include="SpotLightShadow.h">
       <Filter>Header Files\Entities\Lights</Filter>
     </ClInclude>
-    <ClInclude Include="BaseHUDElement.h">
-      <Filter>Header Files\Entities\HUD</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialHUDElement.h">
-      <Filter>Header Files\Entities\HUD</Filter>
-    </ClInclude>
     <ClInclude Include="BaseWorld.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
     <ClInclude Include="BaseTransform.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="BaseHUDTransform.h">
-      <Filter>Header Files\Entities\HUD</Filter>
+    <ClInclude Include="CommandManager.h">
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="ColorHUDMaterial.h">
-      <Filter>Header Files\Materials</Filter>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="UnlitMaterial.h">
+      <Filter>Header Files\Assets\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyboxMaterial.h">
+      <Filter>Header Files\Assets\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="LitMaterial.h">
+      <Filter>Header Files\Assets\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files\Assets\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="PreGlobal.h">
+      <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseAsset.h">
+      <Filter>Header Files\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelNode.h">
+      <Filter>Header Files\Assets\OLD</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files\Assets\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>Header Files\Assets\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\Assets\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files\Assets\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Header Files\Assets\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Assets\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticProp.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedProp.h">
+      <Filter>Header Files\Entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

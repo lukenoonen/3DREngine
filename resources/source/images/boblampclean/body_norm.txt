@@ -1,0 +1,3 @@
+type image;
+name body_norm;
+image body_norm.png;

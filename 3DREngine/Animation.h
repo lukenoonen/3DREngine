@@ -2,52 +2,44 @@
 #define ANIMATION_H
 
 #include "Global.h"
+#include "BaseAsset.h"
 
-struct SAnimationChannel
-{
-	unsigned int uiAssociatedNode;
-
-	std::vector<float> flPositionTimes;
-	std::vector<glm::vec3> vecPositions;
-
-	std::vector<float> flRotationTimes;
-	std::vector<glm::quat> qRotations;
-
-	std::vector<float> flScaleTimes;
-	std::vector<glm::vec3> vecScales;
-};
-
-class CAnimation
+class CAnimationChannel
 {
 public:
-	DECLARE_CLASS_NOBASE( CAnimation );
+	DECLARE_CLASS_NOBASE( CAnimationChannel );
 
-	CAnimation( const char *sPath, float flDuration, float flTicksPerSecond, const std::vector<SAnimationChannel> &acAnimationChannels );
-	~CAnimation();
+	CAnimationChannel( const std::vector<float> &flPositionTimes, const std::vector<glm::vec3> &vecPositions, const std::vector<float> &flRotationTimes, const std::vector<glm::quat> &qRotations, const std::vector<float> &flScaleTimes, const std::vector<glm::vec3> &vecScales );
 
-	float GetDuration( void );
-	float GetTicksPerSecond( void );
-
-	unsigned int GetAnimationChannelCount( void );
-	const SAnimationChannel &GetAnimationChannel( unsigned int uiIndex );
-
-	const char *GetPath( void );
-
-	void CalcInterpolatedTranslation( glm::vec3 &vecOut, float flAnimationTime, unsigned int uiIndex );
-	void CalcInterpolatedRotation( glm::quat &qOut, float flAnimationTime, unsigned int uiIndex );
-	void CalcInterpolatedScaling( glm::vec3 &vecOut, float flAnimationTime, unsigned int uiIndex );
-	
-	unsigned int FindTranslation( float flAnimationTime, unsigned int uiIndex );
-	unsigned int FindRotation( float flAnimationTime, unsigned int uiIndex );
-	unsigned int FindScale( float flAnimationTime, unsigned int uiIndex );
+	void CalcInterpolatedPosition( glm::vec3 &vecOut, float flAnimationTime );
+	void CalcInterpolatedRotation( glm::quat &qOut, float flAnimationTime );
+	void CalcInterpolatedScale( glm::vec3 &vecOut, float flAnimationTime );
 
 private:
-	float m_flDuration;
-	float m_flTicksPerSecond;
+	std::vector<float> m_flPositionTimes;
+	std::vector<glm::vec3> m_vecPositions;
 
-	std::vector<SAnimationChannel> m_acAnimationChannels;
-	
-	char *m_sPath;
+	std::vector<float> m_flRotationTimes;
+	std::vector<glm::quat> m_qRotations;
+
+	std::vector<float> m_flScaleTimes;
+	std::vector<glm::vec3> m_vecScales;
+};
+
+class CAnimation : public CBaseAsset
+{
+public:
+	DECLARE_CLASS( CAnimation, CBaseAsset );
+
+	CAnimation( float flTime, const std::vector<CAnimationChannel *> &pAnimationChannels, const char *sPath );
+	virtual ~CAnimation();
+
+	float GetTime( void ) const;
+	CAnimationChannel *GetAnimationChannel( unsigned int uiIndex ) const;
+
+private:
+	float m_flTime;
+	std::vector<CAnimationChannel *> m_pAnimationChannels;
 };
 
 #endif // ANIMATION_H

@@ -9,16 +9,11 @@ class CCSMLight : public CBaseLight
 public:
 	DECLARE_CLASS( CCSMLight, CBaseLight );
 
-	CCSMLight( float flBlurRadius, float flBlendDistance, float flInitialDistance, float flDistanceFactor, float flFarZError, float flNearZError, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CCSMLight( float flFadeNear, float flFadeFar, float flBlurRadius, float flBlendDistance, float flInitialDistance, float flDistanceFactor, float flFarZError, float flNearZError, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
 	virtual ~CCSMLight();
-
-	virtual bool CastShadows( void ) const;
 
 	virtual void CalculateShadows( void );
 	virtual void ActivateLight( void );
-
-	void CreateShadowBuffers( void );
-	void DestroyShadowBuffers( void );
 
 private:
 	unsigned int m_uiShadowMapFBOs[4];
@@ -28,9 +23,11 @@ private:
 	float m_flCascadeEndNear[4];
 	glm::vec4 m_vecCascadeEndClipSpaceNear;
 	glm::vec4 m_vecCascadeEndClipSpaceFar;
-	glm::vec4 m_vecCascadeBlurScale;
+	float m_flBlurScale;
 	float m_flFarZError;
 	float m_flNearZError;
+	float m_flFadeNear;
+	float m_flFadeFar;
 	float m_flBlurRadius;
 };
 

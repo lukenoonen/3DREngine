@@ -1,0 +1,100 @@
+else if (sType == "model")
+		{
+			unsigned int uiModelIndex = pSourceFileInformation.GetIndex( "model" );
+			if (!pSourceFileInformation.IsValidTerm( uiModelIndex ))
+			{
+				// Error
+			}
+
+			std::string sModel = pSourceFileInformation.GetTerm( uiModelIndex + 1 );
+
+			unsigned int uiFlipUVIndex = pSourceFileInformation.GetIndex( "flipuv" );
+			if (!pSourceFileInformation.IsValidTerm( uiFlipUVIndex ))
+			{
+				// Error
+			}
+
+			bool bFlipUV = (unsigned int)std::stoul( pSourceFileInformation.GetTerm( uiFlipUVIndex + 1 ) ) != 0;
+
+			unsigned int uiFlags = bFlipUV ? (aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs) : (aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
+
+			std::string sModelSourcePath = sRootPath + sModel;
+
+			Assimp::Importer imImporter;
+			const aiScene *pScene = imImporter.ReadFile( sModelSourcePath.c_str(), uiFlags );
+			if (!pScene || pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !pScene->mRootNode)
+			{
+				// Error
+				//std::cout << "ERROR::ASSIMP::" << imImporter.GetErrorString() << '\n';
+			}
+
+			unsigned int uiModelNameIndex = pSourceFileInformation.GetIndex( "modelname" );
+			if (!pSourceFileInformation.IsValidTerm( uiModelNameIndex ))
+			{
+				// Error
+			}
+
+			std::string sModelName = pSourceFileInformation.GetTerm( uiModelNameIndex + 1 );
+			std::string sModelPath = sRootPath + sModelName + ".3md";
+			std::fstream fModel( sModelPath, std::ios::out | std::ios::binary );
+
+			for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
+				ProcessMesh( i, pScene->mMeshes[i], fModel );
+
+			ProcessNode( 0, pScene->mRootNode, fModel );
+
+			fModel.close();
+
+			unsigned int uiAnimationNameIndex = pSourceFileInformation.GetIndex( "animationname" );
+			if (!pSourceFileInformation.IsValidTerm( uiAnimationNameIndex ))
+			{
+				// Error
+			}
+
+			std::string sAnimationName = pSourceFileInformation.GetTerm( uiAnimationNameIndex + 1 );
+
+			for (unsigned int i = 0; i < pScene->mNumAnimations; i++)
+				ProcessAnimation( i, pScene->mAnimations[i], sRootPath, sAnimationName );
+
+			unsigned int uiAnimationsIndex = pSourceFileInformation.GetIndex( "animations" );
+			if (!pSourceFileInformation.IsValidTerm( uiAnimationsIndex ))
+			{
+				// Error
+			}
+
+			unsigned int uiAnimationCount = (unsigned int)std::stoul( pSourceFileInformation.GetTerm( uiAnimationsIndex + 1 ) );
+			uiAnimationsIndex += 2;
+
+			std::vector<std::string> sAnimationNames;
+			sAnimationNames.resize( uiAnimationCount );
+
+			std::vector<unsigned int> uiNextAnimations;
+			uiNextAnimations.resize( uiAnimationCount );
+
+			for (unsigned int i = 0; i < uiAnimationCount; i++)
+			{
+				unsigned int uiMaterialIndex = (unsigned int)std::stoul( pSourceFileInformation.GetTerm( uiAnimationsIndex + i * 3 ) );
+				sAnimationNames[uiMaterialIndex] = pSourceFileInformation.GetTerm( uiAnimationsIndex + i * 3 + 1 ) + ".3an";
+				uiNextAnimations[uiMaterialIndex] = (unsigned int)std::stoul( pSourceFileInformation.GetTerm( uiAnimationsIndex + i * 3 + 2 ) );
+			}
+
+			unsigned int uiAnimationControllerNameIndex = pSourceFileInformation.GetIndex( "animationcontrollername" );
+			if (!pSourceFileInformation.IsValidTerm( uiAnimationControllerNameIndex ))
+			{
+				// Error
+			}
+
+			std::string sAnimationControllerName = pSourceFileInformation.GetTerm( uiAnimationControllerNameIndex + 1 );
+			std::string sAnimationControllerPath = sRootPath + sAnimationControllerName + ".3ac";
+			std::fstream fAnimationController( sAnimationControllerPath, std::ios::out | std::ios::binary );
+
+			for (unsigned int i = 0; i < uiAnimationCount; i++)
+			{
+				unsigned int uiSize = sAnimationNames[i].size();
+				UTIL_Write( fAnimationController, &uiSize, 1, unsigned int );
+				UTIL_Write( fAnimationController, sAnimationNames[i].c_str(), uiSize, char );
+				UTIL_Write( fAnimationController, &uiNextAnimations[i], 1, unsigned int );
+			}
+
+			fAnimationController.close();
+		}

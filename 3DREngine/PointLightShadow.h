@@ -9,23 +9,20 @@ class CPointLightShadow : public CPointLight
 public:
 	DECLARE_CLASS( CPointLightShadow, CPointLight );
 
-	CPointLightShadow( float flBlurRadius, float flConstant, float flLinear, float flQuadratic, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CPointLightShadow( float flFadeNear, float flFadeFar, float flBlurRadius, float flConstant, float flLinear, float flQuadratic, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
 	virtual ~CPointLightShadow();
-
-	virtual bool CastShadows( void ) const;
 
 	virtual void PostThink( void );
 
 	virtual void CalculateShadows( void );
 	virtual void ActivateLight( void );
 
-	void CreateShadowBuffers( void );
-	void DestroyShadowBuffers( void );
-
 private:
 	unsigned int m_uiShadowMapFBO;
 	unsigned int m_uiShadowMap;
 
+	float m_flFadeNear;
+	float m_flFadeFar;
 	float m_flBlurScale;
 
 	glm::mat4 m_matProjectionMatrix;

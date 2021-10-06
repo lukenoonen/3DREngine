@@ -1,4 +1,5 @@
 #include "BaseDrawable.h"
+#include "ShaderManager.h"
 
 CBaseDrawable::CBaseDrawable( bool bShouldDraw, bool bActive ) : BaseClass( bActive )
 {
@@ -7,7 +8,7 @@ CBaseDrawable::CBaseDrawable( bool bShouldDraw, bool bActive ) : BaseClass( bAct
 
 void CBaseDrawable::PreDraw( void )
 {
-
+	pShaderManager->SetShaderAnimate( SHADERANIMATE_FALSE );
 }
 
 void CBaseDrawable::Draw( void )

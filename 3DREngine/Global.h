@@ -2,31 +2,27 @@
 #define GLOBAL_H
 
 #include "PreGlobal.h"
-#include "CommandProcessor.h"
 
-class CAnimationManager;
+class CRenderManager;
+class CAssetManager;
+class CCommandManager;
 class CEntityManager;
 class CFileManager;
 class CGlobalValues;
 class CInputManager;
-class CMaterialManager;
-class CModelManager;
-class CRenderManager;
 class CShaderManager;
-class CTextureManager;
 
 void CreateGlobals( void );
 void DestroyGlobals( void );
+void ExitError( const char *sError );
 
-extern CAnimationManager *pAnimationManager;
+extern CRenderManager *pRenderManager;
+extern CAssetManager *pAssetManager;
+extern CCommandManager *pCommandManager;
 extern CEntityManager *pEntityManager;
 extern CFileManager *pFileManager;
 extern CGlobalValues *pGlobalValues;
 extern CInputManager *pInputManager;
-extern CMaterialManager *pMaterialManager;
-extern CModelManager *pModelManager;
-extern CRenderManager *pRenderManager;
 extern CShaderManager *pShaderManager;
-extern CTextureManager *pTextureManager;
 
 #endif // GLOBAL_H

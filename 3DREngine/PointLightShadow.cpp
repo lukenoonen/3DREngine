@@ -1,12 +1,16 @@
 #include "PointLightShadow.h"
 #include "ShaderManager.h"
 #include "RenderManager.h"
-#include "TextureManager.h"
+#include "CommandManager.h"
+#include "AssetManager.h"
 
 CConInt ci_r_pntshadowsize( "r_pntshadowsize", 512 );
 
-CPointLightShadow::CPointLightShadow( float flBlurRadius, float flConstant, float flLinear, float flQuadratic, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( flConstant, flLinear, flQuadratic, vecAmbient, vecDiffuse, vecSpecular, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CPointLightShadow::CPointLightShadow( float flFadeNear, float flFadeFar, float flBlurRadius, float flConstant, float flLinear, float flQuadratic, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( flConstant, flLinear, flQuadratic, vecAmbient, vecDiffuse, vecSpecular, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
 {
+	m_flFadeNear = flFadeNear;
+	m_flFadeFar = flFadeFar;
+
 	m_flBlurScale = flBlurRadius / M_SQRT2;
 
 	m_matProjectionMatrix = glm::perspective( 2.0f * atanf( (1.0f + m_flBlurScale * 2.0f) ), 1.0f, 0.1f, GetMaxRadius() );
@@ -17,17 +21,13 @@ CPointLightShadow::CPointLightShadow( float flBlurRadius, float flConstant, floa
 	m_matLightSpaceMatricies[4] = m_matProjectionMatrix * glm::lookAt( GetPosition(), GetPosition() + g_vecUp, g_vecBack );
 	m_matLightSpaceMatricies[5] = m_matProjectionMatrix * glm::lookAt( GetPosition(), GetPosition() + g_vecDown, g_vecBack );
 
-	CreateShadowBuffers();
+	int iShadowSize = ci_r_pntshadowsize.GetValue();
+	pRenderManager->CreateShadowMapFramebuffer( 1, &m_uiShadowMapFBO, &m_uiShadowMap, iShadowSize, iShadowSize );
 }
 
 CPointLightShadow::~CPointLightShadow()
 {
-	DestroyShadowBuffers();
-}
-
-bool CPointLightShadow::CastShadows( void ) const
-{
-	return true;
+	pRenderManager->DestroyShadowMapFrameBuffer( 1, &m_uiShadowMapFBO, &m_uiShadowMap );
 }
 
 void CPointLightShadow::PostThink( void )
@@ -49,25 +49,26 @@ void CPointLightShadow::CalculateShadows( void )
 {
 	if (ci_r_pntshadowsize.WasDispatched())
 	{
-		pTextureManager->UnbindTexture( m_uiShadowMap );
+		pAssetManager->UnbindTexture( m_uiShadowMap );
 
-		DestroyShadowBuffers();
-		CreateShadowBuffers();
+		pRenderManager->DestroyShadowMapFrameBuffer( 1, &m_uiShadowMapFBO, &m_uiShadowMap );
+
+		int iShadowSize = ci_r_pntshadowsize.GetValue();
+		pRenderManager->CreateShadowMapFramebuffer( 1, &m_uiShadowMapFBO, &m_uiShadowMap, iShadowSize * 6, iShadowSize );
 	}
 
 	float flMaxRadius = GetMaxRadius();
 
 	pRenderManager->SetViewportSize( glm::ivec2( ci_r_pntshadowsize.GetValue() ) );
 
-	pShaderManager->SetShaderSubType( SHADERSUBTYPE_POINT );
+	pRenderManager->SetRenderPass( RENDERPASS_SHADOW_POINT );
 
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOSITION, 0, &GetPosition() );
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTMAXDISTANCE, 0, &flMaxRadius );
 
 	int iShadowSize = ci_r_pntshadowsize.GetValue();
 
-	glBindFramebuffer( GL_FRAMEBUFFER, m_uiShadowMapFBO );
-	glClear( GL_DEPTH_BUFFER_BIT );
+	pRenderManager->SetFrameBuffer( m_uiShadowMapFBO );
 
 	for (unsigned int i = 0; i < 6; i++)
 	{
@@ -83,40 +84,12 @@ void CPointLightShadow::ActivateLight( void )
 {
 	BaseClass::ActivateLight();
 
-	float flNear = 40.0f;
-	float flFar = 50.0f;
-
-	pRenderManager->SetShadowMapIndex( pTextureManager->BindTexture( m_uiShadowMap, GL_TEXTURE_2D ), 0 );
+	pRenderManager->SetShadowMapIndex( pAssetManager->BindTexture( m_uiShadowMap, GL_TEXTURE_2D ), 0 );
 
 	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 6, m_matLightSpaceMatricies );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWBLUR, 0, 0, 1, &m_flBlurScale );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWFADE, 0, &flNear );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWFADE, 1, &flFar );
-}
+	pShaderManager->SetUniformBufferObject( UBO_SHADOWBLUR, 0, &m_flBlurScale );
+	pShaderManager->SetUniformBufferObject( UBO_SHADOWFADE, 0, &m_flFadeNear );
+	pShaderManager->SetUniformBufferObject( UBO_SHADOWFADE, 1, &m_flFadeFar );
 
-void CPointLightShadow::CreateShadowBuffers( void )
-{
-	int iShadowSize = ci_r_pntshadowsize.GetValue();
-
-	glGenFramebuffers( 1, &m_uiShadowMapFBO );
-	glGenTextures( 1, &m_uiShadowMap );
-
-	glBindTexture( GL_TEXTURE_2D, m_uiShadowMap );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, iShadowSize * 6, iShadowSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS );
-	glBindFramebuffer( GL_FRAMEBUFFER, m_uiShadowMapFBO );
-	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_uiShadowMap, 0 );
-	glDrawBuffer( GL_NONE );
-	glReadBuffer( GL_NONE );
-}
-
-void CPointLightShadow::DestroyShadowBuffers( void )
-{
-	glDeleteFramebuffers( 1, &m_uiShadowMapFBO );
-	glDeleteTextures( 1, &m_uiShadowMap );
+	pShaderManager->SetShaderShadow( SHADERSHADOW_TRUE );
 }

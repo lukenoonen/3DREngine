@@ -3,7 +3,7 @@
 
 #include "Global.h"
 
-enum KeyCodes_t
+enum KeyCodes_t : unsigned char
 {
 	KEYCODE_LEFTMOUSE = 0,
 	KEYCODE_RIGHTMOUSE,

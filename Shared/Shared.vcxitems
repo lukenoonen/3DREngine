@@ -14,11 +14,13 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)SharedDefs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SharedAsset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TextReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)UTIL.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)SharedDefs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedAsset.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TextReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UTIL.h" />
   </ItemGroup>
 </Project>

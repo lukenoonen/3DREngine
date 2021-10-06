@@ -2,49 +2,108 @@
 #define SHADER_H
 
 #include "Global.h"
-#include <SharedDefs.h>
+
+enum ShaderType_t : unsigned char
+{
+	SHADERTYPE_SHADOW_DIR = 0,
+	SHADERTYPE_SHADOW_POINT,
+	SHADERTYPE_SHADOW_SPOT,
+	SHADERTYPE_SHADOW_CSM,
+	SHADERTYPE_DEPTH,
+	SHADERTYPE_UNLIT,
+	SHADERTYPE_LIT_DIR,
+	SHADERTYPE_LIT_POINT,
+	SHADERTYPE_LIT_SPOT,
+	SHADERTYPE_LIT_CSM,
+	SHADERTYPE_SKYBOX,
+	SHADERTYPE_COUNT,
+	SHADERTYPE_INVALID = SHADERTYPE_COUNT,
+};
+
+static const char *g_sShaderNames[] =
+{
+	"shadowdir",
+	"shadowpoint",
+	"shadowspot",
+	"shadowcsm",
+	"depth",
+	"unlit",
+	"litdir",
+	"litpoint",
+	"litspot",
+	"litcsm",
+	"skybox",
+};
+
+ShaderType_t UTIL_ShaderNameToType( const char *sShaderName );
+const char *UTIL_ShaderTypeToName( ShaderType_t tShaderType );
+
+enum ShaderQuality_t : unsigned char
+{
+	SHADERQUALITY_LOW = 0,
+	SHADERQUALITY_MEDIUM,
+	SHADERQUALITY_HIGH,
+	SHADERQUALITY_ULTRA,
+	SHADERQUALITY_COUNT,
+};
+
+enum ShaderAnimate_t : unsigned char
+{
+	SHADERANIMATE_FALSE = 0,
+	SHADERANIMATE_TRUE,
+	SHADERANIMATE_COUNT,
+};
+
+enum ShaderShadow_t : unsigned char
+{
+	SHADERSHADOW_FALSE = 0,
+	SHADERSHADOW_TRUE,
+	SHADERSHADOW_COUNT,
+};
+
+class CSubShader
+{
+public:
+	DECLARE_CLASS_NOBASE( CSubShader );
+
+	CSubShader( const char *sVertexCode, const char *sGeometryCode, const char *sFragmentCode );
+	~CSubShader();
+
+	void Use( void );
+	GLint GetLocation( const char *sName );
+
+private:
+	void CheckCompileErrorsShader( unsigned int uiShader );
+
+private:
+	unsigned int m_uiID;
+	std::vector<GLint> m_iUniformLocations;
+	std::vector<char *> m_sUniformNames;
+	std::unordered_map<const char *, GLint> m_mapUniformNameToLocation;
+};
 
 class CShader
 {
 public:
 	DECLARE_CLASS_NOBASE( CShader );
 
-	CShader( const char *sVertexPath, const char *sGeometryPath, const char *sFragmentPath, ShaderSubType_t tShaderSubType, ShaderQuality_t tShaderQuality );
+	CShader( const char *sVertexPath, const char *sGeometryPath, const char *sFragmentPath );
 	~CShader();
-
-	void Use( void );
-
-	void SetValue( const char *sName, bool bValue );
-	void SetValue( const char *sName, int iValue );
-	void SetValue( const char *sName, float flValue );
-	void SetValue( const char *sName, const glm::vec2 &vecValue );
-	void SetValue( const char *sName, float x, float y );
-	void SetValue( const char *sName, const glm::vec3 &vecValue );
-	void SetValue( const char *sName, float x, float y, float z );
-	void SetValue( const char *sName, const glm::vec4 &vecValue );
-	void SetValue( const char *sName, float x, float y, float z, float w );
-	void SetValue( const char *sName, const glm::mat2 &matValue );
-	void SetValue( const char *sName, const glm::mat3 &matValue );
-	void SetValue( const char *sName, const glm::mat4 &matValue );
 
 	bool IsSuccess( void ) const;
 
-private:
-	GLint GetLocation( const char *sName );
+	CSubShader *GetSubShader( ShaderQuality_t tShaderQuality, ShaderAnimate_t tShaderAnimate, ShaderShadow_t tShaderShadow ) const;
 
-	char *ReadShaderFile( const char *sPath, ShaderSubType_t tShaderSubType, ShaderQuality_t tShaderQuality );
+private:
+	char *ReadShaderFile( const char *sPath, std::vector<unsigned int> &uiQualityIndices, std::vector<unsigned int> &uiAnimateIndices, std::vector<unsigned int> &uiShadowIndices );
 	char *ReadShaderFile( const char *sPath );
 
-	void CheckCompileErrorsShader( unsigned int iShader, const char *sPath );
-	void CheckCompileErrorsProgram( unsigned int iProgram );
-
-	unsigned int m_uiID;
-
+private:
 	bool m_bSuccess;
-
-	std::vector<GLint> m_iUniformLocations;
-	std::vector<char *> m_sUniformNames;
-	std::unordered_map<const char *, GLint> m_mapUniformNameToLocation;
+	bool m_bHasQualityPreprocessor;
+	bool m_bHasAnimatePreprocessor;
+	bool m_bHasShadowPreprocessor;
+	CSubShader *m_pSubShaders[SHADERQUALITY_COUNT][SHADERANIMATE_COUNT][SHADERSHADOW_COUNT];
 };
 
 #endif // SHADER_H

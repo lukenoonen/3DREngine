@@ -1,14 +1,15 @@
 #ifndef PREGLOBAL_H
 #define PREGLOBAL_H
 
+#include <Windows.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include <vector>
+#include <queue>
+#include <stack>
 #include <unordered_map>
-#include <UTIL.h>
+#include <limits>
+#include "UTIL.h"
 #include "Math.h"
 
 #define DECLARE_CLASS( x, y )			typedef x ThisClass; \

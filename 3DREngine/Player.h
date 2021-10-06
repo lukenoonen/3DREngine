@@ -3,12 +3,13 @@
 
 #include "Global.h"
 #include "BaseTransform.h"
+#include "CommandManager.h"
 
 extern CConFloat cf_r_fov;
 extern CConFloat cf_r_near;
 extern CConFloat cf_r_far;
 
-enum Movement_t
+enum Movement_t : unsigned char
 {
 	MOVEMENT_FORWARD = 0,
 	MOVEMENT_BACK,

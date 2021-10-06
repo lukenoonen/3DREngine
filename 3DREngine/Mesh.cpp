@@ -1,46 +1,31 @@
 #include "Mesh.h"
+#include "AssetManager.h"
 
-CMesh::CMesh( const std::vector<SVertex> &verVertices, const std::vector<unsigned int> &uiIndices )
+CMesh::CMesh( CGeometry *pGeometry, CMaterial *pMaterial, const char *sPath ) : BaseClass( sPath )
 {
-	m_verVertices = verVertices;
-	m_uiIndices = uiIndices;
+	m_pGeometry = pGeometry;
+	m_pMaterial = pMaterial;
 
-	glGenVertexArrays( 1, &m_uiVAO );
-	glGenBuffers( 1, &m_uiVBO );
-	glGenBuffers( 1, &m_uiEBO );
-
-	glBindVertexArray( m_uiVAO );
-	glBindBuffer( GL_ARRAY_BUFFER, m_uiVBO );
-	glBufferData( GL_ARRAY_BUFFER, m_verVertices.size() * sizeof( SVertex ), &m_verVertices[0], GL_STATIC_DRAW );
-
-	glEnableVertexAttribArray( 0 );
-	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void*)0 );
-	glEnableVertexAttribArray( 1 );
-	glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void*)offsetof( SVertex, vecNormal ) );
-	glEnableVertexAttribArray( 2 );
-	glVertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void*)offsetof( SVertex, vecTangent ) );
-	glEnableVertexAttribArray( 3 );
-	glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void*)offsetof( SVertex, vecBitangent ) );
-	glEnableVertexAttribArray( 4 );
-	glVertexAttribPointer( 4, 2, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void*)offsetof( SVertex, vecTexCoords ) );
-	glEnableVertexAttribArray( 5 );
-	glVertexAttribIPointer( 5, 4, GL_INT, sizeof( SVertex ), (void*)offsetof( SVertex, vecBoneIDs ) );
-	glEnableVertexAttribArray( 6 );
-	glVertexAttribPointer( 6, 4, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void*)offsetof( SVertex, vecWeights ) );
-
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_uiEBO );
-	glBufferData( GL_ELEMENT_ARRAY_BUFFER, m_uiIndices.size() * sizeof( unsigned int ), &m_uiIndices[0], GL_STATIC_DRAW );
+	m_pGeometry->Activate();
+	m_pMaterial->Activate();
 }
 
 CMesh::~CMesh()
 {
-	glDeleteVertexArrays( 1, &m_uiVAO );
-	glDeleteBuffers( 1, &m_uiVBO );
-	glDeleteBuffers( 1, &m_uiEBO );
+	m_pGeometry->Inactivate();
+	pAssetManager->CheckGeometry( m_pGeometry );
+
+	m_pMaterial->Inactivate();
+	pAssetManager->CheckMaterial( m_pMaterial );
+}
+
+bool CMesh::ShouldDraw( void ) const
+{
+	return m_pMaterial->ShouldDraw();
 }
 
 void CMesh::Draw( void ) 
 {
-	glBindVertexArray( m_uiVAO );
-	glDrawElements( GL_TRIANGLES, (GLsizei)m_uiIndices.size(), GL_UNSIGNED_INT, 0 );
+	m_pMaterial->Use();
+	m_pGeometry->Draw();
 }

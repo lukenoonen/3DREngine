@@ -1,0 +1,5 @@
+type texture;
+name body_spec;
+wrap repeat;
+filter true;
+image body_spec.3im;

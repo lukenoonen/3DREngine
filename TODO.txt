@@ -1,0 +1,3 @@
+1. Implement animation blending/transitions
+2. Change dirlight to be limited to a square (as to optimize) for certain situations
+3. 

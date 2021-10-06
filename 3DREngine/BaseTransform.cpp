@@ -35,7 +35,7 @@ void CBaseTransform::AddPosition( const glm::vec3 &vecPosition )
 	m_vecPosition += vecPosition;
 	if (!m_pChildren.empty())
 	{
-		for (unsigned int i = 0; i < m_pChildren.size(); i++)
+		for (unsigned int i = 0; i < (unsigned int)m_pChildren.size(); i++)
 		{
 			if (m_pChildren[i]->ParentPosition())
 				m_pChildren[i]->AddPosition( vecPosition );
@@ -47,12 +47,13 @@ void CBaseTransform::AddPosition( const glm::vec3 &vecPosition )
 
 void CBaseTransform::AddRotation( const glm::quat &qRotation )
 {
-	m_qRotation = m_qRotation * qRotation;
 	if (!m_pChildren.empty())
 	{
 		glm::quat qRotationInverse = glm::inverse( m_qRotation );
 
-		for (unsigned int i = 0; i < m_pChildren.size(); i++)
+		m_qRotation = m_qRotation * qRotation;
+
+		for (unsigned int i = 0; i < (unsigned int)m_pChildren.size(); i++)
 		{
 			if (m_pChildren[i]->ParentRotation())
 			{
@@ -68,6 +69,10 @@ void CBaseTransform::AddRotation( const glm::quat &qRotation )
 			}
 		}
 	}
+	else
+	{
+		m_qRotation = m_qRotation * qRotation;
+	}
 
 	m_bTransformUpdated = true;
 }
@@ -77,7 +82,7 @@ void CBaseTransform::AddScale( const glm::vec3 &vecScale )
 	m_vecScale *= vecScale;
 	if (!m_pChildren.empty())
 	{
-		for (unsigned int i = 0; i < m_pChildren.size(); i++)
+		for (unsigned int i = 0; i < (unsigned int)m_pChildren.size(); i++)
 		{
 			if (m_pChildren[i]->ParentScale())
 				m_pChildren[i]->AddScale( vecScale );

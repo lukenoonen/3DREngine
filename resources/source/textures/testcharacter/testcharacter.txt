@@ -1,0 +1,5 @@
+type texture;
+name testcharacter;
+wrap repeat;
+filter true;
+image testcharacter.3im;

@@ -1,50 +1,51 @@
 #include "Global.h"
-#include "AnimationManager.h"
+#include "RenderManager.h"
+#include "AssetManager.h"
+#include "CommandManager.h"
 #include "EntityManager.h"
 #include "FileManager.h"
 #include "GlobalManager.h"
 #include "InputManager.h"
-#include "MaterialManager.h"
-#include "ModelManager.h"
-#include "RenderManager.h"
 #include "ShaderManager.h"
-#include "TextureManager.h"
 
 void CreateGlobals( void )
 {
 	pRenderManager = new CRenderManager();
-	pAnimationManager = new CAnimationManager();
+	pAssetManager = new CAssetManager();
+	pCommandManager = new CCommandManager();
 	pEntityManager = new CEntityManager();
+	pFileManager = new CFileManager();
 	pGlobalValues = new CGlobalValues();
 	pInputManager = new CInputManager();
-	pMaterialManager = new CMaterialManager();
-	pModelManager = new CModelManager();
 	pShaderManager = new CShaderManager();
-	pTextureManager = new CTextureManager();
-	pFileManager = new CFileManager();
 }
 
 void DestroyGlobals( void )
 {
-	delete pFileManager;
-	delete pTextureManager;
 	delete pShaderManager;
-	delete pModelManager;
-	delete pMaterialManager;
 	delete pInputManager;
 	delete pGlobalValues;
+	delete pFileManager;
 	delete pEntityManager;
-	delete pAnimationManager;
+	delete pCommandManager;
+	delete pAssetManager;
 	delete pRenderManager;
 }
 
-CAnimationManager *pAnimationManager;
+void ExitError( const char *sError )
+{
+	char *sFullError = UTIL_stradd( "The program has stopped prematurely due to an error:\n", sError );
+	MessageBox( NULL, sFullError, "Error", MB_ICONERROR | MB_OK );
+	delete[] sFullError;
+
+	exit( EXIT_FAILURE );
+}
+
+CRenderManager *pRenderManager;
+CAssetManager *pAssetManager;
+CCommandManager *pCommandManager;
 CEntityManager *pEntityManager;
 CFileManager *pFileManager;
 CGlobalValues *pGlobalValues;
 CInputManager *pInputManager;
-CMaterialManager *pMaterialManager;
-CModelManager *pModelManager;
-CRenderManager *pRenderManager;
 CShaderManager *pShaderManager;
-CTextureManager *pTextureManager;

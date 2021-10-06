@@ -1,24 +1,26 @@
 #include "SkyboxMaterial.h"
-#include "TextureManager.h"
 #include "ShaderManager.h"
+#include "AssetManager.h"
 
-CSkyboxMaterial::CSkyboxMaterial( CTexture *pSkybox, const char *sPath, unsigned int uiDrawFlags ) : BaseClass( sPath, uiDrawFlags )
+CSkyboxMaterial::CSkyboxMaterial( CTexture *pSkybox, const char *sPath ) : BaseClass( sPath )
 {
 	m_pSkybox = pSkybox;
+
+	m_pSkybox->Activate();
+
+	SetShaderType( RENDERPASS_UNLIT, SHADERTYPE_SKYBOX );
 }
 
-bool CSkyboxMaterial::Use( void )
+CSkyboxMaterial::~CSkyboxMaterial()
 {
-	if (!BaseClass::Use())
-		return false;
+	m_pSkybox->Inactivate();
 
-	CShader *pShader = pShaderManager->GetShader( GetShaderType() );
-
-	pShader->SetValue( "u_sSkybox", pTextureManager->BindTexture( m_pSkybox->GetID(), GL_TEXTURE_CUBE_MAP ) );
-	return true;
+	pAssetManager->CheckTexture( m_pSkybox );
 }
 
-ShaderType_t CSkyboxMaterial::GetShaderType( void ) const
+void CSkyboxMaterial::Use( void )
 {
-	return SHADERTYPE_SKYBOX;
+	BaseClass::Use();
+
+	pShaderManager->SetValue( "u_sSkybox", pAssetManager->BindTexture( m_pSkybox->GetID(), GL_TEXTURE_CUBE_MAP ) );
 }

@@ -1,0 +1,3 @@
+type image;
+name body_spec;
+image body_spec.png;

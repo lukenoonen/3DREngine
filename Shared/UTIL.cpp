@@ -1,4 +1,4 @@
-#include <UTIL.h>
+#include "UTIL.h"
 #include <fstream>
 
 char UTIL_clower( char c )
@@ -9,7 +9,7 @@ char UTIL_clower( char c )
 	return c;
 }
 
-int UTIL_strlen( const char *sStr )
+unsigned int UTIL_strlen( const char *sStr )
 {
 	const char *sStrSearch = sStr;
 	while (*sStrSearch) sStrSearch++;
@@ -38,9 +38,9 @@ int UTIL_strncmp( const char *sStr1, const char *sStr2 )
 	return UTIL_clower( *sStr1 ) - UTIL_clower( *sStr2 );
 }
 
-int UTIL_strcmp( const char *sStr1, const char *sStr2, int iSize )
+int UTIL_strcmp( const char *sStr1, const char *sStr2, unsigned int uiSize )
 {
-	while (iSize-- && *sStr1 == *sStr2)
+	while (uiSize-- && *sStr1 == *sStr2)
 	{
 		sStr1++;
 		sStr2++;
@@ -49,15 +49,35 @@ int UTIL_strcmp( const char *sStr1, const char *sStr2, int iSize )
 	return *sStr1 - *sStr2;
 }
 
-int UTIL_strncmp( const char *sStr1, const char *sStr2, int iSize )
+int UTIL_strncmp( const char *sStr1, const char *sStr2, unsigned int uiSize )
 {
-	while (iSize-- && UTIL_clower( *sStr1 ) == UTIL_clower( *sStr2 ))
+	while (uiSize-- && UTIL_clower( *sStr1 ) == UTIL_clower( *sStr2 ))
 	{
 		sStr1++;
 		sStr2++;
 	}
 
 	return UTIL_clower( *sStr1 ) - UTIL_clower( *sStr2 );
+}
+
+bool UTIL_streq( const char *sStr1, const char *sStr2 )
+{
+	return UTIL_strcmp( sStr1, sStr2 ) == 0;
+}
+
+bool UTIL_strneq( const char *sStr1, const char *sStr2 )
+{
+	return UTIL_strncmp( sStr1, sStr2 ) == 0;
+}
+
+bool UTIL_streq( const char *sStr1, const char *sStr2, unsigned int uiSize )
+{
+	return UTIL_strcmp( sStr1, sStr2, uiSize ) == 0;
+}
+
+bool UTIL_strneq( const char *sStr1, const char *sStr2, unsigned int uiSize )
+{
+	return UTIL_strncmp( sStr1, sStr2, uiSize ) == 0;
 }
 
 bool UTIL_strinc( const char *sStr1, const char *sStr2 )
@@ -68,7 +88,7 @@ bool UTIL_strinc( const char *sStr1, const char *sStr2 )
 		sStr2++;
 	}
 
-	return *sStr2 == 0;
+	return *sStr2 == '\0';
 }
 
 bool UTIL_strninc( const char *sStr1, const char *sStr2 )
@@ -79,7 +99,7 @@ bool UTIL_strninc( const char *sStr1, const char *sStr2 )
 		sStr2++;
 	}
 
-	return *sStr2 == 0;
+	return *sStr2 == '\0';
 }
 
 void UTIL_strcpy( char *sDest, const char *sSource )
@@ -87,10 +107,10 @@ void UTIL_strcpy( char *sDest, const char *sSource )
 	while (*sDest++ = *sSource++);
 }
 
-void UTIL_strncpy( char *sDest, const char *sSource, int iSize )
+void UTIL_strncpy( char *sDest, const char *sSource, unsigned int uiSize )
 {
-	int iCount = 0;
-	while ((iCount++ < iSize) && (*sDest++ = *sSource++));
+	unsigned int uiCount = 0;
+	while ((uiCount++ < uiSize) && (*sDest++ = *sSource++));
 }
 
 char *UTIL_stredit( const char *sSource )
@@ -100,13 +120,60 @@ char *UTIL_stredit( const char *sSource )
 	return sEditable;
 }
 
+char *UTIL_stredit( const char *sSource, unsigned int uiSize )
+{
+	char *sEditable = new char[uiSize + 1];
+	UTIL_strncpy( sEditable, sSource, uiSize );
+	sEditable[uiSize] = '\0';
+	return sEditable;
+}
+
 void UTIL_stradd( char *sDest, const char *sSource1, const char *sSource2 )
 {
 	while (*sSource1)
 		*sDest++ = *sSource1++;
 	while (*sSource2)
 		*sDest++ = *sSource2++;
-	*sDest = 0;
+	*sDest = '\0';
+}
+
+char *UTIL_stradd( const char *sSource1, const char *sSource2 )
+{
+	char *sDest = new char[UTIL_strlen( sSource1 ) + UTIL_strlen( sSource2 ) + 1];
+	UTIL_stradd( sDest, sSource1, sSource2 );
+	return sDest;
+}
+
+void UTIL_stradd( char *sDest, const char *sSource1, char cSource2 )
+{
+	while (*sSource1)
+		*sDest++ = *sSource1++;
+	
+	*sDest++ = cSource2;
+	*sDest = '\0';
+}
+
+char *UTIL_stradd( const char *sSource1, char cSource2 )
+{
+	char *sDest = new char[UTIL_strlen( sSource1 ) + 2];
+	UTIL_stradd( sDest, sSource1, cSource2 );
+	return sDest;
+}
+
+void UTIL_stradd( char *sDest, char cSource1, const char *sSource2 )
+{
+	*sDest++ = cSource1;
+	while (*sSource2)
+		*sDest++ = *sSource2++;
+
+	*sDest = '\0';
+}
+
+char *UTIL_stradd( char cSource1, const char *sSource2 )
+{
+	char *sDest = new char[UTIL_strlen( sSource2 ) + 2];
+	UTIL_stradd( sDest, sSource2, sSource2 );
+	return sDest;
 }
 
 const char *UTIL_strstr( const char *sStr1, const char *sStr2 )
@@ -234,8 +301,10 @@ const char *UTIL_strchri( const char *sStr, const char *sChar )
 		const char *sCharCompare = sChar;
 		while (*sCharCompare)
 		{
-			if (*sStr == *sCharCompare++)
+			if (*sStr == *sCharCompare)
 				break;
+
+			sCharCompare++;
 		}
 		if (!*sCharCompare)
 			return sStr;
@@ -251,14 +320,72 @@ char *UTIL_strchri( char *sStr, const char *sChar )
 		const char *sCharCompare = sChar;
 		while (*sCharCompare)
 		{
-			if (*sStr == *sCharCompare++)
+			if (*sStr == *sCharCompare)
 				break;
+
+			sCharCompare++;
 		}
 		if (!*sCharCompare)
 			return sStr;
 		sStr++;
 	}
 	return NULL;
+}
+
+const char *UTIL_strchrl( const char *sStr, const char cChar )
+{
+	const char *sOutput = NULL;
+	while (sStr = UTIL_strchr( sStr, cChar )) sOutput = sStr++;
+	return sOutput;
+}
+
+char *UTIL_strchrl( char *sStr, const char cChar )
+{
+	char *sOutput = NULL;
+	while (sStr = UTIL_strchr( sStr, cChar )) sOutput = sStr++;
+	return sOutput;
+}
+
+const char *UTIL_strchrl( const char *sStr, const char *sChar )
+{
+	const char *sOutput = NULL;
+	while (sStr = UTIL_strchr( sStr, sChar )) sOutput = sStr++;
+	return sOutput;
+}
+
+char *UTIL_strchrl( char *sStr, const char *sChar )
+{
+	char *sOutput = NULL;
+	while (sStr = UTIL_strchr( sStr, sChar )) sOutput = sStr++;
+	return sOutput;
+}
+
+const char *UTIL_strchril( const char *sStr, const char cChar )
+{
+	const char *sOutput = NULL;
+	while (sStr = UTIL_strchri( sStr, cChar )) sOutput = sStr++;
+	return sOutput;
+}
+
+char *UTIL_strchril( char *sStr, const char cChar )
+{
+	char *sOutput = NULL;
+	while (sStr = UTIL_strchri( sStr, cChar )) sOutput = sStr++;
+	return sOutput;
+}
+
+const char *UTIL_strchril( const char *sStr, const char *sChar )
+{
+	const char *sOutput = NULL;
+	while (sStr = UTIL_strchri( sStr, sChar )) sOutput = sStr++;
+	return sOutput;
+}
+
+char *UTIL_strchril( char *sStr, const char *sChar )
+{
+	char *sOutput = NULL;
+	while (sStr = UTIL_strchri( sStr, sChar )) sOutput = sStr++;
+	return sOutput;
 }
 
 const char *UTIL_extn( const char *sFileName )
@@ -273,6 +400,42 @@ const char *UTIL_extn( const char *sFileName )
 	}
 
 	return sExtension;
+}
+
+bool UTIL_ifmt( const char *sStr )
+{
+	if (*sStr == '-')
+		sStr++;
+
+	while (*sStr)
+	{
+		if (*sStr > '9' || *sStr < '0')
+			return false;
+
+		sStr++;
+	}
+
+	return true;
+}
+
+bool UTIL_ifmt( const char *sStr, unsigned int uiLen )
+{
+	if (*sStr == '-')
+	{
+		sStr++;
+		uiLen--;
+	}
+
+	while (uiLen > 0)
+	{
+		if (*sStr > '9' || *sStr < '0')
+			return false;
+
+		sStr++;
+		uiLen--;
+	}
+
+	return true;
 }
 
 int UTIL_atoi( const char *sStr )
@@ -293,24 +456,131 @@ int UTIL_atoi( const char *sStr )
 	return bNegativeSign ? -iOutput : iOutput;
 }
 
-int UTIL_atoi( const char *sStr, int iLen )
+int UTIL_atoi( const char *sStr, unsigned int uiLen )
 {
 	bool bNegativeSign = false;
 	if (*sStr == '-')
 	{
 		bNegativeSign = true;
 		sStr++;
-		iLen--;
+		uiLen--;
 	}
 	int iOutput = 0;
-	while (iLen > 0)
+	while (uiLen > 0)
 	{
 		iOutput *= 10;
 		iOutput += *sStr - '0';
 		sStr++;
-		iLen--;
+		uiLen--;
 	}
 	return bNegativeSign ? -iOutput : iOutput;
+}
+
+bool UTIL_uifmt( const char *sStr )
+{
+	while (*sStr)
+	{
+		if (*sStr > '9' || *sStr < '0')
+			return false;
+
+		sStr++;
+	}
+
+	return true;
+}
+
+bool UTIL_uifmt( const char *sStr, unsigned int uiLen )
+{
+	while (uiLen > 0)
+	{
+		if (*sStr > '9' || *sStr < '0')
+			return false;
+
+		sStr++;
+		uiLen--;
+	}
+
+	return true;
+}
+
+unsigned int UTIL_atoui( const char *sStr )
+{
+	unsigned int uiOutput = 0;
+	while (*sStr)
+	{
+		uiOutput *= 10;
+		uiOutput += *sStr - '0';
+		sStr++;
+	}
+	return uiOutput;
+}
+
+unsigned int UTIL_atoui( const char *sStr, unsigned int uiLen )
+{
+	unsigned int uiOutput = 0;
+	while (uiLen > 0)
+	{
+		uiOutput *= 10;
+		uiOutput += *sStr - '0';
+		sStr++;
+		uiLen--;
+	}
+	return uiOutput;
+}
+
+bool UTIL_ffmt( const char *sStr )
+{
+	if (*sStr == '-')
+		sStr++;
+
+	bool bDecimal = false;
+	while (*sStr)
+	{
+		if (!bDecimal && *sStr == '.')
+		{
+			bDecimal = true;
+		}
+		else
+		{
+			if (*sStr > '9' || *sStr < '0')
+				return false;
+		}
+
+		sStr++;
+	}
+
+	return true;
+}
+
+bool UTIL_ffmt( const char *sStr, unsigned int uiLen )
+{
+	if (*sStr == '-')
+	{
+		sStr++;
+		uiLen--;
+	}
+
+	bool bDecimal = false;
+	while (uiLen > 0)
+	{
+		if (*sStr == '.')
+		{
+			if (!bDecimal)
+				bDecimal = true;
+			else
+				return false;
+		}
+		else
+		{
+			if (*sStr > '9' || *sStr < '0')
+				return false;
+		}
+
+		sStr++;
+		uiLen--;
+	}
+
+	return true;
 }
 
 float UTIL_atof( const char *sStr )
@@ -345,25 +615,25 @@ float UTIL_atof( const char *sStr )
 	return bNegativeSign ? -fOutput : fOutput;
 }
 
-float UTIL_atof( const char *sStr, int iLen )
+float UTIL_atof( const char *sStr, unsigned int uiLen )
 {
 	bool bNegativeSign = false;
 	if (*sStr == '-')
 	{
 		bNegativeSign = true;
 		sStr++;
-		iLen--;
+		uiLen--;
 	}
 	const char *sDecimal = NULL;
 	float fOutput = 0.0f;
-	while (iLen > 0)
+	while (uiLen > 0)
 	{
 		if (*sStr == '.')
 			sDecimal = sStr;
 		fOutput *= 10.0f;
 		fOutput += *sStr - '0';
 		sStr++;
-		iLen--;
+		uiLen--;
 	}
 	if (sDecimal)
 	{
@@ -395,16 +665,16 @@ char *UTIL_readf( const char *sFile )
 	if (!fFile.is_open())
 		return NULL;
 
-	int iLength = 0;
+	unsigned int uiLength = 0;
 	while (fFile.get() != EOF)
-		iLength++;
+		uiLength++;
 
 	fFile.clear();
 	fFile.seekg( 0, fFile.beg );
 
-	char *sContents = new char[iLength + 1];
-	fFile.read( sContents, iLength );
-	sContents[iLength] = '\0';
+	char *sContents = new char[uiLength + 1];
+	fFile.read( sContents, uiLength );
+	sContents[uiLength] = '\0';
 
 	fFile.close();
 

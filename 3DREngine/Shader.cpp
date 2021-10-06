@@ -1,62 +1,59 @@
 #include "Shader.h"
-#include <UTIL.h>
-
-#include <glad/glad.h>
+#include "ShaderManager.h"
+#include "FileManager.h"
 #include <iostream>
 
-#include "ShaderManager.h"
-
-CShader::CShader( const char *sVertexPath, const char *sGeometryPath, const char *sFragmentPath, ShaderSubType_t tShaderSubType, ShaderQuality_t tShaderQuality )
+ShaderType_t UTIL_ShaderNameToType( const char *sShaderName )
 {
-	m_bSuccess = false;
+	for (int i = 0; i < SHADERTYPE_COUNT; i++)
+	{
+		if (UTIL_streq( g_sShaderNames[i], sShaderName ))
+			return (ShaderType_t)i;
+	}
 
-	char *sVertexCode = ReadShaderFile( sVertexPath, tShaderSubType, tShaderQuality );
-	char *sGeometryCode = ReadShaderFile( sGeometryPath, tShaderSubType, tShaderQuality );
-	char *sFragmentCode = ReadShaderFile( sFragmentPath, tShaderSubType, tShaderQuality );
+	return SHADERTYPE_INVALID;
+}
 
-	if (!sVertexCode)
-		return;
+const char *UTIL_ShaderTypeToName( ShaderType_t tShaderType )
+{
+	return g_sShaderNames[tShaderType];
+}
 
-	if (!sFragmentCode)
-		return;
-
+CSubShader::CSubShader( const char *sVertexCode, const char *sGeometryCode, const char *sFragmentCode )
+{
 	unsigned int uiVertex, uiGeometry, uiFragment;
 
 	uiVertex = glCreateShader( GL_VERTEX_SHADER );
 	glShaderSource( uiVertex, 1, &sVertexCode, NULL );
 	glCompileShader( uiVertex );
-	CheckCompileErrorsShader( uiVertex, sVertexPath );
+	CheckCompileErrorsShader( uiVertex );
 
 	if (sGeometryCode)
 	{
 		uiGeometry = glCreateShader( GL_GEOMETRY_SHADER );
 		glShaderSource( uiGeometry, 1, &sGeometryCode, NULL );
 		glCompileShader( uiGeometry );
-		CheckCompileErrorsShader( uiGeometry, sGeometryPath );
+		CheckCompileErrorsShader( uiGeometry );
 	}
 
 	uiFragment = glCreateShader( GL_FRAGMENT_SHADER );
 	glShaderSource( uiFragment, 1, &sFragmentCode, NULL );
 	glCompileShader( uiFragment );
-	CheckCompileErrorsShader( uiFragment, sFragmentPath );
+	CheckCompileErrorsShader( uiFragment );
 
 	m_uiID = glCreateProgram();
 	glAttachShader( m_uiID, uiVertex );
 	if (sGeometryCode)
 		glAttachShader( m_uiID, uiGeometry );
 	glAttachShader( m_uiID, uiFragment );
+
 	glLinkProgram( m_uiID );
-	CheckCompileErrorsProgram( m_uiID );
 
 	glDeleteShader( uiVertex );
 	if (sGeometryCode)
 		glDeleteShader( uiGeometry );
-	glDeleteShader( uiFragment );
 
-	delete[] sVertexCode;
-	if (sGeometryCode)
-		delete[] sGeometryCode;
-	delete[] sFragmentCode;
+	glDeleteShader( uiFragment );
 
 	for (unsigned int i = 0; i < UBO_COUNT; i++)
 	{
@@ -100,12 +97,14 @@ CShader::CShader( const char *sVertexPath, const char *sGeometryPath, const char
 				delete[] sUniformNameEdit;
 			}
 		}
+		else
+		{
+			delete[] sUniformName;
+		}
 	}
-
-	m_bSuccess = true;
 }
 
-CShader::~CShader()
+CSubShader::~CSubShader()
 {
 	for (unsigned int i = 0; i < m_sUniformNames.size(); i++)
 		delete[] m_sUniformNames[i];
@@ -113,81 +112,12 @@ CShader::~CShader()
 	glDeleteProgram( m_uiID );
 }
 
-void CShader::Use( void )
+void CSubShader::Use( void )
 {
-	if (pShaderManager->GetActiveShader() != this)
-	{
-		glUseProgram( m_uiID );
-		pShaderManager->SetActiveShader( this );
-	}
+	glUseProgram( m_uiID );
 }
 
-void CShader::SetValue( const char *sName, bool bValue )
-{
-	glUniform1i( GetLocation( sName ), (int)bValue );
-}
-
-void CShader::SetValue( const char *sName, int iValue )
-{
-	glUniform1i( GetLocation( sName ), iValue );
-}
-
-void CShader::SetValue( const char *sName, float flValue )
-{
-	glUniform1f( GetLocation( sName ), flValue );
-}
-
-void CShader::SetValue( const char *sName, const glm::vec2 &vecValue )
-{
-	glUniform2fv( GetLocation( sName ), 1, &vecValue[0] );
-}
-
-void CShader::SetValue( const char *sName, float x, float y )
-{
-	glUniform2f( GetLocation( sName ), x, y );
-}
-
-void CShader::SetValue( const char *sName, const glm::vec3 &vecValue )
-{
-	glUniform3fv( GetLocation( sName ), 1, &vecValue[0] );
-}
-
-void CShader::SetValue( const char *sName, float x, float y, float z )
-{
-	glUniform3f( GetLocation( sName ), x, y, z );
-}
-
-void CShader::SetValue( const char *sName, const glm::vec4 &vecValue )
-{
-	glUniform4fv( GetLocation( sName ), 1, &vecValue[0] );
-}
-
-void CShader::SetValue( const char *sName, float x, float y, float z, float w )
-{
-	glUniform4f( GetLocation( sName ), x, y, z, w );
-}
-
-void CShader::SetValue( const char *sName, const glm::mat2 &matValue )
-{
-	glUniformMatrix2fv( GetLocation( sName ), 1, GL_FALSE, &matValue[0][0] );
-}
-
-void CShader::SetValue( const char *sName, const glm::mat3 &matValue )
-{
-	glUniformMatrix3fv( GetLocation( sName ), 1, GL_FALSE, &matValue[0][0] );
-}
-
-void CShader::SetValue( const char *sName, const glm::mat4 &matValue )
-{
-	glUniformMatrix4fv( GetLocation( sName ), 1, GL_FALSE, &matValue[0][0] );
-}
-
-bool CShader::IsSuccess( void ) const
-{
-	return m_bSuccess;
-}
-
-GLint CShader::GetLocation( const char *sName )
+GLint CSubShader::GetLocation( const char *sName )
 {
 	std::unordered_map<const char *, GLint>::iterator itUniformSearch = m_mapUniformNameToLocation.find( sName );
 	if (itUniformSearch == m_mapUniformNameToLocation.end())
@@ -208,7 +138,179 @@ GLint CShader::GetLocation( const char *sName )
 	return itUniformSearch->second;
 }
 
-char *CShader::ReadShaderFile( const char *sPath, ShaderSubType_t tShaderSubType, ShaderQuality_t tShaderQuality )
+void CSubShader::CheckCompileErrorsShader( unsigned int uiShader )
+{
+	int iSuccess;
+	char sInfoLog[1024];
+	glGetShaderiv( uiShader, GL_COMPILE_STATUS, &iSuccess );
+	if (!iSuccess)
+	{
+		glGetShaderInfoLog( uiShader, 1024, NULL, sInfoLog );
+		std::cout << "ERROR::SHADER::COMPILATION_ERROR of type: SHADER\n" << sInfoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+	}
+}
+
+CShader::CShader( const char *sVertexPath, const char *sGeometryPath, const char *sFragmentPath )
+{
+	m_bSuccess = false;
+
+	for (unsigned int i = 0; i < (unsigned int)SHADERQUALITY_COUNT; i++)
+	{
+		for (unsigned int j = 0; j < (unsigned int)SHADERANIMATE_COUNT; j++)
+		{
+			for (unsigned int k = 0; k < (unsigned int)SHADERSHADOW_COUNT; k++)
+				m_pSubShaders[i][j][k] = NULL;
+		}
+	}
+
+	std::vector<unsigned int> uiVertexQualityIndices;
+	std::vector<unsigned int> uiVertexAnimateIndices;
+	std::vector<unsigned int> uiVertexShadowIndices;
+	char *sVertexCode = ReadShaderFile( sVertexPath, uiVertexQualityIndices, uiVertexAnimateIndices, uiVertexShadowIndices );
+	if (!sVertexCode)
+		return;
+
+	std::vector<unsigned int> uiGeometryQualityIndices;
+	std::vector<unsigned int> uiGeometryAnimateIndices;
+	std::vector<unsigned int> uiGeometryShadowIndices;
+	char *sGeometryCode = ReadShaderFile( sGeometryPath, uiGeometryQualityIndices, uiGeometryAnimateIndices, uiGeometryShadowIndices );
+
+	std::vector<unsigned int> uiFragmentQualityIndices;
+	std::vector<unsigned int> uiFragmentAnimateIndices;
+	std::vector<unsigned int> uiFragmentShadowIndices;
+	char *sFragmentCode = ReadShaderFile( sFragmentPath, uiFragmentQualityIndices, uiFragmentAnimateIndices, uiFragmentShadowIndices );
+	if (!sFragmentCode)
+	{
+		delete[] sVertexCode;
+
+		if (sGeometryCode)
+			delete[] sGeometryCode;
+
+		return;
+	}
+
+	m_bHasQualityPreprocessor = uiVertexQualityIndices.empty() || uiGeometryQualityIndices.empty() || uiFragmentQualityIndices.empty();
+	m_bHasAnimatePreprocessor = uiVertexAnimateIndices.empty() || uiGeometryAnimateIndices.empty() || uiFragmentAnimateIndices.empty();
+	m_bHasShadowPreprocessor = uiVertexShadowIndices.empty() || uiGeometryShadowIndices.empty() || uiFragmentShadowIndices.empty();
+
+	for (unsigned int i = 0; i < (unsigned int)SHADERQUALITY_COUNT; i++)
+	{
+		if (m_bHasQualityPreprocessor)
+		{
+			if (!uiVertexQualityIndices.empty())
+				sVertexCode[uiVertexQualityIndices[i]] = '1';
+
+			if (!uiGeometryQualityIndices.empty())
+				sGeometryCode[uiGeometryQualityIndices[i]] = '1';
+
+			if (!uiFragmentQualityIndices.empty())
+				sFragmentCode[uiFragmentQualityIndices[i]] = '1';
+		}
+
+		for (unsigned int j = 0; j < (unsigned int)SHADERANIMATE_COUNT; j++)
+		{
+			if (m_bHasAnimatePreprocessor)
+			{
+				if (!uiVertexAnimateIndices.empty())
+					sVertexCode[uiVertexAnimateIndices[j]] = '1';
+
+				if (!uiGeometryAnimateIndices.empty())
+					sGeometryCode[uiGeometryAnimateIndices[j]] = '1';
+
+				if (!uiFragmentAnimateIndices.empty())
+					sFragmentCode[uiFragmentAnimateIndices[j]] = '1';
+			}
+
+			for (unsigned int k = 0; k < (unsigned int)SHADERSHADOW_COUNT; k++)
+			{
+				if (m_bHasShadowPreprocessor)
+				{
+					if (!uiVertexShadowIndices.empty())
+						sVertexCode[uiVertexShadowIndices[k]] = '1';
+
+					if (!uiGeometryShadowIndices.empty())
+						sGeometryCode[uiGeometryShadowIndices[k]] = '1';
+
+					if (!uiFragmentShadowIndices.empty())
+						sFragmentCode[uiFragmentShadowIndices[k]] = '1';
+				}
+
+				m_pSubShaders[i][j][k] = new CSubShader( sVertexCode, sGeometryCode, sFragmentCode );
+
+				if (!m_bHasShadowPreprocessor)
+					break;
+
+				if (!uiVertexShadowIndices.empty())
+					sVertexCode[uiVertexShadowIndices[k]] = '0';
+
+				if (!uiGeometryShadowIndices.empty())
+					sGeometryCode[uiGeometryShadowIndices[k]] = '0';
+
+				if (!uiFragmentShadowIndices.empty())
+					sFragmentCode[uiFragmentShadowIndices[k]] = '0';
+			}
+
+			if (!m_bHasAnimatePreprocessor)
+				break;
+
+			if (!uiVertexAnimateIndices.empty())
+				sVertexCode[uiVertexAnimateIndices[j]] = '0';
+
+			if (!uiGeometryAnimateIndices.empty())
+				sGeometryCode[uiGeometryAnimateIndices[j]] = '0';
+
+			if (!uiFragmentAnimateIndices.empty())
+				sFragmentCode[uiFragmentAnimateIndices[j]] = '0';
+		}
+
+		if (!m_bHasQualityPreprocessor)
+			break;
+
+		if (!uiVertexQualityIndices.empty())
+			sVertexCode[uiVertexQualityIndices[i]] = '0';
+
+		if (!uiGeometryQualityIndices.empty())
+			sGeometryCode[uiGeometryQualityIndices[i]] = '0';
+
+		if (!uiFragmentQualityIndices.empty())
+			sFragmentCode[uiFragmentQualityIndices[i]] = '0';
+	}
+
+	delete[] sVertexCode;
+	if (sGeometryCode)
+		delete[] sGeometryCode;
+
+	delete[] sFragmentCode;
+
+	m_bSuccess = true;
+}
+
+CShader::~CShader()
+{
+	for (unsigned int i = 0; i < (unsigned int)SHADERQUALITY_COUNT; i++)
+	{
+		for (unsigned int j = 0; j < (unsigned int)SHADERANIMATE_COUNT; j++)
+		{
+			for (unsigned int k = 0; k < (unsigned int)SHADERSHADOW_COUNT; k++)
+			{
+				if (m_pSubShaders[i][j][k])
+					delete m_pSubShaders[i][j][k];
+			}
+		}
+	}
+}
+
+CSubShader *CShader::GetSubShader( ShaderQuality_t tShaderQuality, ShaderAnimate_t tShaderAnimate, ShaderShadow_t tShaderShadow ) const
+{
+	return m_pSubShaders[m_bHasQualityPreprocessor ? tShaderQuality : 0][m_bHasAnimatePreprocessor ? tShaderAnimate : 0][m_bHasShadowPreprocessor ? tShaderShadow : 0];
+}
+
+bool CShader::IsSuccess( void ) const
+{
+	return m_bSuccess;
+}
+
+char *CShader::ReadShaderFile( const char *sPath, std::vector<unsigned int> &uiQualityIndices, std::vector<unsigned int> &uiAnimateIndices, std::vector<unsigned int> &uiShadowIndices )
 {
 	char *sSource = ReadShaderFile( sPath );
 	if (!sSource)
@@ -218,111 +320,69 @@ char *CShader::ReadShaderFile( const char *sPath, ShaderSubType_t tShaderSubType
 
 	std::vector<char> cOutput;
 
-	bool bHasSubTypePreProcessor = false;
-	bool bHasCorrectSubTypePreProcessor = false;
-	bool bHasQualityPreProcessor = false;
-	bool bHasCorrectQualityPreProcessor = false;
-
 	while (*sReadChar)
 	{
 		if (*sReadChar == '#')
 		{
 			const char *sPreProcessorChar = sReadChar + 1;
 			int iPreProcessorSize = (int)(UTIL_strchr( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
-			if (UTIL_strcmp( "subtype", sPreProcessorChar, UTIL_Min( sizeof( "subtype" ), iPreProcessorSize ) - 1 ) == 0)
+			if (UTIL_streq( "subshader", sPreProcessorChar, UTIL_Min( sizeof( "subshader" ), iPreProcessorSize ) - 1 ))
 			{
-				bHasSubTypePreProcessor = true;
-
 				sPreProcessorChar = UTIL_strchri( sPreProcessorChar + iPreProcessorSize, " \t\n" );
-				int iSubTypeSize = (int)(UTIL_strchr( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
+				int iSubShaderSize = (int)(UTIL_strchr( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
 
-				if (!bHasCorrectSubTypePreProcessor)
+				if (uiQualityIndices.empty() && UTIL_streq( "QUALITY", sPreProcessorChar, UTIL_Min( sizeof( "QUALITY" ), iSubShaderSize ) - 1 ))
 				{
-					const char *sSubTypeDefines = NULL;
-					switch (tShaderSubType)
-					{
-					case SHADERSUBTYPE_DEFAULT:
-						if (UTIL_strcmp( "SUBTYPE_DEFAULT", sPreProcessorChar, UTIL_Min( sizeof( "SUBTYPE_DEFAULT" ), iSubTypeSize ) - 1 ) == 0)
-							sSubTypeDefines = "#define SUBTYPE_DEFAULT 1";
-						break;
-					case SHADERSUBTYPE_DIR:
-						if (UTIL_strcmp( "SUBTYPE_DIR", sPreProcessorChar, UTIL_Min( sizeof( "SUBTYPE_DIR" ), iSubTypeSize ) - 1 ) == 0)
-							sSubTypeDefines = "#define SUBTYPE_DIR 1";
-						break;
-					case SHADERSUBTYPE_POINT:
-						if (UTIL_strcmp( "SUBTYPE_POINT", sPreProcessorChar, UTIL_Min( sizeof( "SUBTYPE_POINT" ), iSubTypeSize ) - 1 ) == 0)
-							sSubTypeDefines = "#define SUBTYPE_POINT 1";
-						break;
-					case SHADERSUBTYPE_SPOT:
-						if (UTIL_strcmp( "SUBTYPE_SPOT", sPreProcessorChar, UTIL_Min( sizeof( "SUBTYPE_SPOT" ), iSubTypeSize ) - 1 ) == 0)
-							sSubTypeDefines = "#define SUBTYPE_SPOT 1";
-						break;
-					case SHADERSUBTYPE_CSM:
-						if (UTIL_strcmp( "SUBTYPE_CSM", sPreProcessorChar, UTIL_Min( sizeof( "SUBTYPE_CSM" ), iSubTypeSize ) - 1 ) == 0)
-							sSubTypeDefines = "#define SUBTYPE_CSM 1";
-						break;
-					}
+					uiQualityIndices.resize( SHADERQUALITY_COUNT );
 
-					if (sSubTypeDefines)
-					{
-						bHasCorrectSubTypePreProcessor = true;
+					const char *sSubShaderDefines;
 
-						while (*sSubTypeDefines)
-							cOutput.push_back( *sSubTypeDefines++ );
+					sSubShaderDefines = "#define QUALITY_LOW 0\n";
+					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
+					uiQualityIndices[SHADERQUALITY_LOW] = (unsigned int)cOutput.size() - 2;
 
-						cOutput.push_back( '\n' );
-					}
+					sSubShaderDefines = "#define QUALITY_MEDIUM 0\n";
+					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
+					uiQualityIndices[SHADERQUALITY_MEDIUM] = (unsigned int)cOutput.size() - 2;
+
+					sSubShaderDefines = "#define QUALITY_HIGH 0\n";
+					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
+					uiQualityIndices[SHADERQUALITY_HIGH] = (unsigned int)cOutput.size() - 2;
+
+					sSubShaderDefines = "#define QUALITY_ULTRA 0\n";
+					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
+					uiQualityIndices[SHADERQUALITY_ULTRA] = (unsigned int)cOutput.size() - 2;
+				}
+				else if (uiAnimateIndices.empty() && UTIL_streq( "ANIMATE", sPreProcessorChar, UTIL_Min( sizeof( "ANIMATE" ), iSubShaderSize ) - 1 ))
+				{
+					uiAnimateIndices.resize( SHADERANIMATE_COUNT );
+
+					const char *sSubShaderDefines;
+
+					sSubShaderDefines = "#define ANIMATE_FALSE 0\n";
+					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
+					uiAnimateIndices[SHADERANIMATE_FALSE] = (unsigned int)cOutput.size() - 2;
+
+					sSubShaderDefines = "#define ANIMATE_TRUE 0\n";
+					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
+					uiAnimateIndices[SHADERANIMATE_TRUE] = (unsigned int)cOutput.size() - 2;
+				}
+				else if (uiShadowIndices.empty() && UTIL_streq( "SHADOW", sPreProcessorChar, UTIL_Min( sizeof( "SHADOW" ), iSubShaderSize ) - 1 ))
+				{
+					uiShadowIndices.resize( SHADERSHADOW_COUNT );
+
+					const char *sSubShaderDefines;
+
+					sSubShaderDefines = "#define SHADOW_FALSE 0\n";
+					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
+					uiShadowIndices[SHADERSHADOW_FALSE] = (unsigned int)cOutput.size() - 2;
+
+					sSubShaderDefines = "#define SHADOW_TRUE 0\n";
+					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
+					uiShadowIndices[SHADERSHADOW_TRUE] = (unsigned int)cOutput.size() - 2;
 				}
 
-				sReadChar = sPreProcessorChar + iSubTypeSize + 1;
-				continue;
-			}
-			else if (UTIL_strcmp( "quality", sPreProcessorChar, UTIL_Min( sizeof( "quality" ), iPreProcessorSize ) - 1 ) == 0)
-			{
-				bHasQualityPreProcessor = true;
-
-				sPreProcessorChar = UTIL_strchri( sPreProcessorChar + iPreProcessorSize, " \t\n" );
-				int iQualitySize = (int)(UTIL_strchr( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
-
-				if (!bHasCorrectQualityPreProcessor)
-				{
-					const char *sQualityDefines = NULL;
-					switch (tShaderQuality)
-					{
-					case SHADERQUALITY_DEFAULT:
-						if (UTIL_strcmp( "QUALITY_DEFAULT", sPreProcessorChar, UTIL_Min( sizeof( "QUALITY_DEFAULT" ), iQualitySize ) - 1 ) == 0)
-							sQualityDefines = "#define QUALITY_DEFAULT 1";
-						break;
-					case SHADERQUALITY_LOW:
-						if (UTIL_strcmp( "QUALITY_LOW", sPreProcessorChar, UTIL_Min( sizeof( "QUALITY_LOW" ), iQualitySize ) - 1 ) == 0)
-							sQualityDefines = "#define QUALITY_LOW 1";
-						break;
-					case SHADERQUALITY_MEDIUM:
-						if (UTIL_strcmp( "QUALITY_MEDIUM", sPreProcessorChar, UTIL_Min( sizeof( "QUALITY_MEDIUM" ), iQualitySize ) - 1 ) == 0)
-							sQualityDefines = "#define QUALITY_MEDIUM 1";
-						break;
-					case SHADERQUALITY_HIGH:
-						if (UTIL_strcmp( "QUALITY_HIGH", sPreProcessorChar, UTIL_Min( sizeof( "QUALITY_HIGH" ), iQualitySize ) - 1 ) == 0)
-							sQualityDefines = "#define QUALITY_HIGH 1";
-						break;
-					case SHADERQUALITY_ULTRA:
-						if (UTIL_strcmp( "QUALITY_ULTRA", sPreProcessorChar, UTIL_Min( sizeof( "QUALITY_ULTRA" ), iQualitySize ) - 1 ) == 0)
-							sQualityDefines = "#define QUALITY_ULTRA 1";
-						break;
-					}
-
-					if (sQualityDefines)
-					{
-						bHasCorrectQualityPreProcessor = true;
-
-						while (*sQualityDefines)
-							cOutput.push_back( *sQualityDefines++ );
-
-						cOutput.push_back( '\n' );
-					}
-				}
-
-				sReadChar = sPreProcessorChar + iQualitySize + 1;
+				sReadChar = sPreProcessorChar + iSubShaderSize + 1;
 				continue;
 			}
 		}
@@ -331,12 +391,6 @@ char *CShader::ReadShaderFile( const char *sPath, ShaderSubType_t tShaderSubType
 	}
 
 	delete[] sSource;
-
-	if ((tShaderSubType != SHADERSUBTYPE_DEFAULT || bHasSubTypePreProcessor) && !bHasCorrectSubTypePreProcessor)
-		return NULL;
-
-	if ((tShaderQuality != SHADERQUALITY_DEFAULT || bHasQualityPreProcessor) && !bHasCorrectQualityPreProcessor)
-		return NULL;
 
 	unsigned int uiSize = (unsigned int)cOutput.size();
 	char *sOutput = new char[uiSize + 1];
@@ -350,8 +404,8 @@ char *CShader::ReadShaderFile( const char *sPath, ShaderSubType_t tShaderSubType
 
 char *CShader::ReadShaderFile( const char *sPath )
 {
-	char *sSource = UTIL_readf( sPath );
-	if (!sSource)
+	char *sSource;
+	if (!pFileManager->ReadEntireFile( sPath, sSource ))
 		return NULL;
 
 	const char *sReadChar = sSource;
@@ -373,12 +427,7 @@ char *CShader::ReadShaderFile( const char *sPath )
 				UTIL_strncpy( sPathName, sPreProcessorChar, iPathSize );
 				sPathName[iPathSize] = '\0';
 
-				char sFullPathName[260];
-				sprintf_s( sFullPathName, sizeof( sFullPathName ), "resources/shaders/%s", sPathName );
-
-				char *sIncludeSource = ReadShaderFile( sFullPathName );
-
-				delete[] sPathName;
+				char *sIncludeSource = ReadShaderFile( sPathName );
 
 				if (sIncludeSource)
 				{
@@ -390,15 +439,16 @@ char *CShader::ReadShaderFile( const char *sPath )
 
 					sReadChar = sPreProcessorChar + iPathSize + 2;
 					cOutput.push_back( '\n' );
-					continue;
 				}
 				else
 				{
-					std::cout << "ERROR::SHADER::PREPROCESSOR_ERROR of type: SHADER (" << sPath << ")\n" << "Can't include file '" << sFullPathName << "'!\n -- --------------------------------------------------- -- " << std::endl;
+					std::cout << "ERROR::SHADER::PREPROCESSOR_ERROR of type: SHADER (" << sPath << ")\n" << "Can't include file '" << sPathName << "'!\n -- --------------------------------------------------- -- " << std::endl;
 
 					sReadChar = sPreProcessorChar + iPathSize + 2;
-					continue;
 				}
+
+				delete[] sPathName;
+				continue;
 			}
 		}
 
@@ -415,28 +465,4 @@ char *CShader::ReadShaderFile( const char *sPath )
 	sOutput[uiSize] = '\0';
 
 	return sOutput;
-}
-
-void CShader::CheckCompileErrorsShader( unsigned int iShader, const char *sPath )
-{
-	int iSuccess;
-	char sInfoLog[1024];
-	glGetShaderiv( iShader, GL_COMPILE_STATUS, &iSuccess );
-	if (!iSuccess)
-	{
-		glGetShaderInfoLog( iShader, 1024, NULL, sInfoLog );
-		std::cout << "ERROR::SHADER::COMPILATION_ERROR of type: SHADER (" << sPath << ")\n" << sInfoLog << "\n -- --------------------------------------------------- -- " << std::endl;
-	}
-}
-
-void CShader::CheckCompileErrorsProgram( unsigned int iProgram )
-{
-	int iSuccess;
-	char sInfoLog[1024];
-	glGetShaderiv( iProgram, GL_LINK_STATUS, &iSuccess );
-	if (!iSuccess)
-	{
-		glGetShaderInfoLog( iProgram, 1024, NULL, sInfoLog );
-		std::cout << "ERROR::SHADER::COMPILATION_ERROR of type: PROGRAM" << "\n" << sInfoLog << "\n -- --------------------------------------------------- -- " << std::endl;
-	}
 }

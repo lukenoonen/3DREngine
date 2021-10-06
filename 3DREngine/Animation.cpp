@@ -1,133 +1,122 @@
 #include "Animation.h"
-#include <UTIL.h>
 
-CAnimation::CAnimation( const char *sPath, float flDuration, float flTicksPerSecond, const std::vector<SAnimationChannel> &acAnimationChannels )
+CAnimationChannel::CAnimationChannel( const std::vector<float> &flPositionTimes, const std::vector<glm::vec3> &vecPositions, const std::vector<float> &flRotationTimes, const std::vector<glm::quat> &qRotations, const std::vector<float> &flScaleTimes, const std::vector<glm::vec3> &vecScales )
 {
-	m_sPath = UTIL_stredit( sPath );
+	m_flPositionTimes = flPositionTimes;
+	m_vecPositions = vecPositions;
 
-	m_flDuration = flDuration;
-	m_flTicksPerSecond = flTicksPerSecond;
+	m_flRotationTimes = flRotationTimes;
+	m_qRotations = qRotations;
 
-	m_acAnimationChannels = acAnimationChannels;
+	m_flScaleTimes = flScaleTimes;
+	m_vecScales = vecScales;
+}
+
+void CAnimationChannel::CalcInterpolatedPosition( glm::vec3 &vecOut, float flAnimationTime )
+{
+	if (m_vecPositions.size() == 1)
+	{
+		vecOut = m_vecPositions[0];
+		return;
+	}
+
+	unsigned int uiPositionIndex = 0;
+	for (unsigned int i = 0; i < m_flPositionTimes.size() - 1; i++)
+	{
+		if (flAnimationTime < m_flPositionTimes[i + 1])
+		{
+			uiPositionIndex = i;
+			break;
+		}
+	}
+
+	unsigned int uiNextPositionIndex = uiPositionIndex + 1;
+
+	float flFactor = (flAnimationTime - m_flPositionTimes[uiPositionIndex]) / (m_flPositionTimes[uiNextPositionIndex] - m_flPositionTimes[uiPositionIndex]);
+
+	const glm::vec3 &vecStart = m_vecPositions[uiPositionIndex];
+	const glm::vec3 &vecEnd = m_vecPositions[uiNextPositionIndex];
+
+	vecOut = vecStart + flFactor * (vecEnd - vecStart);
+}
+
+void CAnimationChannel::CalcInterpolatedRotation( glm::quat &qOut, float flAnimationTime )
+{
+	if (m_qRotations.size() == 1)
+	{
+		qOut = m_qRotations[0];
+		return;
+	}
+
+	unsigned int uiRotationIndex = 0;
+	for (unsigned int i = 0; i < m_flRotationTimes.size() - 1; i++)
+	{
+		if (flAnimationTime < m_flRotationTimes[i + 1])
+		{
+			uiRotationIndex = i;
+			break;
+		}
+	}
+
+	unsigned int uiNextRotationIndex = uiRotationIndex + 1;
+
+	float flFactor = (flAnimationTime - m_flRotationTimes[uiRotationIndex]) / (m_flRotationTimes[uiNextRotationIndex] - m_flRotationTimes[uiRotationIndex]);
+
+	const glm::quat &qStart = m_qRotations[uiRotationIndex];
+	const glm::quat &qEnd = m_qRotations[uiNextRotationIndex];
+
+	qOut = glm::normalize( glm::slerp( qStart, qEnd, flFactor ) );
+}
+
+void CAnimationChannel::CalcInterpolatedScale( glm::vec3 &vecOut, float flAnimationTime )
+{
+	if (m_vecScales.size() == 1)
+	{
+		vecOut = m_vecScales[0];
+		return;
+	}
+
+	unsigned int uiScaleIndex = 0;
+	for (unsigned int i = 0; i < m_flScaleTimes.size() - 1; i++)
+	{
+		if (flAnimationTime < m_flScaleTimes[i + 1])
+		{
+			uiScaleIndex = i;
+			break;
+		}
+	}
+
+	unsigned int uiNextScaleIndex = uiScaleIndex + 1;
+
+	float flFactor = (flAnimationTime - m_flScaleTimes[uiScaleIndex]) / (m_flScaleTimes[uiNextScaleIndex] - m_flScaleTimes[uiScaleIndex]);
+
+	const glm::vec3 &vecStart = m_vecScales[uiScaleIndex];
+	const glm::vec3 &vecEnd = m_vecScales[uiNextScaleIndex];
+
+	vecOut = vecStart + flFactor * (vecEnd - vecStart);
+}
+
+CAnimation::CAnimation( float flTime, const std::vector<CAnimationChannel *> &pAnimationChannels, const char *sPath ) : BaseClass( sPath )
+{
+	m_flTime = flTime;
+	m_pAnimationChannels = pAnimationChannels;
 }
 
 CAnimation::~CAnimation()
 {
-	delete[] m_sPath;
-}
-
-float CAnimation::GetDuration( void )
-{
-	return m_flDuration;
-}
-
-float CAnimation::GetTicksPerSecond( void )
-{
-	return m_flTicksPerSecond;
-}
-
-unsigned int CAnimation::GetAnimationChannelCount( void )
-{
-	return (unsigned int)m_acAnimationChannels.size();
-}
-
-const SAnimationChannel &CAnimation::GetAnimationChannel( unsigned int uiIndex )
-{
-	return m_acAnimationChannels[uiIndex];
-}
-
-const char *CAnimation::GetPath(void)
-{
-	return m_sPath;
-}
-
-void CAnimation::CalcInterpolatedTranslation( glm::vec3 &vecOut, float flAnimationTime, unsigned int uiIndex )
-{
-	if (m_acAnimationChannels[uiIndex].vecPositions.size() == 1)
+	for (unsigned int i = 0; i < (unsigned int)m_pAnimationChannels.size(); i++)
 	{
-		vecOut = m_acAnimationChannels[uiIndex].vecPositions[0];
-		return;
+		if (m_pAnimationChannels[i])
+			delete m_pAnimationChannels[i];
 	}
-
-	unsigned int uiPositionIndex = FindTranslation( flAnimationTime, uiIndex );
-	unsigned int uiNextPositionIndex = (uiPositionIndex + 1);
-	float flPositionIndexTime = m_acAnimationChannels[uiIndex].flPositionTimes[uiPositionIndex];
-	float flFactor = (flAnimationTime - flPositionIndexTime) / (m_acAnimationChannels[uiIndex].flPositionTimes[uiNextPositionIndex] - flPositionIndexTime);
-	
-	const glm::vec3& vecStart = m_acAnimationChannels[uiIndex].vecPositions[uiPositionIndex];
-	const glm::vec3& vecEnd = m_acAnimationChannels[uiIndex].vecPositions[uiNextPositionIndex];
-	
-	vecOut = vecStart + flFactor * (vecEnd - vecStart);
 }
 
-void CAnimation::CalcInterpolatedRotation( glm::quat &qOut, float flAnimationTime, unsigned int uiIndex )
+float CAnimation::GetTime( void ) const
 {
-	if (m_acAnimationChannels[uiIndex].qRotations.size() == 1)
-	{
-		qOut = m_acAnimationChannels[uiIndex].qRotations[0];
-		return;
-	}
-
-	unsigned int uiRotationIndex = FindRotation( flAnimationTime, uiIndex );
-	unsigned int uiNextRotationIndex = (uiRotationIndex + 1);
-	float flRotationIndexTime = m_acAnimationChannels[uiIndex].flRotationTimes[uiRotationIndex];
-	float flFactor = (flAnimationTime - flRotationIndexTime) / (m_acAnimationChannels[uiIndex].flRotationTimes[uiNextRotationIndex] - flRotationIndexTime);
-	
-	const glm::quat& qStart = m_acAnimationChannels[uiIndex].qRotations[uiRotationIndex];
-	const glm::quat& qEnd = m_acAnimationChannels[uiIndex].qRotations[uiNextRotationIndex];
-	
-	qOut = glm::slerp( qStart, qEnd, flFactor );
-	qOut = glm::normalize( qOut );
+	return m_flTime;
 }
 
-void CAnimation::CalcInterpolatedScaling( glm::vec3 &vecOut, float flAnimationTime, unsigned int uiIndex )
+CAnimationChannel *CAnimation::GetAnimationChannel( unsigned int uiIndex ) const
 {
-	if (m_acAnimationChannels[uiIndex].vecScales.size() == 1)
-	{
-		vecOut = m_acAnimationChannels[uiIndex].vecScales[0];
-		return;
-	}
-
-	unsigned int uiScaleIndex = FindScale( flAnimationTime, uiIndex );
-	unsigned int uiNextScaleIndex = (uiScaleIndex + 1);
-	float flScaleIndexTime = m_acAnimationChannels[uiIndex].flScaleTimes[uiScaleIndex];
-	float flFactor = (flAnimationTime - flScaleIndexTime) / (m_acAnimationChannels[uiIndex].flScaleTimes[uiNextScaleIndex] - flScaleIndexTime);
-	
-	const glm::vec3& vecStart = m_acAnimationChannels[uiIndex].vecScales[uiScaleIndex];
-	const glm::vec3& vecEnd = m_acAnimationChannels[uiIndex].vecScales[uiNextScaleIndex];
-	
-	vecOut = vecStart + flFactor * (vecEnd - vecStart);
-}
-
-unsigned int CAnimation::FindTranslation( float flAnimationTime, unsigned int uiIndex )
-{
-	for (unsigned int i = 0; i < m_acAnimationChannels[uiIndex].flPositionTimes.size() - 1; i++)
-	{
-		if (flAnimationTime < m_acAnimationChannels[uiIndex].flPositionTimes[i + 1])
-			return i;
-	}
-
-	return 0;
-}
-
-unsigned int CAnimation::FindRotation( float flAnimationTime, unsigned int uiIndex )
-{
-	for (unsigned int i = 0; i < m_acAnimationChannels[uiIndex].flRotationTimes.size() - 1; i++)
-	{
-		if (flAnimationTime < m_acAnimationChannels[uiIndex].flRotationTimes[i + 1])
-			return i;
-	}
-
-	return 0;
-}
-
-unsigned int CAnimation::FindScale( float flAnimationTime, unsigned int uiIndex )
-{
-	for (unsigned int i = 0; i < m_acAnimationChannels[uiIndex].flScaleTimes.size() - 1; i++)
-	{
-		if (flAnimationTime < m_acAnimationChannels[uiIndex].flScaleTimes[i + 1])
-			return i;
-	}
-
-	return 0;
+	return m_pAnimationChannels[uiIndex];
 }

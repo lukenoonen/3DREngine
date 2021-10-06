@@ -1,4 +1,5 @@
 #include "PointLight.h"
+#include "RenderManager.h"
 #include "ShaderManager.h"
 
 CPointLight::CPointLight( float flConstant, float flLinear, float flQuadratic, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecAmbient, vecDiffuse, vecSpecular, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
@@ -14,7 +15,7 @@ void CPointLight::ActivateLight( void )
 {
 	BaseClass::ActivateLight();
 
-	pShaderManager->SetShaderSubType( SHADERSUBTYPE_POINT );
+	pRenderManager->SetRenderPass( RENDERPASS_LIT_POINT );
 
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOSITION, 0, &GetPosition() );
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOINT, 0, &m_flConstant );

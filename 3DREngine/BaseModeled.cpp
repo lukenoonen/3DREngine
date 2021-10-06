@@ -1,13 +1,11 @@
 #include "BaseModeled.h"
-#include "ModelManager.h"
-#include "MaterialManager.h"
 #include "GlobalManager.h"
 #include "RenderManager.h"
+#include "AssetManager.h"
 
-CBaseModeled::CBaseModeled( const char *sMaterialPath, const char *sModelPath, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseModeled::CBaseModeled( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
 {
-	m_pMaterialController = pMaterialManager->GetMaterialController( sMaterialPath );
-	m_pModel = pModelManager->GetModel( sModelPath );
+	m_pModel = NULL;
 }
 
 void CBaseModeled::PreDraw( void )
@@ -18,15 +16,20 @@ void CBaseModeled::PreDraw( void )
 
 void CBaseModeled::Draw( void )
 {
-	m_pModel->Draw( m_pMaterialController );
+	m_pModel->Draw();
 }
 
-CModel *CBaseModeled::GetModel( void )
+void CBaseModeled::SetModel( CModel *pModel )
+{
+	m_pModel = pModel;
+}
+
+CModel *CBaseModeled::GetModel( void ) const
 {
 	return m_pModel;
 }
 
 bool CBaseModeled::ShouldDraw( void ) const
 {
-	return BaseClass::ShouldDraw() && m_pMaterialController->ShouldDraw( pRenderManager->GetDrawFlags() );
+	return BaseClass::ShouldDraw() && m_pModel != NULL && m_pModel->ShouldDraw();
 }

@@ -10,11 +10,10 @@ class CSkyboxMaterial : public CMaterial
 public:
 	DECLARE_CLASS( CSkyboxMaterial, CMaterial );
 
-	CSkyboxMaterial( CTexture *pSkybox, const char *sPath, unsigned int uiDrawFlags );
+	CSkyboxMaterial( CTexture *pSkybox, const char *sPath );
+	virtual ~CSkyboxMaterial();
 
-	virtual bool Use( void );
-
-	virtual ShaderType_t GetShaderType( void ) const;
+	virtual void Use( void );
 
 private:
 	CTexture *m_pSkybox;

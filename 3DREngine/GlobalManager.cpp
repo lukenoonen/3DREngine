@@ -1,4 +1,5 @@
 #include "GlobalManager.h"
+#include "CommandManager.h"
 
 CConFloat cf_fps( "fps", 60.0f, "set the target fps" );
 CConFloat cf_timescale( "ts", 1.0f, "set the timescale" );

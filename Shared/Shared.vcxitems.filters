@@ -9,18 +9,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)SharedDefs.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)UTIL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)UTIL.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)TextReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)SharedAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)SharedDefs.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)UTIL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)UTIL.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedAsset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)TextReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,29 +1,29 @@
 #include "InputManager.h"
 #include "RenderManager.h"
 #include "GlobalManager.h"
-#include <UTIL.h>
+#include "CommandManager.h"
 
-bool CC_Bind( const std::vector<const char *> &command )
+bool CC_Bind( CTextItem *pCommand )
 {
-	if (command.size() < 2)
+	if (pCommand->GetTextTermCount() < 3)
 		return false;
 
-	KeyCodes_t tKeyCodes = UTIL_KeyStrToCode( command[0] );
-	if (tKeyCodes == KEYCODE_INVALID)
+	KeyCodes_t tKeyCode = UTIL_KeyStrToCode( pCommand->GetTextTerm( 1 )->GetString() );
+	if (tKeyCode == KEYCODE_INVALID)
 		return false;
 
-	pInputManager->BindKey( tKeyCodes, command[1] );
+	pInputManager->BindKey( tKeyCode, pCommand->GetTextTerm( 2 )->GetString() );
 
 	return true;
 }
 CConCommand cc_bind( "bind", CC_Bind, "bind [key] [command]" );
 
-bool CC_Unbind( const std::vector<const char *> &command )
+bool CC_Unbind( CTextItem *pCommand )
 {
-	if (command.size() < 1)
+	if (pCommand->GetTextTermCount() < 2)
 		return false;
 
-	KeyCodes_t tKeyCodes = UTIL_KeyStrToCode( command[0] );
+	KeyCodes_t tKeyCodes = UTIL_KeyStrToCode( pCommand->GetTextTerm( 1 )->GetString() );
 	if (tKeyCodes == KEYCODE_INVALID)
 		return false;
 
@@ -281,7 +281,7 @@ void CKeyBind::Unbind( void )
 void CKeyBind::DownDispatch( void )
 {
 	if (m_sCommand)
-		CCommandProcesser::ProcessCommand( m_sCommand );
+		pCommandManager->ProcessCommand( m_sCommand );
 }
 
 void CKeyBind::UpDispatch( void )
@@ -289,7 +289,7 @@ void CKeyBind::UpDispatch( void )
 	if (m_sCommand && m_sCommand[0] == '+')
 	{
 		m_sCommand[0] = '-';
-		CCommandProcesser::ProcessCommand( m_sCommand );
+		pCommandManager->ProcessCommand( m_sCommand );
 		m_sCommand[0] = '+';
 	}
 }

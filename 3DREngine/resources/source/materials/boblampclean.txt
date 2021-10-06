@@ -1,6 +1,0 @@
-body.3mt
-face.3mt
-helmet.3mt
-grill.3mt
-rgrill.3mt
-body.3mt

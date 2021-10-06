@@ -1,0 +1,5 @@
+type model;
+name testcharacter;
+meshes		{ index 0; name testcharacter.3ms; };
+animations	{ index 0; name testcharacter.3an; };
+skeleton testcharacter.3sk;

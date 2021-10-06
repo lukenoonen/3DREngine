@@ -2,12 +2,16 @@
 #include "ShaderManager.h"
 #include "EntityManager.h"
 #include "RenderManager.h"
-#include "TextureManager.h"
+#include "CommandManager.h"
+#include "AssetManager.h"
 
 CConInt ci_r_csmshadowsize( "r_csmshadowsize", 1024 );
 
-CCSMLight::CCSMLight( float flBlurRadius, float flBlendDistance, float flInitialDistance, float flDistanceFactor, float flFarZError, float flNearZError, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecAmbient, vecDiffuse, vecSpecular, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CCSMLight::CCSMLight( float flFadeNear, float flFadeFar, float flBlurRadius, float flBlendDistance, float flInitialDistance, float flDistanceFactor, float flFarZError, float flNearZError, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecAmbient, vecDiffuse, vecSpecular, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
 {
+	m_flFadeNear = flFadeNear;
+	m_flFadeFar = flFadeFar;
+
 	m_flBlurRadius = flBlurRadius;
 
 	m_flFarZError = flFarZError;
@@ -22,17 +26,13 @@ CCSMLight::CCSMLight( float flBlurRadius, float flBlendDistance, float flInitial
 		flBlendDistance *= flDistanceFactor;
 	}
 
-	CreateShadowBuffers();
+	int iShadowSize = ci_r_csmshadowsize.GetValue();
+	pRenderManager->CreateShadowMapFramebuffer( 4, m_uiShadowMapFBOs, m_uiShadowMaps, iShadowSize, iShadowSize );
 }
 
 CCSMLight::~CCSMLight()
 {
-	DestroyShadowBuffers();
-}
-
-bool CCSMLight::CastShadows( void ) const
-{
-	return true;
+	pRenderManager->DestroyShadowMapFrameBuffer( 4, m_uiShadowMapFBOs, m_uiShadowMaps );
 }
 
 void CCSMLight::CalculateShadows( void )
@@ -40,10 +40,12 @@ void CCSMLight::CalculateShadows( void )
 	if (ci_r_csmshadowsize.WasDispatched())
 	{
 		for (unsigned int i = 0; i < 4; i++)
-			pTextureManager->UnbindTexture( m_uiShadowMaps[i] );
+			pAssetManager->UnbindTexture( m_uiShadowMaps[i] );
 
-		DestroyShadowBuffers();
-		CreateShadowBuffers();
+		pRenderManager->DestroyShadowMapFrameBuffer( 4, m_uiShadowMapFBOs, m_uiShadowMaps );
+
+		int iShadowSize = ci_r_csmshadowsize.GetValue();
+		pRenderManager->CreateShadowMapFramebuffer( 4, m_uiShadowMapFBOs, m_uiShadowMaps, iShadowSize, iShadowSize );
 	}
 
 	CPlayer *pPlayer = pEntityManager->GetPlayer();
@@ -72,7 +74,9 @@ void CCSMLight::CalculateShadows( void )
 			matLightOrtho[3] += roundOffset;
 
 			m_matLightSpaceMatricies[i] = matLightOrtho * matLightView;
-			m_vecCascadeBlurScale[i] = m_flBlurRadius / flRadius;
+
+			if (i == 0)
+				m_flBlurScale = m_flBlurRadius / flRadius;
 		}
 
 		ResetTransformUpdated();
@@ -96,8 +100,7 @@ void CCSMLight::CalculateShadows( void )
 	}
 
 	pRenderManager->SetViewportSize( glm::ivec2( ci_r_csmshadowsize.GetValue() ) );
-
-	pShaderManager->SetShaderSubType( SHADERSUBTYPE_CSM );
+	pRenderManager->SetRenderPass( RENDERPASS_SHADOW_CSM );
 
 	for (unsigned int i = 0; i < 4; i++)
 	{
@@ -110,50 +113,18 @@ void CCSMLight::ActivateLight( void )
 {
 	BaseClass::ActivateLight();
 
-	float flNear = 280.0f;
-	float flFar = 300.0f;
-
-	pShaderManager->SetShaderSubType( SHADERSUBTYPE_CSM );
+	pRenderManager->SetRenderPass( RENDERPASS_LIT_CSM );
 
 	for (unsigned int i = 0; i < 4; i++)
-		pRenderManager->SetShadowMapIndex( pTextureManager->BindTexture( m_uiShadowMaps[i], GL_TEXTURE_2D ), i );
+		pRenderManager->SetShadowMapIndex( pAssetManager->BindTexture( m_uiShadowMaps[i], GL_TEXTURE_2D ), i );
 
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTDIRECTION, 0, &(GetRotation() * g_vecFront) );
 	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 4, m_matLightSpaceMatricies );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWBLUR, 0, 0, 4, &m_vecCascadeBlurScale[0] );
+	pShaderManager->SetUniformBufferObject( UBO_SHADOWBLUR, 0, &m_flBlurScale );
 	pShaderManager->SetUniformBufferObject( UBO_SHADOWCASCADEFADE, 0, &m_vecCascadeEndClipSpaceNear );
 	pShaderManager->SetUniformBufferObject( UBO_SHADOWCASCADEFADE, 1, &m_vecCascadeEndClipSpaceFar );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWFADE, 0, &flNear );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWFADE, 1, &flFar );
-}
+	pShaderManager->SetUniformBufferObject( UBO_SHADOWFADE, 0, &m_flFadeNear );
+	pShaderManager->SetUniformBufferObject( UBO_SHADOWFADE, 1, &m_flFadeFar );
 
-void CCSMLight::CreateShadowBuffers( void )
-{
-	int iShadowSize = ci_r_csmshadowsize.GetValue();
-
-	glGenFramebuffers( 4, m_uiShadowMapFBOs );
-	glGenTextures( 4, m_uiShadowMaps );
-
-	for (unsigned int i = 0; i < 4; i++)
-	{
-		glBindTexture( GL_TEXTURE_2D, m_uiShadowMaps[i] );
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, iShadowSize, iShadowSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
-		float flBorderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, flBorderColor );
-		glBindFramebuffer( GL_FRAMEBUFFER, m_uiShadowMapFBOs[i] );
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_uiShadowMaps[i], 0 );
-		glDrawBuffer( GL_NONE );
-		glReadBuffer( GL_NONE );
-	}
-}
-
-void CCSMLight::DestroyShadowBuffers( void )
-{
-	glDeleteFramebuffers( 4, m_uiShadowMapFBOs );
-	glDeleteTextures( 4, m_uiShadowMaps );
+	pShaderManager->SetShaderShadow( SHADERSHADOW_TRUE );
 }
