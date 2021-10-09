@@ -20,18 +20,30 @@ public:
 
 	void SetAnimate( bool bAnimate );
 	void SetUpdateAnimation( bool bUpdateAnimation );
-	void SetAnimationIndex( unsigned int uiAnimationIndex );
 
-	void SetAnimationTime( float flAnimationTime );
+	void TransitionAnimation( unsigned int uiAnimationIndex, float flAnimationTransitionTime );
+	void SetAnimation( unsigned int uiAnimationIndex );
+
 	void SetAnimationTimeScale( float flAnimationTimeScale );
-
+		
 private:
 	bool m_bAnimate;
 	bool m_bUpdateAnimation;
-	bool m_bValidAnimationIndex;
-	unsigned int m_uiAnimationIndex;
 
+	std::vector<CAnimation *> m_pAnimations;
+	std::vector<float> m_flAnimationTimes;
+	std::vector<float> m_flAnimationTransitionFactors;
+	std::vector<float> m_flAnimationTransitionTimes;
+
+	/*
+	unsigned int m_uiAnimationIndex;
+	unsigned int m_uiAnimationIndexTransition;
 	float m_flAnimationTime;
+	float m_flAnimationTimeTransition;
+	float m_flAnimationTransitionFactor;
+	float m_flAnimationTransitionTime;
+	*/
+
 	float m_flAnimationTimeScale;
 
 	std::vector<glm::mat4> m_matBoneTransforms;

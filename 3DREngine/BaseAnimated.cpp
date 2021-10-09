@@ -4,21 +4,41 @@
 
 CBaseAnimated::CBaseAnimated( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
 {
-	m_bAnimate = true;
+	m_bAnimate = false;
 	m_bUpdateAnimation = false;
-	m_bValidAnimationIndex = false;
 
-	m_flAnimationTime = 0.0f;
 	m_flAnimationTimeScale = 1.0f;
 }
 
 void CBaseAnimated::PostThink( void )
 {
-	if (m_bValidAnimationIndex && m_bAnimate && m_bUpdateAnimation)
+	if (m_bAnimate && m_bUpdateAnimation)
 	{
 		CModel *pModel = GetModel();
 		if (pModel->IsAnimated())
-			m_flAnimationTime = pModel->UpdateAnimation( m_matBoneTransforms, m_uiAnimationIndex, m_flAnimationTime, m_flAnimationTimeScale );
+		{
+			for (unsigned int i = 0; i < (unsigned int)m_flAnimationTransitionFactors.size(); i++)
+			{
+				m_flAnimationTransitionFactors[i] = pGlobalValues->GetFrameTime() / m_flAnimationTransitionTimes[i];
+				if (m_flAnimationTransitionFactors[i] >= 1.0f)
+				{
+					for (unsigned int j = 0; j <= i; j++)
+					{
+						m_pAnimations.erase( m_pAnimations.begin() );
+						m_flAnimationTimes.erase( m_flAnimationTimes.begin() );
+						m_flAnimationTransitionFactors.erase( m_flAnimationTransitionFactors.begin() );
+						m_flAnimationTransitionTimes.erase( m_flAnimationTransitionTimes.begin() );
+					}
+
+					i = 0;
+				}
+			}
+
+			for (unsigned int i = 0; i < (unsigned int)m_pAnimations.size(); i++)
+				m_flAnimationTimes[i] = fmod( m_flAnimationTimes[i] + pGlobalValues->GetFrameTime() * m_flAnimationTimeScale, m_pAnimations[i]->GetTime() );
+
+			pModel->UpdateAnimation( m_matBoneTransforms, m_pAnimations, m_flAnimationTimes, m_flAnimationTransitionFactors );
+		}
 	}
 
 	BaseClass::PostThink();
@@ -30,7 +50,7 @@ void CBaseAnimated::PreDraw( void )
 
 	pShaderManager->SetShaderAnimate( SHADERANIMATE_TRUE );
 
-	if (m_bValidAnimationIndex && m_bAnimate)
+	if (m_bAnimate)
 	{
 		CModel *pModel = GetModel();
 		if (pModel->IsAnimated())
@@ -54,30 +74,31 @@ void CBaseAnimated::SetUpdateAnimation( bool bUpdateAnimation )
 	m_bUpdateAnimation = bUpdateAnimation;
 }
 
-void CBaseAnimated::SetAnimationIndex( unsigned int uiAnimationIndex )
+void CBaseAnimated::TransitionAnimation( unsigned int uiAnimationIndex, float flAnimationTransitionTime )
 {
 	CModel *pModel = GetModel();
+	if (!pModel)
+		return;
 
-	if (m_bValidAnimationIndex)
-	{
-		if (pModel->IsValidAnimation( uiAnimationIndex ))
-			m_uiAnimationIndex = uiAnimationIndex;
-		else
-			m_bValidAnimationIndex = false;
-	}
-	else
-	{
-		if (pModel->IsValidAnimation( uiAnimationIndex ))
-		{
-			m_uiAnimationIndex = uiAnimationIndex;
-			m_bValidAnimationIndex = true;
-		}
-	}
+	m_pAnimations.push_back( pModel->GetAnimation( uiAnimationIndex ) );
+	m_flAnimationTimes.push_back( 0.0f );
+	m_flAnimationTransitionFactors.push_back( 0.0f );
+	m_flAnimationTransitionTimes.push_back( flAnimationTransitionTime );
 }
 
-void CBaseAnimated::SetAnimationTime( float flAnimationTime )
+void CBaseAnimated::SetAnimation( unsigned int uiAnimationIndex )
 {
-	m_flAnimationTime = flAnimationTime;
+	CModel *pModel = GetModel();
+	if (!pModel)
+		return;
+
+	m_pAnimations.clear();
+	m_flAnimationTimes.clear();
+	m_flAnimationTransitionFactors.clear();
+	m_flAnimationTransitionTimes.clear();
+
+	m_pAnimations.push_back( pModel->GetAnimation( uiAnimationIndex ) );
+	m_flAnimationTimes.push_back( 0.0f );
 }
 
 void CBaseAnimated::SetAnimationTimeScale( float flAnimationTimeScale )

@@ -11,7 +11,7 @@ CDirLightShadow::CDirLightShadow( float flFadeNear, float flFadeFar, float flBlu
 	m_flFadeNear = flFadeNear;
 	m_flFadeFar = flFadeFar;
 
-	m_flBlurScale = flBlurRadius / (flLength * M_SQRT2);
+	m_flBlurScale = flBlurRadius / (flLength);
 
 	flLength /= 2.0f;
 

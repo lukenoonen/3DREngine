@@ -7,8 +7,10 @@ CAnimatedProp::CAnimatedProp( const char *sModelPath, const glm::vec3 &vecPositi
 	pModel->Activate();
 	SetModel( pModel );
 
-	SetAnimationIndex( 0 );
+	SetAnimation( 0 );
+
 	SetUpdateAnimation( true );
+	SetAnimate( true );
 }
 
 CAnimatedProp::~CAnimatedProp()

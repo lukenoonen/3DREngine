@@ -76,7 +76,7 @@ void CCSMLight::CalculateShadows( void )
 			m_matLightSpaceMatricies[i] = matLightOrtho * matLightView;
 
 			if (i == 0)
-				m_flBlurScale = m_flBlurRadius / flRadius;
+				m_flBlurScale = m_flBlurRadius / (flRadius * 2.0f);
 		}
 
 		ResetTransformUpdated();

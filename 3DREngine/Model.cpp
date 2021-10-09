@@ -73,9 +73,12 @@ bool CModel::IsAnimated( void ) const
 	return m_bIsAnimated;
 }
 
-bool CModel::IsValidAnimation( unsigned int uiIndex ) const
+CAnimation *CModel::GetAnimation( unsigned int uiIndex ) const
 {
-	return uiIndex < (unsigned int)m_pAnimations.size();
+	if (uiIndex < (unsigned int)m_pAnimations.size())
+		return m_pAnimations[uiIndex];
+
+	return NULL;
 }
 
 void CModel::SetUpBoneTransforms( std::vector<glm::mat4> &matBoneTransforms )
@@ -83,10 +86,7 @@ void CModel::SetUpBoneTransforms( std::vector<glm::mat4> &matBoneTransforms )
 	m_pSkeleton->SetUpBoneTransforms( matBoneTransforms );
 }
 
-float CModel::UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, unsigned int uiAnimationIndex, float flAnimationTime, float flAnimationTimeScale )
+void CModel::UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, const std::vector<CAnimation *> &pAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors )
 {
-	CAnimation *pAnimation = m_pAnimations[uiAnimationIndex];
-	flAnimationTime = fmod( flAnimationTime + pGlobalValues->GetFrameTime() * flAnimationTimeScale, pAnimation->GetTime() );
-	m_pSkeleton->UpdateAnimation( matBoneTransforms, pAnimation, flAnimationTime );
-	return flAnimationTime;
+	m_pSkeleton->UpdateAnimation( matBoneTransforms, pAnimations, flAnimationTimes, flAnimationTransitionFactors );
 }

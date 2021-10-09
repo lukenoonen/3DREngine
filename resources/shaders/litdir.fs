@@ -79,20 +79,17 @@ void main()
 	if (v_flClipSpacePosZ < u_flShadowFadeFar)
 	{
 		float flAdjustedShadowMapDepth = (v_flShadowMapDepth / v_flShadowMapFactor) * 0.5f + 0.5f - bias(flNormalDirectionDot);
-		if (flAdjustedShadowMapDepth <= 1.0f)
-		{
 #if QUALITY_HIGH || QUALITY_ULTRA
-			float flPhi = InterleavedGradientNoise(v_vecFragPos) * 6.28318530718f;
+		float flPhi = InterleavedGradientNoise(v_vecFragPos) * 6.28318530718f;
 #else // QUALITY_HIGH || QUALITY_ULTRA
-			float flPhi = 0.0f;
+		float flPhi = 0.0f;
 #endif // QUALITY_HIGH || QUALITY_ULTRA
-			vec2 vecAdjustedShadowMapCoords = (v_vecShadowMapCoords / v_flShadowMapFactor) * 0.5f + 0.5f;
-			flShadow = 0.0f;
-			for (int i = 0; i < SHADOW_SAMPLES; i++)
-				flShadow += texture(u_sShadowMap, vec3(vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepth));
-		
-			flShadow *= SHADOW_SAMPLES_INV_F;
-		}
+		vec2 vecAdjustedShadowMapCoords = (v_vecShadowMapCoords / v_flShadowMapFactor) * 0.5f + 0.5f;
+		flShadow = 0.0f;
+		for (int i = 0; i < SHADOW_SAMPLES; i++)
+			flShadow += texture(u_sShadowMap, vec3(vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepth));
+	
+		flShadow *= SHADOW_SAMPLES_INV_F;
 		
 		if (v_flClipSpacePosZ > u_flShadowFadeNear)
 			flShadow = mix(flShadow, 1.0f, (v_flClipSpacePosZ - u_flShadowFadeNear) / (u_flShadowFadeFar - u_flShadowFadeNear));

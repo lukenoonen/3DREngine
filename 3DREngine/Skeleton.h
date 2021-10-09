@@ -56,11 +56,11 @@ public:
 	virtual ~CSkeleton();
 
 	void SetUpBoneTransforms( std::vector<glm::mat4> &matBoneTransforms );
-	void UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, CAnimation *pAnimation, float flAnimationTime );
+	void UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, const std::vector<CAnimation *> &pAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors );
 	
 private:
-	void ReadNodeHierarchy( std::vector<glm::mat4> &matBoneTransforms, CAnimation *pAnimation, float flAnimationTime, CSkeletonNode *pSkeletonNode, const glm::mat4 &matParentTransform );
-
+	void ReadNodeHierarchy( std::vector<glm::mat4> &matBoneTransforms, const std::vector<CAnimation *> &pAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors, CSkeletonNode *pSkeletonNode, const glm::mat4 &matParentTransform );
+	
 private:
 	CSkeletonNode *m_pSkeletonNode;
 	unsigned int m_uiSkeletonBonesCount;

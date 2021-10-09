@@ -21,10 +21,11 @@ public:
 	void Draw( void );
 
 	bool IsAnimated( void ) const;
-	bool IsValidAnimation( unsigned int uiIndex ) const;
+
+	CAnimation *GetAnimation( unsigned int uiIndex ) const;
 
 	void SetUpBoneTransforms( std::vector<glm::mat4> &matBoneTransforms );
-	float UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, unsigned int uiAnimationIndex, float flAnimationTime, float flAnimationTimeScale );
+	void UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, const std::vector<CAnimation *> &pAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors );
 	
 private:
 	std::vector<CMesh *> m_pMeshes;
