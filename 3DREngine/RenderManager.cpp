@@ -3,77 +3,55 @@
 #include "InputManager.h"
 #include "ShaderManager.h"
 #include "EntityManager.h"
-#include "CommandManager.h"
+#include "GlobalManager.h"
 
-bool CC_R_WindowSize( CTextItem *pCommand )
+bool CV_R_WindowSize( void );
+CConIVec2 cv_r_windowsize( glm::ivec2( 1920, 1080 ), "r_windowsize", CV_R_WindowSize );
+bool CV_R_WindowSize( void )
 {
-	if (pCommand->GetTextTermCount() < 2)
-		return false;;
-
-	CTextTerm *pTextTerm = pCommand->GetTextTerm( 1 );
-	if (!pTextTerm->IsIVec2Format())
-		return false;
-	
-	pRenderManager->SetWindowSize( pTextTerm->GetIVec2() );
+	const glm::ivec2 &vecWindowSize = cv_r_windowsize.GetValue();
+	glfwSetWindowMonitor( pRenderManager->GetWindow(), cb_r_fullscreen.GetValue() ? pRenderManager->GetMonitor() : NULL, 0, 0, vecWindowSize.x, vecWindowSize.y, GLFW_DONT_CARE );
 	return true;
 }
-CConCommand cc_r_windowsize( "r_windowsize", CC_R_WindowSize );
 
-bool CC_R_Fullscreen( CTextItem *pCommand )
+bool CB_R_Fullscreen( void );
+CConBool cb_r_fullscreen( true, "r_fullscreen", CB_R_Fullscreen );
+bool CB_R_Fullscreen( void )
 {
-	if (pCommand->GetTextTermCount() < 2)
-		return false;
-
-	CTextTerm *pTextTerm = pCommand->GetTextTerm( 1 );
-	if (!pTextTerm->IsBoolFormat())
-		return false;
-
-	pRenderManager->SetFullscreen( pTextTerm->GetBool() );
+	const glm::ivec2 &vecWindowSize = cv_r_windowsize.GetValue();
+	glfwSetWindowMonitor( pRenderManager->GetWindow(), cb_r_fullscreen.GetValue() ? pRenderManager->GetMonitor() : NULL, 0, 0, vecWindowSize.x, vecWindowSize.y, GLFW_DONT_CARE );
 	return true;
 }
-CConCommand cc_r_fullscreen( "r_fullscreen", CC_R_Fullscreen );
 
-bool CC_R_VSync( CTextItem *pCommand )
+bool CB_R_VSync( void );
+CConBool cb_r_vsync( true, "r_vsync", CB_R_VSync );
+bool CB_R_VSync( void )
 {
-	if (pCommand->GetTextTermCount() < 2)
-		return false;
-
-	CTextTerm *pTextTerm = pCommand->GetTextTerm( 1 );
-	if (!pTextTerm->IsBoolFormat())
-		return false;
-
-	pRenderManager->SetVSync( pTextTerm->GetBool() );
+	glfwSwapInterval( cb_r_vsync.GetValue() ? 1 : 0 );
 	return true;
 }
-CConCommand cc_r_vsync( "r_vsync", CC_R_VSync );
 
-bool CC_R_MSAA( CTextItem *pCommand )
+CConFloat cf_r_fov( 90.0f, "r_fov" );
+
+CConFloat cf_r_height( 1.0f, "r_height" );
+
+CConFloat cf_r_near( 0.1f, "r_near" );
+
+CConFloat cf_r_far( 1000.0f, "r_far" );
+
+CConInt ci_r_msaalevel( 4, "r_msaalevel" );
+
+CConFloat cf_r_vcsizefactor( 1.0f, "r_vcsizefactor" );
+
+CConFloat cf_r_vcmsaalevelfactor( 1.0f, "r_vcmsaalevelfactor" );
+
+bool CB_R_WindowName( void );
+CConString cs_r_windowname( "3DREngine", "r_windowname", CB_R_WindowName );
+bool CB_R_WindowName( void )
 {
-	if (pCommand->GetTextTermCount() < 2)
-		return false;
-
-	CTextTerm *pTextTerm = pCommand->GetTextTerm( 1 );
-	if (!pTextTerm->IsUnsignedIntFormat())
-		return false;
-
-	pRenderManager->SetMSAALevel( pTextTerm->GetUnsignedInt() );
+	glfwSetWindowTitle( pRenderManager->GetWindow(), cs_r_windowname.GetValue() );
 	return true;
 }
-CConCommand cc_r_msaa( "r_msaa", CC_R_MSAA );
-
-bool CC_R_WindowName( CTextItem *pCommand )
-{
-	if (pCommand->GetTextTermCount() < 2)
-		return false;
-
-	const char *sWindowName = pCommand->GetTextTerm( 1 )->GetString();
-	if (!sWindowName)
-		return false;
-
-	pRenderManager->SetWindowName( sWindowName );
-	return true;
-}
-CConCommand cc_r_windowname( "r_windowname", CC_R_WindowName );
 
 CRenderManager::CRenderManager()
 {
@@ -84,17 +62,14 @@ CRenderManager::CRenderManager()
 	glfwWindowHint( GLFW_DECORATED, GLFW_FALSE );
 	glfwWindowHint( GLFW_RESIZABLE, GLFW_FALSE );
 
+	m_tRenderPass = RENDERPASS_SHADOW_DIR;
+
 	m_pMonitor = glfwGetPrimaryMonitor();
 	m_pWindow = glfwCreateWindow( 800, 600, "3DREngine", NULL, NULL );
 
 	glfwMakeContextCurrent( m_pWindow );
 	gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress );
 
-	m_ivecWindowSize = glm::ivec2( 800, 600 );
-	m_bFullscreen = false;
-	m_bVSync = true;
-	m_uiMSAALevel = 0;
-	m_sWindowName = NULL;
 	m_uiFrameBuffer = 0;
 	m_uiDepthFunc = GL_LEQUAL;
 	m_bBlend = false;
@@ -106,60 +81,68 @@ CRenderManager::CRenderManager()
 	glEnable( GL_CULL_FACE );
 	glCullFace( GL_BACK );
 	glBlendFunc( GL_ONE, GL_ONE );
-
-	m_tRenderPass = RENDERPASS_SHADOW_DIR;
 }
 
 CRenderManager::~CRenderManager()
 {
-	if (m_sWindowName)
-	{
-		delete[] m_sWindowName;
-		m_sWindowName = NULL;
-	}
-
-	if (m_uiMSAALevel != 0)
-		DestroyMSAABuffers();
-
 	glfwDestroyWindow( m_pWindow );
 	glfwTerminate();
 }
 
 void CRenderManager::OnLoop( void )
 {
-	DrawShadows();
+	for (unsigned int i = 0; i < (unsigned int)m_pCameraEntities.size(); i++)
+		m_pCameraEntities[i]->Render();
+
+	glfwSwapBuffers( m_pWindow );
+
+	/*DrawShadows();
 
 	SetViewportSize( m_ivecWindowSize );
-	m_uiMSAALevel == 0 ? SetFrameBuffer( 0 ) : SetFrameBuffer( m_uiFBO );
+	SetFrameBuffer( m_uiMSAALevel == 0 ? 0 : m_uiFBO );
 
-	SetRenderPass( RENDERPASS_DEPTH );
 	DrawEntities();
-
-	SetRenderPass( RENDERPASS_UNLIT );
-	DrawEntities();
-
-	DrawLitEntities();
 
 	if (m_uiMSAALevel != 0)
 	{
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, m_uiFBO );
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 		glBlitFramebuffer( 0, 0, m_ivecWindowSize.x, m_ivecWindowSize.y, 0, 0, m_ivecWindowSize.x, m_ivecWindowSize.y, GL_COLOR_BUFFER_BIT, GL_LINEAR );
-	}	
-
-	glfwSwapBuffers( m_pWindow );
+	}*/
 }
 
-void CRenderManager::DrawShadows( void )
+RenderPass_t CRenderManager::GetRenderPass( void ) const
 {
-	for (unsigned int i = 0; i < m_pLightEntities.size(); i++)
-	{
-		if (m_pLightEntities[i]->ShouldDraw())
-			m_pLightEntities[i]->CalculateShadows();
-	}
+	return m_tRenderPass;
+}
+
+void CRenderManager::SetRenderPass( RenderPass_t tRenderPass )
+{
+	m_tRenderPass = tRenderPass;
+}
+
+GLFWmonitor *CRenderManager::GetMonitor( void )
+{
+	return m_pMonitor;
+}
+
+GLFWwindow *CRenderManager::GetWindow( void )
+{
+	return m_pWindow;
 }
 
 void CRenderManager::DrawEntities( void )
+{
+	SetRenderPass( RENDERPASS_DEPTH );
+	DrawNonLitEntities();
+
+	SetRenderPass( RENDERPASS_UNLIT );
+	DrawNonLitEntities();
+
+	DrawLitEntities();
+}
+
+void CRenderManager::DrawNonLitEntities( void )
 {
 	for (unsigned int i = 0; i < m_pDrawEntities.size(); i++)
 	{
@@ -198,18 +181,33 @@ void CRenderManager::DrawLitEntities( void )
 	SetBlend( false );
 }
 
-void CRenderManager::DrawShadowMap( unsigned int uiDepthMapFBO )
-{
-	SetFrameBuffer( uiDepthMapFBO );
-	DrawEntities();
-}
-
 void CRenderManager::AddEntity( CBaseEntity *pEntity )
 {
 	if (pEntity->IsLight())
+	{
 		m_pLightEntities.push_back( dynamic_cast<CBaseLight *>(pEntity) );
+	}
+	else if (pEntity->IsCamera())
+	{
+		bool bSuccess = false;
+		CBaseCamera *pCamera = dynamic_cast<CBaseCamera *>(pEntity);
+		for (unsigned int i = 0; i < (unsigned int)m_pCameraEntities.size(); i++)
+		{
+			if (pCamera->GetRenderPriority() <= m_pCameraEntities[i]->GetRenderPriority())
+			{
+				m_pCameraEntities.insert( m_pCameraEntities.begin() + i, pCamera );
+				bSuccess = true;
+				break;
+			}
+		}
+
+		if (!bSuccess)
+			m_pCameraEntities.push_back( pCamera );
+	}
 	else if (pEntity->IsDrawable())
+	{
 		m_pDrawEntities.push_back( dynamic_cast<CBaseDrawable *>(pEntity) );
+	}
 }
 
 void CRenderManager::RemoveEntity( CBaseEntity *pEntity )
@@ -236,71 +234,24 @@ void CRenderManager::RemoveEntity( CBaseEntity *pEntity )
 			}
 		}
 	}
+	else if (pEntity->IsCamera())
+	{
+		for (unsigned int i = 0; i < m_pCameraEntities.size(); i++)
+		{
+			if (m_pCameraEntities[i] == pEntity)
+			{
+				m_pCameraEntities.erase( m_pCameraEntities.begin() + i );
+				return;
+			}
+		}
+	}
 }
 
 void CRenderManager::ClearEntities( void )
 {
 	m_pDrawEntities.clear();
 	m_pLightEntities.clear();
-}
-
-void CRenderManager::SetWindowSize( const glm::ivec2 &ivecWindowSize )
-{
-	if (m_ivecWindowSize == ivecWindowSize)
-		return;
-
-	m_ivecWindowSize = ivecWindowSize;
-	glfwSetWindowMonitor( m_pWindow, m_bFullscreen ? m_pMonitor : NULL, 0, 0, m_ivecWindowSize.x, m_ivecWindowSize.y, GLFW_DONT_CARE );
-
-	if (m_uiMSAALevel != 0)
-	{
-		DestroyMSAABuffers();
-		CreateMSAABuffers();
-	}
-}
-
-void CRenderManager::SetFullscreen( bool bFullscreen )
-{
-	if (m_bFullscreen == bFullscreen)
-		return;
-
-	m_bFullscreen = bFullscreen;
-	glfwSetWindowMonitor( m_pWindow, m_bFullscreen ? m_pMonitor : NULL, 0, 0, m_ivecWindowSize.x, m_ivecWindowSize.y, GLFW_DONT_CARE );
-}
-
-void CRenderManager::SetVSync( bool bVSync )
-{
-	if (m_bVSync == bVSync)
-		return;
-
-	m_bVSync = bVSync;
-	glfwSwapInterval( m_bVSync ? 1 : 0 );
-}
-
-void CRenderManager::SetMSAALevel( unsigned int uiMSAALevel )
-{
-	if (m_uiMSAALevel == uiMSAALevel)
-		return;
-
-	m_uiMSAALevel = uiMSAALevel;
-	if (m_uiMSAALevel != 0)
-	{
-		DestroyMSAABuffers();
-		CreateMSAABuffers();
-	}
-	else
-	{
-		DestroyMSAABuffers();
-	}
-}
-
-void CRenderManager::SetWindowName( const char *sWindowName )
-{
-	if (m_sWindowName)
-		delete[] m_sWindowName;
-
-	m_sWindowName = UTIL_stredit( sWindowName );
-	glfwSetWindowTitle( m_pWindow, m_sWindowName );
+	m_pCameraEntities.clear();
 }
 
 void CRenderManager::SetFrameBuffer( unsigned int uiFrameBuffer )
@@ -352,87 +303,12 @@ void CRenderManager::SetViewportOffset( const glm::ivec2 &ivecViewportOffset )
 	}
 }
 
-const glm::ivec2 &CRenderManager::GetWindowSize( void )
+int CRenderManager::GetShadowMapIndex( void ) const
 {
-	return m_ivecWindowSize;
+	return m_iShadowMapIndex;
 }
 
-float CRenderManager::GetWindowSizeRatio( void )
+void CRenderManager::SetShadowMapIndex( int iShadowMapIndex )
 {
-	return (float)m_ivecWindowSize.x / (float)m_ivecWindowSize.y;
-}
-
-GLFWwindow *CRenderManager::GetWindow( void )
-{
-	return m_pWindow;
-}
-
-void CRenderManager::CreateShadowMapFramebuffer( unsigned int uiCount, unsigned int *uiShadowMapFBO, unsigned int *uiShadowMap, int iShadowSizeX, int iShadowSizeY )
-{
-	glGenFramebuffers( uiCount, uiShadowMapFBO );
-	glGenTextures( uiCount, uiShadowMap );
-
-	for (unsigned int i = 0; i < uiCount; i++)
-	{
-		glBindTexture( GL_TEXTURE_2D, uiShadowMap[i] );
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, iShadowSizeX, iShadowSizeY, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
-		glBindFramebuffer( GL_FRAMEBUFFER, uiShadowMapFBO[i] );
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, uiShadowMap[i], 0 );
-		glDrawBuffer( GL_NONE );
-		glReadBuffer( GL_NONE );
-	}
-}
-
-void CRenderManager::DestroyShadowMapFrameBuffer( unsigned int uiCount, unsigned int *uiShadowMapFBO, unsigned int *uiShadowMap )
-{
-	glDeleteFramebuffers( uiCount, uiShadowMapFBO );
-	glDeleteTextures( uiCount, uiShadowMap );
-}
-
-int CRenderManager::GetShadowMapIndex( unsigned iIndex ) const
-{
-	return m_iShadowMapIndex[iIndex];
-}
-
-void CRenderManager::SetShadowMapIndex( int iShadowMapIndex, unsigned int iIndex )
-{
-	m_iShadowMapIndex[iIndex] = iShadowMapIndex;
-}
-
-RenderPass_t CRenderManager::GetRenderPass( void ) const
-{
-	return m_tRenderPass;
-}
-
-void CRenderManager::SetRenderPass( RenderPass_t tRenderPass )
-{
-	m_tRenderPass = tRenderPass;
-}
-
-void CRenderManager::CreateMSAABuffers( void )
-{
-	glGenFramebuffers( 1, &m_uiFBO );
-	glGenTextures( 1, &m_uiTextureColorBufferMultiSampled );
-	glGenRenderbuffers( 1, &m_uiRBO );
-
-	glBindFramebuffer( GL_FRAMEBUFFER, m_uiFBO );
-	glBindTexture( GL_TEXTURE_2D_MULTISAMPLE, m_uiTextureColorBufferMultiSampled );
-	glBindRenderbuffer( GL_RENDERBUFFER, m_uiRBO );
-
-	glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB8, m_ivecWindowSize.x, m_ivecWindowSize.y, GL_TRUE );
-	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_uiTextureColorBufferMultiSampled, 0 );
-	glRenderbufferStorageMultisample( GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, m_ivecWindowSize.x, m_ivecWindowSize.y );
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_uiRBO );
-}
-
-void CRenderManager::DestroyMSAABuffers( void )
-{
-	glDeleteFramebuffers( 1, &m_uiFBO );
-	glDeleteTextures( 1, &m_uiTextureColorBufferMultiSampled );
-	glDeleteRenderbuffers( 1, &m_uiRBO );
+	m_iShadowMapIndex = iShadowMapIndex;
 }

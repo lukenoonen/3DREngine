@@ -17,6 +17,7 @@ public:
 	virtual bool IsPlayer( void ) const;
 	virtual bool IsLight( void ) const;
 	virtual bool IsDrawable( void ) const;
+	virtual bool IsCamera( void ) const;
 
 	bool IsActive( void ) const;
 	void SetActive( bool bActive );

@@ -1,5 +1,7 @@
 #version 330 core
 
+#subshader ANIMATE
+
 layout (location = 0) in vec3 a_vecPos;
 layout (location = 1) in vec3 a_vecNormal;
 layout (location = 2) in vec3 a_vecTangent;
@@ -20,6 +22,9 @@ void main()
 {
 	v_vecTexCoords = a_vecTexCoords * u_vecTextureScale;
 	
-	mat4 matBoneTransform = (a_vecWeights.x != 0.0) ? (u_matBones[a_vecBoneIDs.w] * a_vecWeights.w + u_matBones[a_vecBoneIDs.x] * a_vecWeights.x + u_matBones[a_vecBoneIDs.y] * a_vecWeights.y + u_matBones[a_vecBoneIDs.z] * a_vecWeights.z) : mat4(1.0);
-	gl_Position = u_matProjectionView * u_matModel * matBoneTransform * vec4(a_vecPos, 1.0);
+#if ANIMATE_TRUE
+	gl_Position = u_matProjectionView * u_matModel * (u_matBones[a_vecBoneIDs.w] * a_vecWeights.w + u_matBones[a_vecBoneIDs.x] * a_vecWeights.x + u_matBones[a_vecBoneIDs.y] * a_vecWeights.y + u_matBones[a_vecBoneIDs.z] * a_vecWeights.z) * vec4(a_vecPos, 1.0);
+#else // ANIMATE_TRUE
+	gl_Position = u_matProjectionView * u_matModel * vec4(a_vecPos, 1.0);
+#endif // ANIMATE_TRUE
 }

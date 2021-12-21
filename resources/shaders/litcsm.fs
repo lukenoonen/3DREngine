@@ -50,7 +50,7 @@ uniform bool u_bUseNormal;
 uniform sampler2D u_sNormal;
 uniform float u_flShininess;
 #if SHADOW_TRUE
-uniform sampler2DShadow u_sShadowMap[4];
+uniform sampler2DShadow u_sShadowMap;
 #endif // SHADOW_TRUE
 
 out vec4 v_vecFragColor;
@@ -92,7 +92,7 @@ void main()
 			
 			flShadow = 0.0f;
 			for (int i = 0; i < SHADOW_SAMPLES; i++)
-				flShadow += texture(u_sShadowMap[0], vec3(vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepth));
+				flShadow += texture(u_sShadowMap, vec3((vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi)) * vec2(0.25f, 1.0f), flAdjustedShadowMapDepth));
 			
 			flShadow *= SHADOW_SAMPLES_INV_F;
 			
@@ -103,7 +103,7 @@ void main()
 				
 				float flShadowFar = 0.0f;
 				for (int i = 0; i < SHADOW_SAMPLES; i++)
-					flShadowFar += texture(u_sShadowMap[1], vec3(vecAdjustedShadowMapCoordsFar + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepthFar));
+					flShadowFar += texture(u_sShadowMap, vec3((vecAdjustedShadowMapCoordsFar + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi)) * vec2(0.25f, 1.0f) + vec2(0.25f, 0.0f), flAdjustedShadowMapDepthFar));
 				
 				flShadowFar *= SHADOW_SAMPLES_INV_F;
 				
@@ -117,7 +117,7 @@ void main()
 			
 			flShadow = 0.0f;
 			for (int i = 0; i < SHADOW_SAMPLES; i++)
-				flShadow += texture(u_sShadowMap[1], vec3(vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepth));
+				flShadow += texture(u_sShadowMap, vec3((vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi)) * vec2(0.25f, 1.0f) + vec2(0.25f, 0.0f), flAdjustedShadowMapDepth));
 			
 			flShadow *= SHADOW_SAMPLES_INV_F;
 			
@@ -128,7 +128,7 @@ void main()
 				
 				float flShadowFar = 0.0f;
 				for (int i = 0; i < SHADOW_SAMPLES; i++)
-					flShadowFar += texture(u_sShadowMap[2], vec3(vecAdjustedShadowMapCoordsFar + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepthFar));
+					flShadowFar += texture(u_sShadowMap, vec3((vecAdjustedShadowMapCoordsFar + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi)) * vec2(0.25f, 1.0f) + vec2(0.5f, 0.0f), flAdjustedShadowMapDepthFar));
 				
 				flShadowFar *= SHADOW_SAMPLES_INV_F;
 				
@@ -142,7 +142,7 @@ void main()
 			
 			flShadow = 0.0f;
 			for (int i = 0; i < SHADOW_SAMPLES; i++)
-				flShadow += texture(u_sShadowMap[2], vec3(vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepth));
+				flShadow += texture(u_sShadowMap, vec3((vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi)) * vec2(0.25f, 1.0f) + vec2(0.5f, 0.0f), flAdjustedShadowMapDepth));
 			
 			flShadow *= SHADOW_SAMPLES_INV_F;
 			
@@ -153,7 +153,7 @@ void main()
 				
 				float flShadowFar = 0.0f;
 				for (int i = 0; i < SHADOW_SAMPLES; i++)
-					flShadowFar += texture(u_sShadowMap[3], vec3(vecAdjustedShadowMapCoordsFar + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepthFar));
+					flShadowFar += texture(u_sShadowMap, vec3((vecAdjustedShadowMapCoordsFar + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi)) * vec2(0.25f, 1.0f) + vec2(0.75f, 0.0f), flAdjustedShadowMapDepthFar));
 				
 				flShadowFar *= SHADOW_SAMPLES_INV_F;
 				
@@ -167,7 +167,7 @@ void main()
 			
 			flShadow = 0.0f;
 			for (int i = 0; i < SHADOW_SAMPLES; i++)
-				flShadow += texture(u_sShadowMap[3], vec3(vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepth));
+				flShadow += texture(u_sShadowMap, vec3((vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi)) * vec2(0.25f, 1.0f) + vec2(0.75f, 0.0f), flAdjustedShadowMapDepth));
 			
 			flShadow *= SHADOW_SAMPLES_INV_F;
 		}
@@ -178,7 +178,7 @@ void main()
 #endif // SHADOW_TRUE
 	
 #if QUALITY_LOW
-    v_vecFragColor = vec4(vecAmbientLight + flShadow * (vecDiffuseLight), 1.0f);
+    v_vecFragColor = vec4(vecAmbientLight + flShadow * vecDiffuseLight, 1.0f);
 #else // QUALITY_LOW
     v_vecFragColor = vec4(vecAmbientLight + flShadow * (vecDiffuseLight + vecSpecularLight), 1.0f);
 #endif // QUALITY_LOW

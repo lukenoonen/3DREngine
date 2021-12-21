@@ -3,14 +3,6 @@
 #include "ShaderManager.h"
 #include "AssetManager.h"
 
-const char *g_sCSMShadowMapNames[] =
-{
-	"u_sShadowMap[0]",
-	"u_sShadowMap[1]",
-	"u_sShadowMap[2]",
-	"u_sShadowMap[3]",
-};
-
 CLitMaterial::CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, CTexture *pNormal, float flShininess, const glm::vec2 &vecTextureScale, const char *sPath ) : BaseClass( sPath )
 {
 	m_pDiffuse = pDiffuse;
@@ -88,15 +80,7 @@ void CLitMaterial::Use( void )
 
 		if (pShaderManager->GetShaderShadow() == SHADERSHADOW_TRUE)
 		{
-			if (tRenderPass == RENDERPASS_LIT_CSM)
-			{
-				for (unsigned int i = 0; i < 4; i++)
-					pShaderManager->SetValue( g_sCSMShadowMapNames[i], pRenderManager->GetShadowMapIndex( i ) );
-			}
-			else
-			{
-				pShaderManager->SetValue( "u_sShadowMap", pRenderManager->GetShadowMapIndex( 0 ) );
-			}
+			pShaderManager->SetValue( "u_sShadowMap", pRenderManager->GetShadowMapIndex() );
 		}
 	}
 	}

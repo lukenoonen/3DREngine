@@ -16,7 +16,7 @@ bool CC_Bind( CTextItem *pCommand )
 
 	return true;
 }
-CConCommand cc_bind( "bind", CC_Bind, "bind [key] [command]" );
+CConCommand cc_bind( "bind", CC_Bind );
 
 bool CC_Unbind( CTextItem *pCommand )
 {
@@ -31,7 +31,7 @@ bool CC_Unbind( CTextItem *pCommand )
 
 	return true;
 }
-CConCommand cc_unbind( "unbind", CC_Unbind, "unbind [key]" );
+CConCommand cc_unbind( "unbind", CC_Unbind );
 
 void CB_KeyboardInput( GLFWwindow *pWindow, int iKey, int iScancode, int iAction, int iMods )
 {

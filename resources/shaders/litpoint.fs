@@ -46,66 +46,16 @@ uniform bool u_bUseNormal;
 uniform sampler2D u_sNormal;
 uniform float u_flShininess;
 #if SHADOW_TRUE
-uniform sampler2DShadow u_sShadowMap;
+uniform samplerCubeShadow u_sShadowMap;
 #endif // SHADOW_TRUE
 
 out vec4 v_vecFragColor;
 
 #if SHADOW_TRUE
-vec2 GetSampleCoordinate(vec3 vecFragToLight) // OPTIMIZE / CLEAN THIS UP!!
+vec3 ToDirection(vec2 vecPolar)
 {
-	vec2 vecCoord;
-	float flSlice;
-
-	vec3 vecAbsFragToLight = abs(vecFragToLight);
-	float flMaxCoord = max(vecAbsFragToLight.x, max(vecAbsFragToLight.y, vecAbsFragToLight.z));
-	if (flMaxCoord == vecAbsFragToLight.y)
-	{
-		if (vecFragToLight.y > 0.0f)
-		{
-			flSlice = 0.0f;
-		}
-		else
-		{
-			vecFragToLight.z = -vecFragToLight.z;
-			flSlice = 2.0f;
-		}
-		vecCoord = vecFragToLight.xz / vecFragToLight.y;
-	}
-	else if (flMaxCoord == vecAbsFragToLight.x)
-	{
-		vecFragToLight.y = -vecFragToLight.y;
-		if (vecFragToLight.x > 0.0f)
-		{
-			flSlice = 1.0f;
-		}
-		else
-		{
-			vecFragToLight.z = -vecFragToLight.z;
-			flSlice = 3.0f;
-		}
-		vecCoord = vecFragToLight.yz / vecFragToLight.x;
-	}
-	else
-	{
-		vecFragToLight.x = -vecFragToLight.x;
-		if (vecFragToLight.z > 0.0f)
-		{
-			flSlice = 4.0f;
-		}
-		else
-		{
-			vecFragToLight.y = -vecFragToLight.y;
-			flSlice = 5.0f;
-		}
-		vecCoord = vecFragToLight.xy / vecFragToLight.z;
-	}
-
-	vecCoord = vecCoord * 0.5f + 0.5f;
-	vecCoord = vecCoord * (1.0f - 2.0f * u_flShadowBlurScale) + u_flShadowBlurScale;
-	vecCoord.x = vecCoord.x / 6.0f + flSlice / 6.0f;
-	
-	return vecCoord;
+	float flSinPhi = sin(vecPolar.y);
+	return vec3(cos(vecPolar.x) * flSinPhi, sin(vecPolar.x) * flSinPhi, cos(vecPolar.y));
 }
 #endif // SHADOW_TRUE
 
@@ -149,11 +99,11 @@ void main()
 #else // QUALITY_HIGH || QUALITY_ULTRA
 		float flPhi = 0.0f;
 #endif // QUALITY_HIGH || QUALITY_ULTRA
-		vec2 vecCoord = GetSampleCoordinate(-vecDelta);
+		vec2 vecPolar = vec2(atan(vecNormalizedDelta.y, vecNormalizedDelta.x), acos(vecNormalizedDelta.z));
 		float flAdjustedShadowMapDepth = flDistance / u_flLightMaxDistance - bias(flNormalDirectionDot);
 		flShadow = 0.0f;
 		for (int i = 0; i < SHADOW_SAMPLES; i++)
-			flShadow += texture(u_sShadowMap, vec3(vecCoord + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi) * vec2(0.16666666666f, 1.0f), flAdjustedShadowMapDepth));
+			flShadow += texture(u_sShadowMap, vec4(ToDirection(vecPolar + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi)).xzy, flAdjustedShadowMapDepth));
 		
 		flShadow *= SHADOW_SAMPLES_INV_F;
 		

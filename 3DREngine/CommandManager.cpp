@@ -2,20 +2,6 @@
 #include "GlobalManager.h"
 #include "FileManager.h"
 
-bool CC_Exec( CTextItem *pCommand )
-{
-	if (pCommand->GetTextTermCount() < 2)
-		return false;
-
-	char *sConfigContents;
-	if (!pFileManager->ReadEntireFile( pCommand->GetTextTerm( 1 )->GetString(), sConfigContents ))
-		return false;
-
-	pCommandManager->ProcessCommand( sConfigContents );
-	return true;
-}
-CConCommand cc_exec( "exec", CC_Exec, "exec (file name)" );
-
 /*if (command.size() == 0)
 {
 	char sFilename[MAX_PATH];
@@ -40,10 +26,66 @@ else
 	pFileManager->Load( command[0] );
 }*/
 
-CBaseConCommand::CBaseConCommand( const char *sName, const char *sHelpString )
+bool CC_Exec( CTextItem *pCommand )
+{
+	if (pCommand->GetTextTermCount() < 2)
+		return false;
+
+	char *sConfigContents;
+	if (!pFileManager->ReadEntireFile( pCommand->GetTextTerm( 1 )->GetString(), sConfigContents ))
+		return false;
+
+	pCommandManager->ProcessCommand( sConfigContents );
+	return true;
+}
+CConCommand cc_exec( "exec", CC_Exec );
+
+CBaseConCommand::CBaseConCommand( const char *sName )
 {
 	m_sName = sName;
-	m_sHelpString = sHelpString;
+
+	m_fnCommandCallback = NULL;
+	m_fnCommandCallbackVoid = NULL;
+	
+	m_uiFrameLastDispatched = 0;
+
+	CCommandManager::AddCommand( this );
+}
+
+CBaseConCommand::CBaseConCommand( const char *sName, FnCommandCallback_t fnCommandCallback )
+{
+	m_sName = sName;
+
+	m_fnCommandCallback = fnCommandCallback;
+	m_fnCommandCallbackVoid = NULL;
+
+	m_uiFrameLastDispatched = 0;
+
+	CCommandManager::AddCommand( this );
+}
+
+CBaseConCommand::CBaseConCommand( const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid )
+{
+	m_sName = sName;
+
+	m_fnCommandCallback = NULL;
+	m_fnCommandCallbackVoid = fnCommandCallbackVoid;
+
+	m_uiFrameLastDispatched = 0;
+
+	CCommandManager::AddCommand( this );
+}
+
+bool CBaseConCommand::Dispatch( CTextItem *pTextInformation )
+{
+	m_uiFrameLastDispatched = pGlobalValues->GetFrameCount();
+
+	if (m_fnCommandCallbackVoid)
+		return !(*m_fnCommandCallbackVoid)();
+	else if (m_fnCommandCallback)
+		return (*m_fnCommandCallback)(pTextInformation);
+
+	return true;
 }
 
 const char *CBaseConCommand::GetName( void )
@@ -51,43 +93,40 @@ const char *CBaseConCommand::GetName( void )
 	return m_sName;
 }
 
-void CBaseConCommand::Dispatch( CTextItem *pTextInformation )
-{
-
-}
-
-void CBaseConCommand::OnDispatch( void )
-{
-	m_uiFrameLastDispatched = pGlobalValues->GetFrameCount();
-}
-
-void CBaseConCommand::Help( void ) const
-{
-	//if (m_sHelpString)
-	//	pHUDManager->AddConsoleEntry( FONTTYPE_NORMAL, c_red, "'%s' Usage: %s", m_sName, m_sHelpString );
-}
-
 bool CBaseConCommand::WasDispatched( void ) const
 {
 	return m_uiFrameLastDispatched == pGlobalValues->GetFrameCount();
 }
 
-CConFloat::CConFloat( const char *sName, float flDefaultValue, const char *sHelpString /*= NULL*/ ) : BaseClass( sName, sHelpString )
+CConFloat::CConFloat( float flDefaultValue, const char *sName ) : BaseClass( sName )
 {
 	m_flValue = flDefaultValue;
-
-	CCommandManager::AddCommand( this );
 }
 
-void CConFloat::Dispatch( CTextItem *pTextInformation )
+CConFloat::CConFloat( float flDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+{
+	m_flValue = flDefaultValue;
+}
+
+CConFloat::CConFloat( float flDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+{
+	m_flValue = flDefaultValue;
+}
+
+bool CConFloat::Dispatch( CTextItem *pTextInformation )
 {
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsFloatFormat())
+	{
+		float flPrevValue = m_flValue;
 		m_flValue = pTextTerm->GetFloat();
-	else
-		Help();
+		if (BaseClass::Dispatch( pTextInformation ))
+			return true;
 
-	OnDispatch();
+		m_flValue = flPrevValue;
+	}
+
+	return false;
 }
 
 float CConFloat::GetValue( void )
@@ -95,22 +134,35 @@ float CConFloat::GetValue( void )
 	return m_flValue;
 }
 
-CConInt::CConInt( const char *sName, int iDefaultValue, const char *sHelpString /*= NULL*/ ) : BaseClass( sName, sHelpString )
+CConInt::CConInt( int iDefaultValue, const char *sName ) : BaseClass( sName )
 {
 	m_iValue = iDefaultValue;
-
-	CCommandManager::AddCommand( this );
 }
 
-void CConInt::Dispatch( CTextItem *pTextInformation )
+CConInt::CConInt( int iDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+{
+	m_iValue = iDefaultValue;
+}
+
+CConInt::CConInt( int iDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+{
+	m_iValue = iDefaultValue;
+}
+
+bool CConInt::Dispatch( CTextItem *pTextInformation )
 {
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsIntFormat())
+	{
+		int iPrevValue = m_iValue;
 		m_iValue = pTextTerm->GetInt();
-	else
-		Help();
+		if (BaseClass::Dispatch( pTextInformation ))
+			return true;
 
-	OnDispatch();
+		m_iValue = iPrevValue;
+	}
+
+	return false;
 }
 
 int CConInt::GetValue( void )
@@ -118,22 +170,35 @@ int CConInt::GetValue( void )
 	return m_iValue;
 }
 
-CConBool::CConBool( const char *sName, bool bDefaultValue, const char *sHelpString /*= NULL*/ ) : BaseClass( sName, sHelpString )
+CConBool::CConBool( bool bDefaultValue, const char *sName ) : BaseClass( sName )
 {
 	m_bValue = bDefaultValue;
-
-	CCommandManager::AddCommand( this );
 }
 
-void CConBool::Dispatch( CTextItem *pTextInformation )
+CConBool::CConBool( bool bDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+{
+	m_bValue = bDefaultValue;
+}
+
+CConBool::CConBool( bool bDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+{
+	m_bValue = bDefaultValue;
+}
+
+bool CConBool::Dispatch( CTextItem *pTextInformation )
 {
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsBoolFormat())
+	{
+		bool bPrevValue = m_bValue;
 		m_bValue = pTextTerm->GetBool();
-	else
-		Help();
+		if (BaseClass::Dispatch( pTextInformation ))
+			return true;
 
-	OnDispatch();
+		m_bValue = bPrevValue;
+	}
+
+	return false;
 }
 
 bool CConBool::GetValue( void )
@@ -141,22 +206,35 @@ bool CConBool::GetValue( void )
 	return m_bValue;
 }
 
-CConVec2::CConVec2( const char *sName, const glm::vec2 &bDefaultValue, const char *sHelpString /*= NULL*/ ) : BaseClass( sName, sHelpString )
+CConVec2::CConVec2( const glm::vec2 &vecDefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_vecValue = bDefaultValue;
-
-	CCommandManager::AddCommand( this );
+	m_vecValue = vecDefaultValue;
 }
 
-void CConVec2::Dispatch( CTextItem *pTextInformation )
+CConVec2::CConVec2( const glm::vec2 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+CConVec2::CConVec2( const glm::vec2 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+bool CConVec2::Dispatch( CTextItem *pTextInformation )
 {
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsVec2Format())
+	{
+		glm::vec2 vecPrevValue = m_vecValue;
 		m_vecValue = pTextTerm->GetVec2();
-	else
-		Help();
+		if (BaseClass::Dispatch( pTextInformation ))
+			return true;
 
-	OnDispatch();
+		m_vecValue = vecPrevValue;
+	}
+
+	return false;
 }
 
 const glm::vec2 &CConVec2::GetValue( void )
@@ -164,22 +242,35 @@ const glm::vec2 &CConVec2::GetValue( void )
 	return m_vecValue;
 }
 
-CConVec3::CConVec3( const char *sName, const glm::vec3 &bDefaultValue, const char *sHelpString /*= NULL*/ ) : BaseClass( sName, sHelpString )
+CConVec3::CConVec3( const glm::vec3 &vecDefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_vecValue = bDefaultValue;
-
-	CCommandManager::AddCommand( this );
+	m_vecValue = vecDefaultValue;
 }
 
-void CConVec3::Dispatch( CTextItem *pTextInformation )
+CConVec3::CConVec3( const glm::vec3 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+CConVec3::CConVec3( const glm::vec3 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+bool CConVec3::Dispatch( CTextItem *pTextInformation )
 {
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsVec3Format())
+	{
+		glm::vec3 vecPrevValue = m_vecValue;
 		m_vecValue = pTextTerm->GetVec3();
-	else
-		Help();
+		if (BaseClass::Dispatch( pTextInformation ))
+			return true;
 
-	OnDispatch();
+		m_vecValue = vecPrevValue;
+	}
+
+	return false;
 }
 
 const glm::vec3 &CConVec3::GetValue( void )
@@ -187,22 +278,35 @@ const glm::vec3 &CConVec3::GetValue( void )
 	return m_vecValue;
 }
 
-CConVec4::CConVec4( const char *sName, const glm::vec4 &bDefaultValue, const char *sHelpString /*= NULL*/ ) : BaseClass( sName, sHelpString )
+CConVec4::CConVec4( const glm::vec4 &vecDefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_vecValue = bDefaultValue;
-
-	CCommandManager::AddCommand( this );
+	m_vecValue = vecDefaultValue;
 }
 
-void CConVec4::Dispatch( CTextItem *pTextInformation )
+CConVec4::CConVec4( const glm::vec4 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+CConVec4::CConVec4( const glm::vec4 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+bool CConVec4::Dispatch( CTextItem *pTextInformation )
 {
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsVec4Format())
+	{
+		glm::vec4 vecPrevValue = m_vecValue;
 		m_vecValue = pTextTerm->GetVec4();
-	else
-		Help();
+		if (BaseClass::Dispatch( pTextInformation ))
+			return true;
 
-	OnDispatch();
+		m_vecValue = vecPrevValue;
+	}
+
+	return false;
 }
 
 const glm::vec4 &CConVec4::GetValue( void )
@@ -210,36 +314,164 @@ const glm::vec4 &CConVec4::GetValue( void )
 	return m_vecValue;
 }
 
-CConCommand::CConCommand(const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid, const char *sHelpString /*= NULL*/) : BaseClass( sName, sHelpString )
+CConIVec2::CConIVec2( const glm::ivec2 &vecDefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_fnCommandCallbackVoid = fnCommandCallbackVoid;
-	m_fnCommandCallback = NULL;
-	
-	CCommandManager::AddCommand( this );
+	m_vecValue = vecDefaultValue;
 }
 
-CConCommand::CConCommand( const char *sName, FnCommandCallback_t fnCommandCallback, const char *sHelpString /*= NULL*/ ) : BaseClass( sName, sHelpString )
+CConIVec2::CConIVec2( const glm::ivec2 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
 {
-	m_fnCommandCallbackVoid = NULL;
-	m_fnCommandCallback = fnCommandCallback;
-
-	CCommandManager::AddCommand( this );
+	m_vecValue = vecDefaultValue;
 }
 
-void CConCommand::Dispatch( CTextItem *pTextInformation )
+CConIVec2::CConIVec2( const glm::ivec2 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
 {
-	if (m_fnCommandCallbackVoid)
+	m_vecValue = vecDefaultValue;
+}
+
+bool CConIVec2::Dispatch( CTextItem *pTextInformation )
+{
+	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
+	if (pTextTerm && pTextTerm->IsIVec2Format())
 	{
-		if (!(*m_fnCommandCallbackVoid)())
-			Help();
-	}
-	else if (m_fnCommandCallback)
-	{
-		if (!(*m_fnCommandCallback)(pTextInformation))
-			Help();
+		glm::ivec2 vecPrevValue = m_vecValue;
+		m_vecValue = pTextTerm->GetIVec2();
+		if (BaseClass::Dispatch( pTextInformation ))
+			return true;
+
+		m_vecValue = vecPrevValue;
 	}
 
-	OnDispatch();
+	return false;
+}
+
+const glm::ivec2 &CConIVec2::GetValue( void )
+{
+	return m_vecValue;
+}
+
+CConIVec3::CConIVec3( const glm::ivec3 &vecDefaultValue, const char *sName ) : BaseClass( sName )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+CConIVec3::CConIVec3( const glm::ivec3 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+CConIVec3::CConIVec3( const glm::ivec3 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+bool CConIVec3::Dispatch( CTextItem *pTextInformation )
+{
+	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
+	if (pTextTerm && pTextTerm->IsIVec3Format())
+	{
+		glm::ivec3 vecPrevValue = m_vecValue;
+		m_vecValue = pTextTerm->GetIVec3();
+		if (BaseClass::Dispatch( pTextInformation ))
+			return true;
+
+		m_vecValue = vecPrevValue;
+	}
+
+	return false;
+}
+
+const glm::ivec3 &CConIVec3::GetValue( void )
+{
+	return m_vecValue;
+}
+
+CConIVec4::CConIVec4( const glm::ivec4 &vecDefaultValue, const char *sName ) : BaseClass( sName )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+CConIVec4::CConIVec4( const glm::ivec4 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+CConIVec4::CConIVec4( const glm::ivec4 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+{
+	m_vecValue = vecDefaultValue;
+}
+
+bool CConIVec4::Dispatch( CTextItem *pTextInformation )
+{
+	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
+	if (pTextTerm && pTextTerm->IsIVec4Format())
+	{
+		glm::ivec4 vecPrevValue = m_vecValue;
+		m_vecValue = pTextTerm->GetIVec4();
+		if (BaseClass::Dispatch( pTextInformation ))
+			return true;
+
+		m_vecValue = vecPrevValue;
+	}
+
+	return false;
+}
+
+const glm::ivec4 &CConIVec4::GetValue( void )
+{
+	return m_vecValue;
+}
+
+CConString::CConString( const char *sDefaultValue, const char *sName ) : BaseClass( sName )
+{
+	m_sValue = UTIL_stredit( sDefaultValue );
+}
+
+CConString::CConString( const char *sDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+{
+	m_sValue = UTIL_stredit( sDefaultValue );
+}
+
+CConString::CConString( const char *sDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+{
+	m_sValue = UTIL_stredit( sDefaultValue );
+}
+
+CConString::~CConString()
+{
+	delete[] m_sValue;
+}
+
+bool CConString::Dispatch( CTextItem *pTextInformation )
+{
+	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
+	if (pTextTerm)
+	{
+		char *sPrevValue = m_sValue;
+		m_sValue = UTIL_stredit( pTextTerm->GetString() );
+		if (BaseClass::Dispatch( pTextInformation ))
+			return true;
+
+		delete[] m_sValue;
+		m_sValue = sPrevValue;
+	}
+
+	return false;
+}
+
+const char *CConString::GetValue( void )
+{
+	return m_sValue;
+}
+
+CConCommand::CConCommand(const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+{
+
+}
+
+CConCommand::CConCommand( const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+{
+
 }
 
 std::vector<CBaseConCommand *> *CCommandManager::s_pCommands = NULL;

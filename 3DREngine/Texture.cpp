@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "AssetManager.h"
 
 CTexture::CTexture( unsigned int uiID, const char *sPath ) : BaseClass( sPath )
 {
@@ -7,6 +8,8 @@ CTexture::CTexture( unsigned int uiID, const char *sPath ) : BaseClass( sPath )
 
 CTexture::~CTexture()
 {
+	pAssetManager->UnbindTexture( m_uiID );
+
 	glDeleteTextures( 1, &m_uiID );
 }
 

@@ -1,3 +1,11 @@
-1. Implement animation blending/transitions
-2. Change dirlight to be limited to a square (as to optimize) for certain situations
-3. 
+1. Finish up any unfinished code
+2. Make render priority a non-const variable
+3. Make render method in render manager
+4. Clean
+	a. Think functions
+	b. Initialization functions
+	c. Destruction functions
+	d. Entity-spanning virtual functions
+	e. Keep testing and cleaning everything as needed
+5. Finish up anything which needs to be finished to run (no new features, just getting everything working again after this restructuring)
+6. Consider best methods to do planar reflections

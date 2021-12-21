@@ -1,4 +1,5 @@
 #include "BaseTransform.h"
+#include "GlobalManager.h"
 
 CBaseTransform::CBaseTransform( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( bShouldDraw, bActive )
 {
@@ -11,8 +12,10 @@ CBaseTransform::CBaseTransform( const glm::vec3 &vecPosition, const glm::vec3 &v
 	m_bParentRotationPosition = true;
 	m_bParentScale = true;
 	m_bParentScalePosition = true;
-
-	m_bTransformUpdated = true;
+	
+	m_uiLastFramePositionUpdated = pGlobalValues->GetFrameCount();
+	m_uiLastFrameRotationUpdated = pGlobalValues->GetFrameCount();
+	m_uiLastFrameScaleUpdated = pGlobalValues->GetFrameCount();
 }
 
 void CBaseTransform::SetPosition( const glm::vec3 &vecPosition )
@@ -41,8 +44,8 @@ void CBaseTransform::AddPosition( const glm::vec3 &vecPosition )
 				m_pChildren[i]->AddPosition( vecPosition );
 		}
 	}
-
-	m_bTransformUpdated = true;
+	
+	m_uiLastFramePositionUpdated = pGlobalValues->GetFrameCount();
 }
 
 void CBaseTransform::AddRotation( const glm::quat &qRotation )
@@ -73,8 +76,8 @@ void CBaseTransform::AddRotation( const glm::quat &qRotation )
 	{
 		m_qRotation = m_qRotation * qRotation;
 	}
-
-	m_bTransformUpdated = true;
+	
+	m_uiLastFrameRotationUpdated = pGlobalValues->GetFrameCount();
 }
 
 void CBaseTransform::AddScale( const glm::vec3 &vecScale )
@@ -95,7 +98,7 @@ void CBaseTransform::AddScale( const glm::vec3 &vecScale )
 		}
 	}
 
-	m_bTransformUpdated = true;
+	m_uiLastFrameScaleUpdated = pGlobalValues->GetFrameCount();
 }
 
 const glm::vec3 &CBaseTransform::GetPosition( void ) const
@@ -196,12 +199,17 @@ bool CBaseTransform::ParentScalePosition( void ) const
 	return m_bParentScalePosition;
 }
 
-bool CBaseTransform::HasTransformUpdated( void ) const
+bool CBaseTransform::PositionUpdated( void ) const
 {
-	return m_bTransformUpdated;
+	return m_uiLastFramePositionUpdated == pGlobalValues->GetFrameCount();
 }
 
-void CBaseTransform::ResetTransformUpdated( void )
+bool CBaseTransform::RotationUpdated( void ) const
 {
-	m_bTransformUpdated = false;
+	return m_uiLastFrameRotationUpdated == pGlobalValues->GetFrameCount();
+}
+
+bool CBaseTransform::ScaleUpdated( void ) const
+{
+	return m_uiLastFrameScaleUpdated == pGlobalValues->GetFrameCount();
 }

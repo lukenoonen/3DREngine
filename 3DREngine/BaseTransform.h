@@ -39,8 +39,9 @@ public:
 	bool ParentScale( void ) const;
 	bool ParentScalePosition( void ) const;
 
-	bool HasTransformUpdated( void ) const;
-	void ResetTransformUpdated( void );
+	bool PositionUpdated( void ) const;
+	bool RotationUpdated( void ) const;
+	bool ScaleUpdated( void ) const;
 
 private:
 	glm::vec3 m_vecPosition;
@@ -56,7 +57,9 @@ private:
 	bool m_bParentScale;
 	bool m_bParentScalePosition;
 
-	bool m_bTransformUpdated;
+	unsigned int m_uiLastFramePositionUpdated;
+	unsigned int m_uiLastFrameRotationUpdated;
+	unsigned int m_uiLastFrameScaleUpdated;
 };
 
 #endif // BASETRANSFORM_H

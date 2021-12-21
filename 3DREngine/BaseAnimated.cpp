@@ -19,7 +19,7 @@ void CBaseAnimated::PostThink( void )
 		{
 			for (unsigned int i = 0; i < (unsigned int)m_flAnimationTransitionFactors.size(); i++)
 			{
-				m_flAnimationTransitionFactors[i] = pGlobalValues->GetFrameTime() / m_flAnimationTransitionTimes[i];
+				m_flAnimationTransitionFactors[i] += pGlobalValues->GetFrameTime() / m_flAnimationTransitionTimes[i];
 				if (m_flAnimationTransitionFactors[i] >= 1.0f)
 				{
 					for (unsigned int j = 0; j <= i; j++)
@@ -38,7 +38,7 @@ void CBaseAnimated::PostThink( void )
 				m_flAnimationTimes[i] = fmod( m_flAnimationTimes[i] + pGlobalValues->GetFrameTime() * m_flAnimationTimeScale, m_pAnimations[i]->GetTime() );
 
 			pModel->UpdateAnimation( m_matBoneTransforms, m_pAnimations, m_flAnimationTimes, m_flAnimationTransitionFactors );
-		}
+		}	
 	}
 
 	BaseClass::PostThink();

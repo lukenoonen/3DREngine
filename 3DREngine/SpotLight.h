@@ -2,18 +2,25 @@
 #define SPOTLIGHT_H
 
 #include "Global.h"
-#include "PointLight.h"
+#include "BaseLight.h"
+#include "SpotShadowCamera.h"
 
-class CSpotLight : public CPointLight
+class CSpotLight : public CBaseLight
 {
 public:
-	DECLARE_CLASS( CSpotLight, CPointLight );
+	DECLARE_CLASS( CSpotLight, CBaseLight );
 
-	CSpotLight( float flCutoff, float flOuterCutoff, float flConstant, float flLinear, float flQuadratic, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CSpotLight( float flCutoff, float flOuterCutoff, float flConstant, float flLinear, float flQuadratic, CSpotShadowCamera *pSpotShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
 
 	virtual void ActivateLight( void );
 
 private:
+	float m_flConstant;
+	float m_flLinear;
+	float m_flQuadratic;
+
+	float m_flMaxRadius;
+
 	float m_flCutoff;
 	float m_flOuterCutoff;
 };

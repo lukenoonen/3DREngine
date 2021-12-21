@@ -99,7 +99,7 @@ private:
 	char *ReadShaderFile( const char *sPath );
 
 private:
-	bool m_bSuccess;
+	bool m_bSuccess;	
 	bool m_bHasQualityPreprocessor;
 	bool m_bHasAnimatePreprocessor;
 	bool m_bHasShadowPreprocessor;

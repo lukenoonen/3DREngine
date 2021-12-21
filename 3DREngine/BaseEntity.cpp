@@ -35,6 +35,11 @@ bool CBaseEntity::IsDrawable( void ) const
 	return false;
 }
 
+bool CBaseEntity::IsCamera( void ) const
+{
+	return false;
+}
+
 bool CBaseEntity::IsActive( void ) const
 {
 	return m_bActive;

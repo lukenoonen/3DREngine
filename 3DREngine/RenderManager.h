@@ -4,6 +4,20 @@
 #include "Global.h"
 #include "BaseDrawable.h"
 #include "BaseLight.h"
+#include "BaseCamera.h"
+#include "CommandManager.h"
+
+extern CConIVec2 cv_r_windowsize;
+extern CConBool cb_r_fullscreen;
+extern CConBool cb_r_vsync;
+extern CConFloat cf_r_fov;
+extern CConFloat cf_r_height;
+extern CConFloat cf_r_near;
+extern CConFloat cf_r_far;
+extern CConInt ci_r_msaalevel;
+extern CConFloat cf_r_vcsizefactor;
+extern CConFloat cf_r_vcmsaalevelfactor;
+extern CConString cs_r_windowname;
 
 enum RenderPass_t : unsigned char
 {
@@ -29,68 +43,47 @@ public:
 	~CRenderManager();
 
 	void OnLoop( void );
-	void DrawShadows( void );
+
 	void DrawEntities( void );
+	void DrawNonLitEntities( void );
 	void DrawLitEntities( void );
-	void DrawShadowMap( unsigned int uiDepthMapFBO );
+
+	RenderPass_t GetRenderPass( void ) const;
+	void SetRenderPass( RenderPass_t tRenderPass );
+
+	GLFWmonitor *GetMonitor( void );
+	GLFWwindow *GetWindow( void );
 
 	void AddEntity( CBaseEntity *pEntity );
 	void RemoveEntity( CBaseEntity *pEntity );
 	void ClearEntities( void );
 
-	void SetWindowSize( const glm::ivec2 &ivecWindowSize );
-	void SetFullscreen( bool bFullscreen );
-	void SetVSync( bool bVSync );
-	void SetMSAALevel( unsigned int uiMSAALevel );
-	void SetWindowName( const char *sName );
 	void SetFrameBuffer( unsigned int uiFrameBuffer );
 	void SetDepthFunc( unsigned int uiDepthFunc );
 	void SetBlend( bool bBlend );
 	void SetViewportSize( const glm::ivec2 &ivecViewportSize );
 	void SetViewportOffset( const glm::ivec2 &ivecViewportOffset );
 
-	const glm::ivec2 &GetWindowSize( void );
-	float GetWindowSizeRatio( void );
-
-	GLFWwindow *GetWindow( void );
-
-	void CreateShadowMapFramebuffer( unsigned int uiCount, unsigned int *uiShadowMapFBO, unsigned int *uiShadowMap, int iShadowSizeX, int iShadowSizeY );
-	void DestroyShadowMapFrameBuffer( unsigned int uiCount, unsigned int *uiShadowMapFBO, unsigned int *uiShadowMap );
-	int GetShadowMapIndex( unsigned iIndex ) const;
-	void SetShadowMapIndex( int iShadowMapIndex, unsigned int iIndex );
-
-	RenderPass_t GetRenderPass( void ) const;
-	void SetRenderPass( RenderPass_t tRenderPass );
+	int GetShadowMapIndex( void ) const;
+	void SetShadowMapIndex( int iShadowMapIndex );
 
 private:
-	void CreateMSAABuffers( void );
-	void DestroyMSAABuffers( void );
+	RenderPass_t m_tRenderPass;
 
-private:
 	GLFWmonitor *m_pMonitor;
 	GLFWwindow *m_pWindow;
 
 	std::vector<CBaseLight *> m_pLightEntities;
 	std::vector<CBaseDrawable *> m_pDrawEntities;
+	std::vector<CBaseCamera *> m_pCameraEntities;
 
-	glm::ivec2 m_ivecWindowSize;
-	bool m_bFullscreen;
-	bool m_bVSync;
-	unsigned int m_uiMSAALevel;
-	char *m_sWindowName;
 	unsigned int m_uiFrameBuffer;
 	unsigned int m_uiDepthFunc;
 	bool m_bBlend;
 	glm::ivec2 m_ivecViewportSize;
 	glm::ivec2 m_ivecViewportOffset;
 
-	int m_iShadowMapIndex[4];
-
-	RenderPass_t m_tRenderPass;
-
-	unsigned int m_uiFBO;
-	unsigned m_uiTextureColorBufferMultiSampled;
-	unsigned int m_uiRBO;
+	int m_iShadowMapIndex;
 };
 
 #endif // RENDERMANAGER_H

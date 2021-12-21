@@ -991,7 +991,7 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 		}
 
 		glGenTextures( 1, &uiTextureID );
-		glBindTexture( GL_TEXTURE_2D, uiTextureID );
+		glBindTexture( GL_TEXTURE_CUBE_MAP, uiTextureID );
 		for (unsigned int i = 0; i < 6; i++)
 			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, tInternalFormat[i], uiWidth[i], uiHeight[i], 0, tFormat[i], GL_UNSIGNED_BYTE, pData[i] );
 
