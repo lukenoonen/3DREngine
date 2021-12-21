@@ -1,6 +1,7 @@
 #include "CSMShadowCamera.h"
 #include "CommandManager.h"
 #include "Player.h"
+#include "BasePlayerCamera.h"
 #include "EntityManager.h"
 #include "RenderManager.h"
 #include "ShaderManager.h"
@@ -31,8 +32,8 @@ CCSMShadowCamera::~CCSMShadowCamera()
 
 void CCSMShadowCamera::PostThink()
 {
-	CPlayer *pPlayer = pEntityManager->GetPlayer();
-	bool bCalculateTotal = pPlayer->PositionUpdated() || pPlayer->RotationUpdated() || RotationUpdated() || cf_r_vcsizefactor.WasDispatched();
+	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetPlayer()->GetCamera();
+	bool bCalculateTotal = pPlayerCamera->PositionUpdated() || pPlayerCamera->RotationUpdated() || RotationUpdated() || cf_r_vcsizefactor.WasDispatched();
 
 	if (cf_r_near.WasDispatched())
 	{
@@ -149,15 +150,15 @@ void CCSMShadowCamera::CalculateRadius( void )
 
 void CCSMShadowCamera::CalculateTotal( void )
 {
-	CPlayer *pPlayer = pEntityManager->GetPlayer();
+	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetPlayer()->GetCamera();
 
 	float flShadowSize = (float)GetSize().y;
 
-	glm::mat4 matLightView = glm::lookAt( pPlayer->GetPosition() - GetRotation() * g_vecFront, pPlayer->GetPosition(), GetRotation() * g_vecUp );
+	glm::mat4 matLightView = glm::lookAt( pPlayerCamera->GetPosition() - GetRotation() * g_vecFront, pPlayerCamera->GetPosition(), GetRotation() * g_vecUp );
 
 	for (unsigned int i = 0; i < 4; i++)
 	{
-		glm::vec3 vecFrustumCenter = pPlayer->GetPosition() + pPlayer->GetRotation() * g_vecFront * ((m_flCascadeEnd[i + 1] + m_flCascadeEnd[i]) * 0.5f);
+		glm::vec3 vecFrustumCenter = pPlayerCamera->GetPosition() + pPlayerCamera->GetRotation() * g_vecFront * ((m_flCascadeEnd[i + 1] + m_flCascadeEnd[i]) * 0.5f);
 		glm::vec3 maxOrtho = glm::vec3( matLightView * glm::vec4( vecFrustumCenter, 1.0f ) ) + glm::vec3( m_flRadius[i] );
 		glm::vec3 minOrtho = glm::vec3( matLightView * glm::vec4( vecFrustumCenter, 1.0f ) ) - glm::vec3( m_flRadius[i] );
 

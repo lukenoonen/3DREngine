@@ -31,9 +31,14 @@ CConCommand cc_animatedproptest( "animatedproptest", CC_AnimatedPropTest );
 
 void CreateLevel( void )
 {
-	CPerspectivePlayerCamera *pPlayerCamera = new CPerspectivePlayerCamera( 1, glm::vec3( 0.0f, 0.0f, 1.0f ), g_vecZero, g_vecOne, true, true );
+	CPerspectivePlayerCamera *pPlayerCamera = new CPerspectivePlayerCamera( 1, g_vecZero, g_vecZero, g_vecOne, true, true );
+	CPlayer *pPlayer = new CPlayer( pPlayerCamera, glm::vec3( 0.0f, 0.0f, -100.0f ), g_vecZero, g_vecOne, true, true );
+	pPlayerCamera->SetPosition( pPlayer->GetPosition() );
+	pPlayerCamera->SetRotation( pPlayer->GetRotation() );
+	pPlayerCamera->SetScale( pPlayer->GetScale() );
+	pPlayerCamera->SetParent( pPlayer );
 	pEntityManager->AddEntity( pPlayerCamera );
-	pEntityManager->AddEntity( new CPlayer( pPlayerCamera, glm::vec3( 0.0f, 0.0f, 1.0f ), g_vecZero, g_vecOne, true, true ) );
+	pEntityManager->AddEntity( pPlayer );
 	pEntityManager->AddEntity( new CSkybox( "skybox.3mt", true, true ) );
 	pEntityManager->AddEntity( new CStaticProp( "plane_brick.3md", glm::vec3( 0.0f, 0.0f, -2.0f ), g_vecZero, g_vecOne * 500.0f, true, true ) );
 	pEntityManager->AddEntity( new CStaticProp( "cube_brick.3md", glm::vec3( 0.0f, 20.0f, -2.0f ), g_vecZero, glm::vec3( 50.0f, 2.0f, 50.0f ), true, true ) );
@@ -63,7 +68,7 @@ void CreateLevel( void )
 	pEntityManager->AddEntity( new CCSMLight( pCSMShadowCamera, g_vecOne * 0.1f, g_vecOne * 0.9f, g_vecOne * 0.4f, g_vecZero, glm::radians( glm::vec3( -70.0f, 0.0f, 30.0f ) ), g_vecOne, true, true ) );
 	
 
-	CPointShadowCamera *pPointShadowCamera = new CPointShadowCamera( 0.1f, (-0.09f + std::sqrtf( 0.09f * 0.09f - 4.0f * 0.032f * (1.0f - 100.0f * std::fmaxf( std::fmaxf( 1.2f, 1.2f ), 1.2f )) )) / (2.0f * 0.032f), 60.0f, 80.0f, 0.04f, 512, 0, glm::vec3( 0.0f, 0.0f, 1.0f ), g_vecZero, g_vecOne, true, true);
+	CPointShadowCamera *pPointShadowCamera = new CPointShadowCamera( 0.1f, (-0.09f + std::sqrtf( 0.09f * 0.09f - 4.0f * 0.032f * (1.0f - 100.0f * std::fmaxf( std::fmaxf( 1.2f, 1.2f ), 1.2f )) )) / (2.0f * 0.032f), 60.0f, 80.0f, 0.04f, 512, 0, g_vecZero, g_vecZero, g_vecOne, true, true);
 	pEntityManager->AddEntity( pPointShadowCamera );
 	pEntityManager->AddEntity( new CPointLight( 1.0f, 0.09f, 0.032f, pPointShadowCamera, g_vecOne * 0.1f, g_vecOne * 1.2f, g_vecOne * 0.8f, glm::vec3( 0.0f, 0.0f, 1.0f ), g_vecZero, g_vecOne, true, true ) );
 

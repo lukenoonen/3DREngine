@@ -95,8 +95,9 @@ CConVec2 cv2_pl_mousesens( g_vec2One * 0.08f, "pl_mousesens" );
 
 CPlayer::CPlayer( CBasePlayerCamera *pCamera, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
 {
-	m_pCamera = NULL;
-	SetCamera( pCamera );
+	pCamera->SetPlayerCamera( true );
+
+	m_pCamera = pCamera;
 
 	for (unsigned int i = 0; i < MOVEMENT_COUNT; i++)
 		m_bMovement[i] = false;
@@ -157,16 +158,10 @@ void CPlayer::SetMovement( Movement_t tMovement, bool bMoving )
 
 void CPlayer::SetCamera( CBasePlayerCamera *pCamera )
 {
-	if (m_pCamera != pCamera)
-	{
-		if (m_pCamera)
-			RemoveChild( m_pCamera );
+	m_pCamera->SetPlayerCamera( false );
+	pCamera->SetPlayerCamera( true );
 
-		if (pCamera)
-			AddChild( pCamera );
-
-		m_pCamera = pCamera;
-	}
+	m_pCamera = pCamera;
 }
 
 CBasePlayerCamera *CPlayer::GetCamera( void ) const

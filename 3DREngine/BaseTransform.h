@@ -27,6 +27,9 @@ public:
 	void AddChild( CBaseTransform *pChild );
 	void RemoveChild( CBaseTransform *pChild );
 
+	CBaseTransform *GetParent( void ) const;
+	const std::vector<CBaseTransform *> &GetChildren( void ) const;
+
 	void SetParentPosition( bool bParentPosition );
 	void SetParentRotation( bool bParentRotation );
 	void SetParentRotationPosition( bool bParentRotationPosition );

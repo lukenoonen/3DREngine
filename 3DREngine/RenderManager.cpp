@@ -92,23 +92,12 @@ CRenderManager::~CRenderManager()
 void CRenderManager::OnLoop( void )
 {
 	for (unsigned int i = 0; i < (unsigned int)m_pCameraEntities.size(); i++)
-		m_pCameraEntities[i]->Render();
+	{
+		if (m_pCameraEntities[i]->ShouldDraw())
+			m_pCameraEntities[i]->Render();
+	}
 
 	glfwSwapBuffers( m_pWindow );
-
-	/*DrawShadows();
-
-	SetViewportSize( m_ivecWindowSize );
-	SetFrameBuffer( m_uiMSAALevel == 0 ? 0 : m_uiFBO );
-
-	DrawEntities();
-
-	if (m_uiMSAALevel != 0)
-	{
-		glBindFramebuffer( GL_READ_FRAMEBUFFER, m_uiFBO );
-		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-		glBlitFramebuffer( 0, 0, m_ivecWindowSize.x, m_ivecWindowSize.y, 0, 0, m_ivecWindowSize.x, m_ivecWindowSize.y, GL_COLOR_BUFFER_BIT, GL_LINEAR );
-	}*/
 }
 
 RenderPass_t CRenderManager::GetRenderPass( void ) const

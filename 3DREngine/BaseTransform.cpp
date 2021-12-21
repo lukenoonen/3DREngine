@@ -149,6 +149,16 @@ void CBaseTransform::RemoveChild( CBaseTransform *pChild )
 	}
 }
 
+CBaseTransform *CBaseTransform::GetParent( void ) const
+{
+	return m_pParent;
+}
+
+const std::vector<CBaseTransform *> &CBaseTransform::GetChildren( void ) const
+{
+	return m_pChildren;
+}
+
 void CBaseTransform::SetParentPosition( bool bParentPosition )
 {
 	m_bParentPosition = bParentPosition;

@@ -10,6 +10,13 @@ public:
 	DECLARE_CLASS( CBasePlayerCamera, CBaseUniformMSAACamera );
 
 	CBasePlayerCamera( unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+
+	virtual bool ShouldDraw( void ) const;
+
+	void SetPlayerCamera( bool bPlayerCamera );
+
+private:
+	bool m_bPlayerCamera;
 };
 
 #endif // BASEPLAYERCAMERA_H
