@@ -41,7 +41,7 @@ void CEntityManager::OnLoop( void )
 void CEntityManager::AddEntity( CBaseEntity *pNewEntity )
 {
 	if (pNewEntity->IsPlayer() && !m_pPlayer)
-		m_pPlayer = dynamic_cast<CPlayer *>(pNewEntity);
+		m_pPlayer = dynamic_cast<CBasePlayer *>(pNewEntity);
 
 	m_pEntities.push_back( pNewEntity );
 
@@ -72,7 +72,7 @@ void CEntityManager::ClearEntities( void )
 	pRenderManager->ClearEntities();
 }
 
-CPlayer *CEntityManager::GetPlayer( void )
+CBasePlayer *CEntityManager::GetPlayer( void )
 {
 	return m_pPlayer;
 }

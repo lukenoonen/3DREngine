@@ -130,6 +130,12 @@
     <Filter Include="Source Files\Entities\Cameras\Variable\Shadow">
       <UniqueIdentifier>{5a68afa8-6e74-49d8-834d-2ee15427a263}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Entities\Player">
+      <UniqueIdentifier>{176cc741-9227-4094-a95b-8d815e4e1dbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities\Player">
+      <UniqueIdentifier>{1b73af2a-a657-4046-a1df-d8b214af30c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ShaderManager.cpp">
@@ -157,9 +163,6 @@
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
     <ClCompile Include="Skybox.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
     <ClCompile Include="BaseAnimated.cpp">
@@ -303,6 +306,12 @@
     <ClCompile Include="BaseUniformSizeCamera.cpp">
       <Filter>Source Files\Entities\Cameras\Uniform</Filter>
     </ClCompile>
+    <ClCompile Include="BasePlayer.cpp">
+      <Filter>Source Files\Entities\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="TestPlayer.cpp">
+      <Filter>Source Files\Entities\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderManager.h">
@@ -330,9 +339,6 @@
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="Skybox.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
     <ClInclude Include="BaseAnimated.h">
@@ -472,6 +478,12 @@
     </ClInclude>
     <ClInclude Include="BaseUniformSizeCamera.h">
       <Filter>Header Files\Entities\Cameras\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="BasePlayer.h">
+      <Filter>Header Files\Entities\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="TestPlayer.h">
+      <Filter>Header Files\Entities\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

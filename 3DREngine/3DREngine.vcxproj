@@ -61,7 +61,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="PerspectivePlayerCamera.cpp" />
     <ClCompile Include="PerspectiveWorldCamera.cpp" />
-    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="BasePlayer.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="PointShadowCamera.cpp" />
     <ClCompile Include="ReflectionCamera.cpp" />
@@ -74,6 +74,7 @@
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="SpotShadowCamera.cpp" />
     <ClCompile Include="StaticProp.cpp" />
+    <ClCompile Include="TestPlayer.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="UnlitMaterial.cpp" />
   </ItemGroup>
@@ -119,7 +120,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="PerspectivePlayerCamera.h" />
     <ClInclude Include="PerspectiveWorldCamera.h" />
-    <ClInclude Include="Player.h" />
+    <ClInclude Include="BasePlayer.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="PointShadowCamera.h" />
     <ClInclude Include="PreGlobal.h" />
@@ -132,6 +133,7 @@
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="SpotShadowCamera.h" />
     <ClInclude Include="StaticProp.h" />
+    <ClInclude Include="TestPlayer.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="UnlitMaterial.h" />
   </ItemGroup>

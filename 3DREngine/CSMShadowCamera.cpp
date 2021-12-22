@@ -1,6 +1,5 @@
 #include "CSMShadowCamera.h"
 #include "CommandManager.h"
-#include "Player.h"
 #include "BasePlayerCamera.h"
 #include "EntityManager.h"
 #include "RenderManager.h"

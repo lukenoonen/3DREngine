@@ -3,7 +3,7 @@
 
 #include "Global.h"
 #include "BaseEntity.h"
-#include "Player.h"
+#include "BasePlayer.h"
 
 class CEntityManager
 {
@@ -21,11 +21,11 @@ public:
 	void RemoveEntity( CBaseEntity *pEntity );
 	void ClearEntities( void );
 
-	CPlayer *GetPlayer( void );
+	CBasePlayer *GetPlayer( void );
 
 private:
 	std::vector<CBaseEntity *> m_pEntities;
-	CPlayer *m_pPlayer;
+	CBasePlayer *m_pPlayer;
 };
 
 #endif // ENTITYMANAGER_H
