@@ -10,7 +10,12 @@
       "ProjectGuid": "375b001d-0268-4742-90db-9ba8af7352d7",
       "DisplayName": "3DREngine",
       "ColorIndex": 1
+    },
+    "2c862fba-0c11-4a51-bad1-f04bc5dd7209": {
+      "ProjectGuid": "2c862fba-0c11-4a51-bad1-f04bc5dd7209",
+      "DisplayName": "Shared",
+      "ColorIndex": 2
     }
   },
-  "NextColorIndex": 2
+  "NextColorIndex": 3
 }

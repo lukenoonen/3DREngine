@@ -119,19 +119,21 @@ void CCSMShadowCamera::ActivateLight( void )
 	pShaderManager->SetUniformBufferObject( UBO_SHADOWCASCADEFADE, 1, &m_vecCascadeEndClipSpaceFar );
 }
 
+#include <iostream>
+
 void CCSMShadowCamera::CalculateCascade( void )
 {
 	float flBlendDistance = m_flBlendDistance;
-	float flDistanceFactor = m_flDistanceFactor;
 
 	m_flCascadeEnd[0] = cf_r_near.GetValue();
 	float flDistance = m_flInitialDistance + m_flCascadeEnd[0];
-	for (unsigned int i = 1; i < 5; i++)
+	for (unsigned int i = 0; i < 4; i++)
 	{
-		m_flCascadeEnd[i] = flDistance;
-		m_flCascadeEndNear[i - 1] = flDistance - flBlendDistance;
-		flDistance *= flDistanceFactor;
-		flBlendDistance *= flDistanceFactor;
+		m_flCascadeEnd[i + 1] = flDistance;
+		m_flCascadeEndNear[i] = flDistance - flBlendDistance;
+
+		flBlendDistance = (m_flDistanceFactor - 1.0f) * (flBlendDistance + m_flCascadeEnd[i]);
+		flDistance *= m_flDistanceFactor;
 	}
 }
 
