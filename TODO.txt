@@ -8,6 +8,8 @@
 	d. Entity-spanning virtual functions
 	e. Keep testing and cleaning everything as needed
 	f. Add methods to modify the lights dynamically
+	g. Clean up the ShouldDraw functions
+	f. Add reliable solution for uninitialised member variables
 5. Finish up anything which needs to be finished to run (no new features, just getting everything working again after this restructuring)
 6. Consider best methods to do planar reflections
 	a. Consider applying method to CSM light (for maps with more than one camera rendering at once, i.e., both player camera and security camera)

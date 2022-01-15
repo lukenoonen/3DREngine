@@ -8,10 +8,15 @@ CBaseDrawable::CBaseDrawable( bool bShouldDraw, bool bActive ) : BaseClass( bAct
 
 void CBaseDrawable::PreDraw( void )
 {
-	pShaderManager->SetShaderAnimate( SHADERANIMATE_FALSE );
+
 }
 
 void CBaseDrawable::Draw( void )
+{
+
+}
+
+void CBaseDrawable::PostDraw( void )
 {
 
 }

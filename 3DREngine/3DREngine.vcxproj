@@ -25,6 +25,7 @@
     <ClCompile Include="BaseAnimated.cpp" />
     <ClCompile Include="BaseAsset.cpp" />
     <ClCompile Include="BaseCamera.cpp" />
+    <ClCompile Include="BaseSprite.cpp" />
     <ClCompile Include="BaseUniformSizeCamera.cpp" />
     <ClCompile Include="BaseVariableSizeCamera.cpp" />
     <ClCompile Include="BaseDrawable.cpp" />
@@ -100,6 +101,7 @@
     <ClInclude Include="BaseVariableMSAACamera.h" />
     <ClInclude Include="BaseWorld.h" />
     <ClInclude Include="BaseWorldCamera.h" />
+    <ClInclude Include="BaseSprite.h" />
     <ClInclude Include="CSMShadowCamera.h" />
     <ClInclude Include="DirShadowCamera.h" />
     <ClInclude Include="OrthoPlayerCamera.h" />

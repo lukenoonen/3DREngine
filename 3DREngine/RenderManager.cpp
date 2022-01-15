@@ -139,6 +139,7 @@ void CRenderManager::DrawNonLitEntities( void )
 		{
 			m_pDrawEntities[i]->PreDraw();
 			m_pDrawEntities[i]->Draw();
+			m_pDrawEntities[i]->PostDraw();
 		}
 	}
 }
@@ -164,6 +165,7 @@ void CRenderManager::DrawLitEntities( void )
 					uiDrawCount++;
 				}
 			}
+			m_pDrawEntities[i]->PostDraw();
 		}
 	}
 

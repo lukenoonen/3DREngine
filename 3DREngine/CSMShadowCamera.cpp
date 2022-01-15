@@ -119,8 +119,6 @@ void CCSMShadowCamera::ActivateLight( void )
 	pShaderManager->SetUniformBufferObject( UBO_SHADOWCASCADEFADE, 1, &m_vecCascadeEndClipSpaceFar );
 }
 
-#include <iostream>
-
 void CCSMShadowCamera::CalculateCascade( void )
 {
 	float flBlendDistance = m_flBlendDistance;

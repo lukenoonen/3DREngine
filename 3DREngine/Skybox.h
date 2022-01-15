@@ -14,6 +14,7 @@ public:
 	CSkybox( const char *sMaterialPath, bool bShouldDraw, bool bActive );
 	virtual ~CSkybox();
 
+	virtual void PreDraw( void );
 	virtual void Draw( void );
 
 	virtual bool ShouldDraw( void ) const;

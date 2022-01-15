@@ -98,7 +98,6 @@ void main()
 			
 			if (u_vecShadowCascadeFadeNear[0] < u_vecShadowCascadeFadeFar[0] && v_flClipSpacePosZ > u_vecShadowCascadeFadeNear[0])
 			{
-				vecDiffuseLight += vec3(0.0f, 0.0f, 0.2f);
 				float flAdjustedShadowMapDepthFar = (v_flShadowMapDepth[1] / v_flShadowMapFactor[1]) * 0.5f + 0.5f - flBias;
 				vec2 vecAdjustedShadowMapCoordsFar = (v_vecShadowMapCoords[1] / v_flShadowMapFactor[1]) * 0.5f + 0.5f;
 				
@@ -124,7 +123,6 @@ void main()
 			
 			if (u_vecShadowCascadeFadeNear[1] < u_vecShadowCascadeFadeFar[1] && v_flClipSpacePosZ > u_vecShadowCascadeFadeNear[1])
 			{
-				vecDiffuseLight += vec3(0.2f, 0.0f, 0.0f);
 				float flAdjustedShadowMapDepthFar = (v_flShadowMapDepth[2] / v_flShadowMapFactor[2]) * 0.5f + 0.5f - flBias;
 				vec2 vecAdjustedShadowMapCoordsFar = (v_vecShadowMapCoords[2] / v_flShadowMapFactor[2]) * 0.5f + 0.5f;
 				
@@ -150,7 +148,6 @@ void main()
 			
 			if (u_vecShadowCascadeFadeNear[2] < u_vecShadowCascadeFadeFar[2] && v_flClipSpacePosZ > u_vecShadowCascadeFadeNear[2])
 			{
-				vecDiffuseLight += vec3(0.0f, 0.2f, 0.0f);
 				float flAdjustedShadowMapDepthFar = (v_flShadowMapDepth[3] / v_flShadowMapFactor[3]) * 0.5f + 0.5f - flBias;
 				vec2 vecAdjustedShadowMapCoordsFar = (v_vecShadowMapCoords[3] / v_flShadowMapFactor[3]) * 0.5f + 0.5f;
 				

@@ -58,6 +58,11 @@ void CBaseAnimated::PreDraw( void )
 	}
 }
 
+void CBaseAnimated::PostDraw( void )
+{
+	pShaderManager->SetShaderAnimate( SHADERANIMATE_FALSE );
+}
+
 void CBaseAnimated::SetModel( CModel *pModel )
 {
 	BaseClass::SetModel( pModel );

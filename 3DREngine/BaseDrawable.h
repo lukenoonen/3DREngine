@@ -13,6 +13,7 @@ public:
 	
 	virtual void PreDraw( void );
 	virtual void Draw( void );
+	virtual void PostDraw( void );
 
 	virtual bool IsDrawable( void ) const;
 

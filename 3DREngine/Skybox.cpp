@@ -20,9 +20,13 @@ CSkybox::~CSkybox()
 	pAssetManager->CheckGeometry( m_pGeometry );
 }
 
-void CSkybox::Draw( void )
+void CSkybox::PreDraw( void )
 {
 	m_pMaterial->Use();
+}
+
+void CSkybox::Draw( void )
+{
 	m_pGeometry->Draw();
 }
 

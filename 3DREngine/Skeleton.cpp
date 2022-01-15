@@ -76,7 +76,15 @@ void CSkeleton::SetUpBoneTransforms( std::vector<glm::mat4> &matBoneTransforms )
 
 void CSkeleton::UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, const std::vector<CAnimation *> &pAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors )
 {
-	ReadNodeHierarchy( matBoneTransforms, pAnimations, flAnimationTimes, flAnimationTransitionFactors, m_pSkeletonNode, glm::mat4( 1.0f ) );
+	std::vector<float> flAdjustedAnimationTransitionFactors;
+	for (unsigned int i = 0; i < flAnimationTransitionFactors.size(); i++)
+	{
+		float flAdjustedAnimationTransitionFactor = (flAnimationTransitionFactors[i] - 1.0f) / flAnimationTransitionFactors[i];
+		flAdjustedAnimationTransitionFactor = 1.0f / (1.0f + flAdjustedAnimationTransitionFactor * flAdjustedAnimationTransitionFactor);
+		flAdjustedAnimationTransitionFactors.push_back( flAdjustedAnimationTransitionFactor );
+	}
+
+	ReadNodeHierarchy( matBoneTransforms, pAnimations, flAnimationTimes, flAdjustedAnimationTransitionFactors, m_pSkeletonNode, glm::mat4( 1.0f ) );
 }
 
 void CSkeleton::ReadNodeHierarchy( std::vector<glm::mat4> &matBoneTransforms, const std::vector<CAnimation *> &pAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors, CSkeletonNode *pSkeletonNode, const glm::mat4 &matParentTransform )

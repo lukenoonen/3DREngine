@@ -15,6 +15,7 @@ public:
 
 	virtual void PostThink( void );
 	virtual void PreDraw( void );
+	virtual void PostDraw( void );
 
 	virtual void SetModel( CModel *pModel );
 

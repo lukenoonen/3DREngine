@@ -312,6 +312,9 @@
     <ClCompile Include="TestPlayer.cpp">
       <Filter>Source Files\Entities\Player</Filter>
     </ClCompile>
+    <ClCompile Include="BaseSprite.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderManager.h">
@@ -484,6 +487,9 @@
     </ClInclude>
     <ClInclude Include="TestPlayer.h">
       <Filter>Header Files\Entities\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseSprite.h">
+      <Filter>Header Files\Entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
