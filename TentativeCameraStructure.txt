@@ -1,6 +1,0 @@
-BaseCamera -> ColorCamera -> PerspectiveColorCamera: Player, ReflectiveSurface (NAME TBD)
-                          -> OrthoColorCamera: TBD
-           -> DepthCamera -> PerspectiveDepthCamera -> SpotShadowCamera: SpotLightShadow
-                                                    -> PointShadowCamera: PointLightShadow
-                          -> OrthoColorCamera -> DirShadowCamera: DirLightShadow
-                                              -> CSMShadowCamera: CSMLightShadow
