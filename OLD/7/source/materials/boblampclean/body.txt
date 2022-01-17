@@ -1,7 +1,0 @@
-type material;
-material lit;
-name body;
-diffuse body.3tx;
-specular body_spec.3tx;
-normal body_norm.3tx;
-shininess 4.0;

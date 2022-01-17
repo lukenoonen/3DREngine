@@ -1,5 +1,0 @@
-type texture;
-name face_spec;
-wrap repeat;
-filter true;
-image face_spec.3im;

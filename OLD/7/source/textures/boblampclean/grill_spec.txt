@@ -1,5 +1,0 @@
-type texture;
-name grill_spec;
-wrap repeat;
-filter true;
-image grill_spec.3im;
