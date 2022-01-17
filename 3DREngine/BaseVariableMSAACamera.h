@@ -9,7 +9,7 @@ class CBaseVariableMSAACamera : public CBaseMSAACamera
 public:
 	DECLARE_CLASS( CBaseVariableMSAACamera, CBaseMSAACamera );
 
-	CBaseVariableMSAACamera( unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseVariableMSAACamera( unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority );
 
 	virtual void PreThink( void );
 

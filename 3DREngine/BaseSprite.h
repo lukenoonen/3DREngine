@@ -11,7 +11,7 @@ class CBaseSprite : public CBaseWorld
 public:
 	DECLARE_CLASS( CBaseSprite, CBaseWorld );
 
-	CBaseSprite( const char *sMaterialPath, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseSprite( const char *sMaterialPath );
 	virtual ~CBaseSprite();
 
 	virtual void PostThink( void );

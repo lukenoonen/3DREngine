@@ -9,7 +9,7 @@ class COrthoPlayerCamera : public CBasePlayerCamera
 public:
 	DECLARE_CLASS( COrthoPlayerCamera, CBasePlayerCamera );
 
-	COrthoPlayerCamera( unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	COrthoPlayerCamera( unsigned int uiRenderPriority );
 
 	virtual void PostThink( void );
 

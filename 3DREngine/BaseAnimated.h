@@ -11,7 +11,7 @@ class CBaseAnimated : public CBaseModeled
 public:
 	DECLARE_CLASS( CBaseAnimated, CBaseModeled );
 
-	CBaseAnimated( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseAnimated();
 
 	virtual void PostThink( void );
 	virtual void PreDraw( void );

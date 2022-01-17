@@ -20,7 +20,7 @@ class CTestPlayer : public CBasePlayer
 public:
 	DECLARE_CLASS( CTestPlayer, CBasePlayer );
 
-	CTestPlayer( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale );
+	CTestPlayer();
 
 	virtual void PreThink( void );
 

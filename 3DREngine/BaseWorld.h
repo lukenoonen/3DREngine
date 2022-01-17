@@ -9,7 +9,7 @@ class CBaseWorld : public CBaseTransform
 public:
 	DECLARE_CLASS( CBaseWorld, CBaseTransform );
 
-	CBaseWorld( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseWorld();
 
 	virtual void PostThink( void );
 

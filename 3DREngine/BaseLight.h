@@ -10,7 +10,7 @@ class CBaseLight : public CBaseTransform
 public:
 	DECLARE_CLASS( CBaseLight, CBaseTransform );
 
-	CBaseLight( CBaseShadowCamera *pShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseLight( CBaseShadowCamera *pShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular );
 
 	virtual bool IsLight( void ) const;
 

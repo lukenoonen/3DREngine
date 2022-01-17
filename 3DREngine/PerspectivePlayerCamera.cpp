@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 #include "ShaderManager.h"
 
-CPerspectivePlayerCamera::CPerspectivePlayerCamera( unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CPerspectivePlayerCamera::CPerspectivePlayerCamera( unsigned int uiRenderPriority ) : BaseClass( uiRenderPriority )
 {
 	const glm::ivec2 &vecSize = GetSize();
 	m_matProjection = glm::perspective( glm::radians( cf_r_fov.GetValue() ), (float)vecSize.x / (float)vecSize.y, cf_r_near.GetValue(), cf_r_far.GetValue() );

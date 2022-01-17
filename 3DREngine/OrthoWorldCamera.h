@@ -9,7 +9,7 @@ class COrthoWorldCamera : public CBaseWorldCamera
 public:
 	DECLARE_CLASS( COrthoWorldCamera, CBaseWorldCamera );
 
-	COrthoWorldCamera( float flHeight, float flNear, float flFar, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	COrthoWorldCamera( float flHeight, float flNear, float flFar, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority );
 	virtual ~COrthoWorldCamera();
 
 	virtual void PostThink( void );

@@ -9,7 +9,7 @@ class CBaseShadowCamera : public CBaseVariableSizeCamera
 public:
 	DECLARE_CLASS( CBaseShadowCamera, CBaseVariableSizeCamera );
 
-	CBaseShadowCamera( float flFadeNear, float flFadeFar, float flBlurScale, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseShadowCamera( float flFadeNear, float flFadeFar, float flBlurScale, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiRenderPriority );
 
 	virtual void ActivateLight( void );
 

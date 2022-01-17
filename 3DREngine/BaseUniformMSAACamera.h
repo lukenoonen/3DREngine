@@ -9,7 +9,7 @@ class CBaseUniformMSAACamera : public CBaseMSAACamera
 public:
 	DECLARE_CLASS( CBaseUniformMSAACamera, CBaseMSAACamera );
 
-	CBaseUniformMSAACamera( unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseUniformMSAACamera( unsigned int uiRenderPriority );
 
 	virtual void PreThink( void );
 };

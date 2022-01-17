@@ -9,7 +9,7 @@ class CBaseTransform : public CBaseDrawable
 public:
 	DECLARE_CLASS( CBaseTransform, CBaseDrawable );
 
-	CBaseTransform( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseTransform();
 
 	void SetPosition( const glm::vec3 &vecPosition );
 	void SetRotation( const glm::quat &qRotation );

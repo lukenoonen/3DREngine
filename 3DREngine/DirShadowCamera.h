@@ -9,7 +9,7 @@ class CDirShadowCamera : public CBaseShadowCamera
 public:
 	DECLARE_CLASS( CDirShadowCamera, CBaseShadowCamera );
 
-	CDirShadowCamera( float flLength, float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CDirShadowCamera( float flLength, float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority );
 	virtual ~CDirShadowCamera();
 
 	virtual void PostThink( void );

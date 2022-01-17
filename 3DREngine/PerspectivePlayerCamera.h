@@ -9,7 +9,7 @@ class CPerspectivePlayerCamera : public CBasePlayerCamera
 public:
 	DECLARE_CLASS( CPerspectivePlayerCamera, CBasePlayerCamera );
 
-	CPerspectivePlayerCamera( unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CPerspectivePlayerCamera( unsigned int uiRenderPriority );
 
 	virtual void PostThink( void );
 

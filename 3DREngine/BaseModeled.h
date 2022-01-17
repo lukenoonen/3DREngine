@@ -10,7 +10,7 @@ class CBaseModeled : public CBaseWorld
 public:
 	DECLARE_CLASS( CBaseModeled, CBaseWorld );
 
-	CBaseModeled( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseModeled();
 
 	virtual void PreDraw( void );
 	virtual void Draw( void );

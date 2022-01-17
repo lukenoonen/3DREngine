@@ -11,7 +11,7 @@ class CBasePlayer : public CBaseTransform
 public:
 	DECLARE_CLASS( CBasePlayer, CBaseTransform );
 
-	CBasePlayer( CBasePlayerCamera *pCamera, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBasePlayer( CBasePlayerCamera *pCamera );
 
 	virtual bool IsPlayer( void ) const;
 

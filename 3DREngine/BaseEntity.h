@@ -8,7 +8,7 @@ class CBaseEntity
 public:
 	DECLARE_CLASS_NOBASE( CBaseEntity );
 
-	CBaseEntity( bool bActive );
+	CBaseEntity();
 	
 	virtual void PreThink( void );
 	virtual void Think( void );

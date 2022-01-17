@@ -1,11 +1,13 @@
 #include "BaseTransform.h"
 #include "GlobalManager.h"
 
-CBaseTransform::CBaseTransform( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( bShouldDraw, bActive )
+CBaseTransform::CBaseTransform()
 {
-	m_vecPosition = vecPosition;
-	m_qRotation = glm::quat( vecRotation );
-	m_vecScale = vecScale;
+	m_vecPosition = g_vecZero;
+	m_qRotation = glm::quat( g_vecZero );
+	m_vecScale = g_vecOne;
+
+	m_pParent = NULL;
 
 	m_bParentPosition = true;
 	m_bParentRotation = true;
@@ -122,14 +124,9 @@ void CBaseTransform::SetParent( CBaseTransform *pParent )
 		m_pParent->RemoveChild( this );
 
 	if (pParent)
-	{
-		m_pParent = pParent;
 		pParent->AddChild( this );
-	}
-	else
-	{
-		m_pParent = NULL;
-	}
+
+	m_pParent = pParent;
 }
 
 void CBaseTransform::AddChild( CBaseTransform *pChild )

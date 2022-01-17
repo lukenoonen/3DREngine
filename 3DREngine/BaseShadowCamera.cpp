@@ -1,7 +1,7 @@
 #include "BaseShadowCamera.h"
 #include "AssetManager.h"
 
-CBaseShadowCamera::CBaseShadowCamera( float flFadeNear, float flFadeFar, float flBlurScale, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( uiBaseSize, flSizeRatio, uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseShadowCamera::CBaseShadowCamera( float flFadeNear, float flFadeFar, float flBlurScale, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiRenderPriority ) : BaseClass( uiBaseSize, flSizeRatio, uiRenderPriority )
 {
 	m_flFadeNear = flFadeNear;
 	m_flFadeFar = flFadeFar;

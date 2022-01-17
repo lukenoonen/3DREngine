@@ -9,7 +9,7 @@ class CBaseDrawable : public CBaseEntity
 public:
 	DECLARE_CLASS( CBaseDrawable, CBaseEntity );
 
-	CBaseDrawable( bool bShouldDraw, bool bActive );
+	CBaseDrawable();
 	
 	virtual void PreDraw( void );
 	virtual void Draw( void );

@@ -4,7 +4,7 @@
 #include "ShaderManager.h"
 #include "AssetManager.h"
 
-CSpotShadowCamera::CSpotShadowCamera( float flOuterCutoff, float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( flFadeNear, flFadeFar, flBlurRadius / (tanf( flOuterCutoff ) * M_SQRT2), uiBaseSize, 1.0f, uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CSpotShadowCamera::CSpotShadowCamera( float flOuterCutoff, float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority ) : BaseClass( flFadeNear, flFadeFar, flBlurRadius / (tanf( flOuterCutoff ) * M_SQRT2), uiBaseSize, 1.0f, uiRenderPriority )
 {
 	m_matProjection = glm::perspective( flOuterCutoff * 2.0f, 1.0f, flZNear, flZFar );
 	m_matTotal = m_matProjection * glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );

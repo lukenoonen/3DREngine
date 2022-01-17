@@ -11,7 +11,7 @@ class CSkybox : public CBaseDrawable
 public:
 	DECLARE_CLASS( CSkybox, CBaseDrawable );
 
-	CSkybox( const char *sMaterialPath, bool bShouldDraw, bool bActive );
+	CSkybox( const char *sMaterialPath );
 	virtual ~CSkybox();
 
 	virtual void PreDraw( void );

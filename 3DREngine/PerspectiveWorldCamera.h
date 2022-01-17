@@ -9,7 +9,7 @@ class CPerspectiveWorldCamera : public CBaseWorldCamera
 public:
 	DECLARE_CLASS( CPerspectiveWorldCamera, CBaseWorldCamera );
 
-	CPerspectiveWorldCamera( float flFOV, float flNear, float flFar, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CPerspectiveWorldCamera( float flFOV, float flNear, float flFar, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority );
 	virtual ~CPerspectiveWorldCamera();
 
 	virtual void PostThink( void );

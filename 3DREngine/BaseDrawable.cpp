@@ -1,9 +1,9 @@
 #include "BaseDrawable.h"
 #include "ShaderManager.h"
 
-CBaseDrawable::CBaseDrawable( bool bShouldDraw, bool bActive ) : BaseClass( bActive )
+CBaseDrawable::CBaseDrawable() : BaseClass()
 {
-	m_bShouldDraw = bShouldDraw;
+	m_bShouldDraw = true;
 }
 
 void CBaseDrawable::PreDraw( void )

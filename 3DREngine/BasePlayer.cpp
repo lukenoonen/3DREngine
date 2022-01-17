@@ -6,7 +6,7 @@
 #include "ShaderManager.h"
 #include "CommandManager.h"
 
-CBasePlayer::CBasePlayer( CBasePlayerCamera *pCamera, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBasePlayer::CBasePlayer( CBasePlayerCamera *pCamera )
 {
 	pCamera->SetPlayerCamera( true );
 

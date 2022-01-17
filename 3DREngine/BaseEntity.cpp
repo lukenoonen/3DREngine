@@ -1,8 +1,8 @@
 #include "BaseEntity.h"
 
-CBaseEntity::CBaseEntity( bool bActive )
+CBaseEntity::CBaseEntity()
 {
-	m_bActive = bActive;
+	m_bActive = true;
 }
 
 void CBaseEntity::PreThink( void )

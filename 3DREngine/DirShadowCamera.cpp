@@ -4,7 +4,7 @@
 #include "ShaderManager.h"
 #include "AssetManager.h"
 
-CDirShadowCamera::CDirShadowCamera( float flLength, float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( flFadeNear, flFadeFar, flBlurRadius / flLength, uiBaseSize, 1.0f, uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CDirShadowCamera::CDirShadowCamera( float flLength, float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority ) : BaseClass( flFadeNear, flFadeFar, flBlurRadius / flLength, uiBaseSize, 1.0f, uiRenderPriority )
 {
 	flLength *= 0.5f;
 	m_matProjection = glm::ortho( -flLength, flLength, -flLength, flLength, flZNear, flZFar );

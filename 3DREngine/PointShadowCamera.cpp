@@ -4,7 +4,7 @@
 #include "ShaderManager.h"
 #include "AssetManager.h"
 
-CPointShadowCamera::CPointShadowCamera( float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( flFadeNear, flFadeFar, flBlurRadius / M_SQRT2, uiBaseSize, 1.0f, uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CPointShadowCamera::CPointShadowCamera( float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority ) : BaseClass( flFadeNear, flFadeFar, flBlurRadius / M_SQRT2, uiBaseSize, 1.0f, uiRenderPriority )
 {
 	m_flMaxRadius = flZFar;
 	m_matProjection = glm::perspective( M_PI * 0.5f, 1.0f, flZNear, flZFar );

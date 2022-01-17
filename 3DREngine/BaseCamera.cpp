@@ -1,7 +1,7 @@
 #include "BaseCamera.h"
 #include "RenderManager.h"
 
-CBaseCamera::CBaseCamera( unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseCamera::CBaseCamera( unsigned int uiRenderPriority )
 {
 	m_uiRenderPriority = uiRenderPriority;
 }

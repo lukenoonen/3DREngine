@@ -1,7 +1,0 @@
-type material;
-material lit;
-name grill;
-diffuse grill.3tx;
-specular grill_spec.3tx;
-normal grill_norm.3tx;
-shininess 4.0;

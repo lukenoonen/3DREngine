@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 #include "GlobalManager.h"
 
-CBaseAnimated::CBaseAnimated( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseAnimated::CBaseAnimated()
 {
 	m_bAnimate = false;
 	m_bUpdateAnimation = false;

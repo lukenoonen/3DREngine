@@ -1,7 +1,7 @@
 #include "BaseLight.h"
 #include "ShaderManager.h"
 
-CBaseLight::CBaseLight( CBaseShadowCamera *pShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseLight::CBaseLight( CBaseShadowCamera *pShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular )
 {
 	m_pShadowCamera = pShadowCamera;
 	if (m_pShadowCamera)
@@ -9,7 +9,7 @@ CBaseLight::CBaseLight( CBaseShadowCamera *pShadowCamera, const glm::vec3 &vecAm
 		m_pShadowCamera->SetPosition( GetPosition() );
 		m_pShadowCamera->SetRotation( GetRotation() );
 		m_pShadowCamera->SetScale( GetScale() );
-		AddChild( m_pShadowCamera );
+		m_pShadowCamera->SetParent( this );
 	}
 
 	m_vecAmbient = vecAmbient;

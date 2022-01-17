@@ -1,7 +1,7 @@
 #include "BaseUniformMSAACamera.h"
 #include "RenderManager.h"
 
-CBaseUniformMSAACamera::CBaseUniformMSAACamera( unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( (unsigned int)ci_r_msaalevel.GetValue(), cv_r_windowsize.GetValue(), uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseUniformMSAACamera::CBaseUniformMSAACamera( unsigned int uiRenderPriority ) : BaseClass( (unsigned int)ci_r_msaalevel.GetValue(), cv_r_windowsize.GetValue(), uiRenderPriority )
 {
 
 }

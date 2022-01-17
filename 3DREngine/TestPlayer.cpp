@@ -115,11 +115,15 @@ CConCommand cc_mdown( "-down", CC_MDown );
 CConFloat cf_pl_speed( 10.0f, "pl_speed" );
 CConVec2 cv2_pl_mousesens( g_vec2One * 0.08f, "pl_mousesens" );
 
-CTestPlayer::CTestPlayer( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale ) : BaseClass( new CPerspectivePlayerCamera( 1, vecPosition, vecRotation, vecScale, true, true ), vecPosition, vecRotation, vecScale, true, true )
+CTestPlayer::CTestPlayer() : BaseClass( new CPerspectivePlayerCamera( 1 ) )
 {
 	CBaseCamera *pCamera = GetCamera();
 	pEntityManager->AddEntity( pCamera );
-	AddChild( pCamera );
+
+	pCamera->SetParent( this );
+	pCamera->SetPosition( GetPosition() );
+	pCamera->SetRotation( GetRotation() );
+	pCamera->SetScale( GetScale() );
 
 	for (unsigned int i = 0; i < MOVEMENT_COUNT; i++)
 		m_bMovement[i] = false;

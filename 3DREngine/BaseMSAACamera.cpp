@@ -1,6 +1,6 @@
 #include "BaseMSAACamera.h"
 
-CBaseMSAACamera::CBaseMSAACamera( unsigned int uiMSAALevel, const glm::vec2 &vecSize, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecSize, uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseMSAACamera::CBaseMSAACamera( unsigned int uiMSAALevel, const glm::vec2 &vecSize, unsigned int uiRenderPriority ) : BaseClass( vecSize, uiRenderPriority )
 {
 	m_uiMSAALevel = uiMSAALevel;
 

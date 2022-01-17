@@ -1,7 +1,7 @@
 #include "AnimatedProp.h"
 #include "AssetManager.h"
 
-CAnimatedProp::CAnimatedProp( const char *sModelPath, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CAnimatedProp::CAnimatedProp( const char *sModelPath )
 {
 	CModel *pModel = pAssetManager->GetModel( sModelPath );
 	pModel->Activate();

@@ -9,7 +9,7 @@ class CAnimatedProp : public CBaseAnimated
 public:
 	DECLARE_CLASS( CAnimatedProp, CBaseAnimated );
 
-	CAnimatedProp( const char *sModelPath, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CAnimatedProp( const char *sModelPath );
 	virtual ~CAnimatedProp();
 };
 

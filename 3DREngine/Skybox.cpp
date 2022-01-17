@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 #include "AssetManager.h"
 
-CSkybox::CSkybox( const char *sMaterialPath, bool bShouldDraw, bool bActive ) : BaseClass( bShouldDraw, bActive )
+CSkybox::CSkybox( const char *sMaterialPath ) : BaseClass()
 {
 	m_pMaterial = pAssetManager->GetMaterial( sMaterialPath );
 	m_pGeometry = pAssetManager->GetGeometry( "inversecube.3gm" );

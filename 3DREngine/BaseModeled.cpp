@@ -3,7 +3,7 @@
 #include "RenderManager.h"
 #include "AssetManager.h"
 
-CBaseModeled::CBaseModeled( const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseModeled::CBaseModeled()
 {
 	m_pModel = NULL;
 }

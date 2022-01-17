@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 #include "ShaderManager.h"
 
-CPointLight::CPointLight( float flConstant, float flLinear, float flQuadratic, CPointShadowCamera *pPointShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( pPointShadowCamera, vecAmbient, vecDiffuse, vecSpecular, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CPointLight::CPointLight( float flConstant, float flLinear, float flQuadratic, CPointShadowCamera *pPointShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular ) : BaseClass( pPointShadowCamera, vecAmbient, vecDiffuse, vecSpecular )
 {
 	m_flConstant = flConstant;
 	m_flLinear = flLinear;

@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 #include "ShaderManager.h"
 
-CSpotLight::CSpotLight( float flCutoff, float flOuterCutoff, float flConstant, float flLinear, float flQuadratic, CSpotShadowCamera *pSpotShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( pSpotShadowCamera, vecAmbient, vecDiffuse, vecSpecular, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CSpotLight::CSpotLight( float flCutoff, float flOuterCutoff, float flConstant, float flLinear, float flQuadratic, CSpotShadowCamera *pSpotShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular ) : BaseClass( pSpotShadowCamera, vecAmbient, vecDiffuse, vecSpecular )
 {
 	m_flConstant = flConstant;
 	m_flLinear = flLinear;

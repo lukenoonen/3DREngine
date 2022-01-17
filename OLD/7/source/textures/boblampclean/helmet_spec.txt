@@ -1,5 +1,0 @@
-type texture;
-name helmet_spec;
-wrap repeat;
-filter true;
-image helmet_spec.3im;

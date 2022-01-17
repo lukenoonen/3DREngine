@@ -9,7 +9,7 @@ class CStaticProp : public CBaseModeled
 public:
 	DECLARE_CLASS( CStaticProp, CBaseModeled );
 
-	CStaticProp( const char *sModelPath, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CStaticProp( const char *sModelPath );
 	virtual ~CStaticProp();
 };
 

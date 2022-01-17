@@ -9,7 +9,7 @@ class CCSMShadowCamera : public CBaseShadowCamera
 public:
 	DECLARE_CLASS( CCSMShadowCamera, CBaseShadowCamera );
 
-	CCSMShadowCamera( float flBlendDistance, float flDistanceFactor, float flInitialDistance, float flNearZError, float flFarZError, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CCSMShadowCamera( float flBlendDistance, float flDistanceFactor, float flInitialDistance, float flNearZError, float flFarZError, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority );
 	virtual ~CCSMShadowCamera();
 
 	virtual void PostThink( void );

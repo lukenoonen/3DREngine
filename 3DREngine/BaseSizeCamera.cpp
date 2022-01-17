@@ -1,6 +1,6 @@
 #include "BaseSizeCamera.h"
 
-CBaseSizeCamera::CBaseSizeCamera( const glm::vec2 &vecSize, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseSizeCamera::CBaseSizeCamera( const glm::vec2 &vecSize, unsigned int uiRenderPriority ) : BaseClass( uiRenderPriority )
 {
 	m_vecSize = vecSize;
 }

@@ -1,7 +1,7 @@
 #include "BaseVariableSizeCamera.h"
 #include "RenderManager.h"
 
-CBaseVariableSizeCamera::CBaseVariableSizeCamera( unsigned int uiBaseSize, float flSizeRatio, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( glm::ivec2( glm::round( glm::vec2( (float)m_uiBaseSize, (float)m_uiBaseSize * m_flSizeRatio ) * cf_r_vcsizefactor.GetValue() ) ), uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseVariableSizeCamera::CBaseVariableSizeCamera( unsigned int uiBaseSize, float flSizeRatio, unsigned int uiRenderPriority ) : BaseClass( glm::ivec2( glm::round( glm::vec2( (float)m_uiBaseSize, (float)m_uiBaseSize * m_flSizeRatio ) * cf_r_vcsizefactor.GetValue() ) ), uiRenderPriority )
 {
 	m_uiBaseSize = uiBaseSize;
 	m_flSizeRatio = flSizeRatio;

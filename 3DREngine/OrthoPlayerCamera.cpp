@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 #include "ShaderManager.h"
 
-COrthoPlayerCamera::COrthoPlayerCamera( unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+COrthoPlayerCamera::COrthoPlayerCamera( unsigned int uiRenderPriority ) : BaseClass( uiRenderPriority )
 {
 	const glm::ivec2 &vecSize = GetSize();
 	float flHeight = cf_r_height.GetValue() * 0.5f;

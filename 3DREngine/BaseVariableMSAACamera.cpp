@@ -1,7 +1,7 @@
 #include "BaseVariableMSAACamera.h"
 #include "RenderManager.h"
 
-CBaseVariableMSAACamera::CBaseVariableMSAACamera( unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( (unsigned int)glm::round( (float)m_uiBaseMSAALevel * cf_r_vcmsaalevelfactor.GetValue() ), glm::ivec2( glm::round( glm::vec2( (float)m_uiBaseSize, (float)m_uiBaseSize * m_flSizeRatio ) * cf_r_vcsizefactor.GetValue() ) ), uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseVariableMSAACamera::CBaseVariableMSAACamera( unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority ) : BaseClass( (unsigned int)glm::round( (float)m_uiBaseMSAALevel * cf_r_vcmsaalevelfactor.GetValue() ), glm::ivec2( glm::round( glm::vec2( (float)m_uiBaseSize, (float)m_uiBaseSize * m_flSizeRatio ) * cf_r_vcsizefactor.GetValue() ) ), uiRenderPriority )
 {
 	m_uiBaseSize = uiBaseSize;
 	m_flSizeRatio = flSizeRatio;

@@ -2,7 +2,7 @@
 #include "AssetManager.h"
 #include "EntityManager.h"
 
-CBaseSprite::CBaseSprite( const char *sMaterialPath, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CBaseSprite::CBaseSprite( const char *sMaterialPath )
 {
 	m_pMaterial = pAssetManager->GetMaterial( sMaterialPath );
 	m_pGeometry = pAssetManager->GetGeometry( "plane.3gm" );

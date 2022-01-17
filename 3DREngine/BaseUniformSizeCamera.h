@@ -9,7 +9,7 @@ class CBaseUniformSizeCamera : public CBaseSizeCamera
 public:
 	DECLARE_CLASS( CBaseUniformSizeCamera, CBaseSizeCamera );
 
-	CBaseUniformSizeCamera( unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseUniformSizeCamera( unsigned int uiRenderPriority );
 
 	virtual void PreThink( void );
 };

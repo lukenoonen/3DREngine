@@ -1,3 +1,0 @@
-type image;
-name rgrill;
-image rgrill.png;

@@ -1,4 +1,0 @@
-type geometry;
-name cube;
-model cube.obj;
-flipuv 0;

@@ -1,7 +1,0 @@
-colorhud
-color 0.5 0.5 0.5
-depth 0
-unlit 0
-lit 0
-shadow 0
-hud 1

@@ -9,7 +9,7 @@ class CSpotShadowCamera : public CBaseShadowCamera
 public:
 	DECLARE_CLASS( CSpotShadowCamera, CBaseShadowCamera );
 
-	CSpotShadowCamera( float flOuterCutoff, float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CSpotShadowCamera( float flOuterCutoff, float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority );
 	virtual ~CSpotShadowCamera();
 
 	virtual void PostThink( void );

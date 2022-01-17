@@ -6,7 +6,7 @@
 #include "ShaderManager.h"
 #include "AssetManager.h"
 
-CCSMShadowCamera::CCSMShadowCamera( float flBlendDistance, float flDistanceFactor, float flInitialDistance, float flNearZError, float flFarZError, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( flFadeNear, flFadeFar, 0.0f, uiBaseSize, 4.0f, uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+CCSMShadowCamera::CCSMShadowCamera( float flBlendDistance, float flDistanceFactor, float flInitialDistance, float flNearZError, float flFarZError, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority ) : BaseClass( flFadeNear, flFadeFar, 0.0f, uiBaseSize, 4.0f, uiRenderPriority )
 {
 	m_flBlendDistance = flBlendDistance;
 	m_flDistanceFactor = flDistanceFactor;

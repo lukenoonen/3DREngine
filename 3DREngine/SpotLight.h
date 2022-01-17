@@ -10,7 +10,7 @@ class CSpotLight : public CBaseLight
 public:
 	DECLARE_CLASS( CSpotLight, CBaseLight );
 
-	CSpotLight( float flCutoff, float flOuterCutoff, float flConstant, float flLinear, float flQuadratic, CSpotShadowCamera *pSpotShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CSpotLight( float flCutoff, float flOuterCutoff, float flConstant, float flLinear, float flQuadratic, CSpotShadowCamera *pSpotShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular );
 
 	virtual void ActivateLight( void );
 

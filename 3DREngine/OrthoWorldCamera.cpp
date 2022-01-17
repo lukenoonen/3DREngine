@@ -3,7 +3,7 @@
 #include "ShaderManager.h"
 #include "AssetManager.h"
 
-COrthoWorldCamera::COrthoWorldCamera( float flHeight, float flNear, float flFar, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive ) : BaseClass( uiBaseSize, flSizeRatio, uiBaseMSAALevel, uiRenderPriority, vecPosition, vecRotation, vecScale, bShouldDraw, bActive )
+COrthoWorldCamera::COrthoWorldCamera( float flHeight, float flNear, float flFar, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority ) : BaseClass( uiBaseSize, flSizeRatio, uiBaseMSAALevel, uiRenderPriority )
 {
 	flHeight *= 0.5f;
 	float flWidth = flHeight * flSizeRatio;

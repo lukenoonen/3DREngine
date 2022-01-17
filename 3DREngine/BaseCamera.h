@@ -9,7 +9,7 @@ class CBaseCamera : public CBaseTransform
 public:
 	DECLARE_CLASS( CBaseCamera, CBaseTransform );
 
-	CBaseCamera( unsigned int uiRenderPriority, const glm::vec3 &vecPosition, const glm::vec3 &vecRotation, const glm::vec3 &vecScale, bool bShouldDraw, bool bActive );
+	CBaseCamera( unsigned int uiRenderPriority );
 
 	virtual bool IsCamera( void ) const;
 
