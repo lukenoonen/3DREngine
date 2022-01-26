@@ -10,8 +10,12 @@ CLitMaterial::CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, CTexture *p
 	m_pNormal = pNormal;
 
 	m_pDiffuse->Activate();
+
+	if (m_pSpecular)
 	m_pSpecular->Activate();
-	m_pNormal->Activate();
+
+	if (m_pNormal)
+		m_pNormal->Activate();
 
 	m_flShininess = flShininess;
 
@@ -31,12 +35,19 @@ CLitMaterial::CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, CTexture *p
 CLitMaterial::~CLitMaterial()
 {
 	m_pDiffuse->Inactivate();
-	m_pSpecular->Inactivate();
-	m_pNormal->Inactivate();
-
 	pAssetManager->CheckTexture( m_pDiffuse );
-	pAssetManager->CheckTexture( m_pSpecular );
-	pAssetManager->CheckTexture( m_pNormal );
+
+	if (m_pSpecular)
+	{
+		m_pSpecular->Inactivate();
+		pAssetManager->CheckTexture( m_pSpecular );
+	}
+
+	if (m_pNormal)
+	{
+		m_pNormal->Inactivate();
+		pAssetManager->CheckTexture( m_pNormal );
+	}
 }
 
 void CLitMaterial::Use( void )

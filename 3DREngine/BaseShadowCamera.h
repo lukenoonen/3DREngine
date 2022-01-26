@@ -9,9 +9,13 @@ class CBaseShadowCamera : public CBaseVariableSizeCamera
 public:
 	DECLARE_CLASS( CBaseShadowCamera, CBaseVariableSizeCamera );
 
-	CBaseShadowCamera( float flFadeNear, float flFadeFar, float flBlurScale, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiRenderPriority );
+	CBaseShadowCamera();
 
 	virtual void ActivateLight( void );
+
+	void SetFadeNear( float flFadeNear );
+
+	void SetFadeFar( float flFadeFar );
 
 	void SetBlurScale( float flBlurScale );
 

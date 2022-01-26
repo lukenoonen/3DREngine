@@ -1,64 +1,81 @@
 #include "CSMShadowCamera.h"
 #include "CommandManager.h"
 #include "BasePlayerCamera.h"
-#include "EntityManager.h"
-#include "RenderManager.h"
 #include "ShaderManager.h"
+#include "RenderManager.h"
+#include "EntityManager.h"
 #include "AssetManager.h"
 
-CCSMShadowCamera::CCSMShadowCamera( float flBlendDistance, float flDistanceFactor, float flInitialDistance, float flNearZError, float flFarZError, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority ) : BaseClass( flFadeNear, flFadeFar, 0.0f, uiBaseSize, 4.0f, uiRenderPriority )
+CCSMShadowCamera::CCSMShadowCamera()
 {
-	m_flBlendDistance = flBlendDistance;
-	m_flDistanceFactor = flDistanceFactor;
-	m_flInitialDistance = flInitialDistance;
-	m_flNearZError = flNearZError;
-	m_flFarZError = flFarZError;
+	m_flBlendDistance = 6.0f;
+	m_flDistanceFactor = 4.0f;
+	m_flInitialDistance = 6.0f;
+	m_flNearError = -60.0f;
+	m_flFarError = 60.0f;
+	m_flBlurRadius = 0.0f;
 
-	m_flBlurRadius = flBlurRadius;
+	SetSizeRatio( 4.0f );
+}
+
+void CCSMShadowCamera::Init( void )
+{
+	m_bUpdateCascade = false;
+	m_bUpdateRadius = false;
+	m_bUpdateTotal = false;
+	m_bUpdateNearFar = false;
+	m_bUpdateBlurScale = false;
+
+	BaseClass::Init();
 
 	CalculateCascade();
 	CalculateRadius();
 	CalculateTotal();
 	CalculateNearFar();
 
-	CreateTextureBuffers();
+	SetBlurScale( m_flBlurRadius * 0.5f / m_flRadius[0] );
 }
 
-CCSMShadowCamera::~CCSMShadowCamera()
-{
-	DestroyTextureBuffers();
-}
-
-void CCSMShadowCamera::PostThink()
+void CCSMShadowCamera::PostThink( void )
 {
 	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetPlayer()->GetCamera();
-	bool bCalculateTotal = pPlayerCamera->PositionUpdated() || pPlayerCamera->RotationUpdated() || RotationUpdated() || cf_r_vcsizefactor.WasDispatched();
+	m_bUpdateCascade = m_bUpdateCascade || cf_r_near.WasDispatched();
+	m_bUpdateRadius = m_bUpdateCascade || cf_r_fov.WasDispatched() || cv_r_windowsize.WasDispatched();
+	m_bUpdateTotal = m_bUpdateTotal || m_bUpdateRadius || pPlayerCamera->PositionUpdated() || pPlayerCamera->RotationUpdated() || RotationUpdated() || cf_r_vcsizefactor.WasDispatched(); // TODO: swap cf_r_vcsizefactor for on size change
+	m_bUpdateNearFar = m_bUpdateNearFar || m_bUpdateCascade || cf_r_far.WasDispatched();
+	m_bUpdateBlurScale = m_bUpdateBlurScale || m_bUpdateRadius;
 
-	if (cf_r_near.WasDispatched())
+	if (m_bUpdateCascade)
 	{
 		CalculateCascade();
-		CalculateRadius();
-		CalculateNearFar();
-		bCalculateTotal = true;
+		m_bUpdateCascade = false;
 	}
-	else
+
+	if (m_bUpdateRadius)
 	{
-		if (cf_r_fov.WasDispatched() || cv_r_windowsize.WasDispatched())
-		{
-			CalculateRadius();
-			bCalculateTotal = true;
-		}
-
-		if (cf_r_far.WasDispatched())
-		{
-			CalculateNearFar();
-		}
+		CalculateRadius();
+		m_bUpdateRadius = false;
 	}
 
-	if (bCalculateTotal)
+	if (m_bUpdateTotal)
 	{
 		CalculateTotal();
+		m_bUpdateTotal = false;
 	}
+
+	if (m_bUpdateNearFar)
+	{
+		CalculateNearFar();
+		m_bUpdateNearFar = false;
+	}
+
+	if (m_bUpdateBlurScale)
+	{
+		SetBlurScale( m_flBlurRadius * 0.5f / m_flRadius[0] );
+		m_bUpdateBlurScale = false;
+	}
+
+	BaseClass::PostThink();
 }
 
 void CCSMShadowCamera::Render( void )
@@ -73,11 +90,60 @@ void CCSMShadowCamera::Render( void )
 	for (unsigned int i = 0; i < 4; i++)
 	{
 		pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 1, &m_matTotal[i] );
+
 		pRenderManager->SetViewportOffset( glm::ivec2( vecSize.x * i, 0 ) );
-		pRenderManager->DrawNonLitEntities();
+
+		pEntityManager->DrawUnlitEntities();
 	}
 
 	pRenderManager->SetViewportOffset( g_vec2Zero );
+}
+
+void CCSMShadowCamera::ActivateLight( void )
+{
+	BaseClass::ActivateLight();
+
+	pRenderManager->SetShadowMapIndex( pAssetManager->BindTexture( m_uiTexture, GL_TEXTURE_2D ) );
+
+	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 4, m_matTotal );
+	pShaderManager->SetUniformBufferObject( UBO_SHADOWCASCADEFADE, 0, &m_vecCascadeEndClipSpaceNear );
+	pShaderManager->SetUniformBufferObject( UBO_SHADOWCASCADEFADE, 1, &m_vecCascadeEndClipSpaceFar );
+}
+
+void CCSMShadowCamera::SetBlendDistance( float flBlendDistance )
+{
+	m_flBlendDistance = flBlendDistance;
+	m_bUpdateCascade = true;
+}
+
+void CCSMShadowCamera::SetDistanceFactor( float flDistanceFactor )
+{
+	m_flDistanceFactor = flDistanceFactor;
+	m_bUpdateCascade = true;
+}
+
+void CCSMShadowCamera::SetInitialDistance( float flInitialDistance )
+{
+	m_flInitialDistance = flInitialDistance;
+	m_bUpdateCascade = true;
+}
+
+void CCSMShadowCamera::SetNearError( float flNearError )
+{
+	m_flNearError = flNearError;
+	m_bUpdateTotal = true;
+}
+
+void CCSMShadowCamera::SetFarError( float flFarError )
+{
+	m_flFarError = flFarError;
+	m_bUpdateTotal = true;
+}
+
+void CCSMShadowCamera::SetBlurRadius( float flBlurRadius )
+{
+	m_flBlurRadius = flBlurRadius;
+	m_bUpdateBlurScale = true;
 }
 
 void CCSMShadowCamera::CreateTextureBuffers( void )
@@ -108,17 +174,6 @@ void CCSMShadowCamera::DestroyTextureBuffers( void )
 	glDeleteTextures( 1, &m_uiTexture );
 }
 
-void CCSMShadowCamera::ActivateLight( void )
-{
-	BaseClass::ActivateLight();
-
-	pRenderManager->SetShadowMapIndex( pAssetManager->BindTexture( m_uiTexture, GL_TEXTURE_2D ) );
-
-	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 4, m_matTotal );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWCASCADEFADE, 0, &m_vecCascadeEndClipSpaceNear );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWCASCADEFADE, 1, &m_vecCascadeEndClipSpaceFar );
-}
-
 void CCSMShadowCamera::CalculateCascade( void )
 {
 	float flBlendDistance = m_flBlendDistance;
@@ -143,8 +198,6 @@ void CCSMShadowCamera::CalculateRadius( void )
 		float farWidth = farHeight * cv_r_windowsize.GetValue().x / cv_r_windowsize.GetValue().y;
 		m_flRadius[i] = glm::sqrt( m_flCascadeEnd[i + 1] * m_flCascadeEnd[i + 1] + farHeight * farHeight + farWidth * farWidth );
 	}
-
-	SetBlurScale( m_flBlurRadius * 0.5f / m_flRadius[0] );
 }
 
 void CCSMShadowCamera::CalculateTotal( void )
@@ -161,7 +214,7 @@ void CCSMShadowCamera::CalculateTotal( void )
 		glm::vec3 maxOrtho = glm::vec3( matLightView * glm::vec4( vecFrustumCenter, 1.0f ) ) + glm::vec3( m_flRadius[i] );
 		glm::vec3 minOrtho = glm::vec3( matLightView * glm::vec4( vecFrustumCenter, 1.0f ) ) - glm::vec3( m_flRadius[i] );
 
-		glm::mat4 matLightOrtho = glm::ortho( minOrtho.x, maxOrtho.x, minOrtho.y, maxOrtho.y, minOrtho.z + m_flNearZError, maxOrtho.z + m_flFarZError );
+		glm::mat4 matLightOrtho = glm::ortho( minOrtho.x, maxOrtho.x, minOrtho.y, maxOrtho.y, minOrtho.z + m_flNearError, maxOrtho.z + m_flFarError );
 		glm::vec4 vecShadowOrigin = ((matLightOrtho * matLightView) * glm::vec4( 0.0f, 0.0f, 0.0f, 1.0f )) * flShadowSize * 0.5f;
 		glm::vec4 vecRoundOffset = glm::round( vecShadowOrigin ) - vecShadowOrigin;
 		vecRoundOffset = vecRoundOffset * 2.0f / flShadowSize;

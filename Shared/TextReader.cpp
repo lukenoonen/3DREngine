@@ -1,44 +1,15 @@
 #include "TextReader.h"
 #include "UTIL.h"
 
-CTextReader::CTextReader()
-{
-	m_pTextInformation = NULL;
-	m_sText = NULL;
-}
-CTextReader::~CTextReader()
-{
-	Reset();
-}
-
-void CTextReader::InitFromFile( const char *sFilePath )
-{
-	m_sText = UTIL_readf( sFilePath );
-	if (!m_sText)
-		return;
-
-	m_pTextInformation = new CTextInformation( m_sText );
-}
-
-void CTextReader::InitFromText( const char *sText )
+CTextReader::CTextReader( const char *sText )
 {
 	m_sText = UTIL_stredit( sText );
 	m_pTextInformation = new CTextInformation( m_sText );
 }
-
-void CTextReader::Reset( void )
+CTextReader::~CTextReader()
 {
-	if (m_pTextInformation)
-	{
-		delete m_pTextInformation;
-		m_pTextInformation = NULL;
-	}
-
-	if (m_sText)
-	{
-		delete[] m_sText;
-		m_sText = NULL;
-	}
+	delete[] m_sText;
+	delete m_pTextInformation;
 }
 
 CTextInformation *CTextReader::GetTextInformation( void ) const

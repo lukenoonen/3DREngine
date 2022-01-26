@@ -1,24 +1,65 @@
 #include "SpotShadowCamera.h"
 #include "CommandManager.h"
-#include "RenderManager.h"
 #include "ShaderManager.h"
+#include "RenderManager.h"
+#include "EntityManager.h"
 #include "AssetManager.h"
 
-CSpotShadowCamera::CSpotShadowCamera( float flOuterCutoff, float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority ) : BaseClass( flFadeNear, flFadeFar, flBlurRadius / (tanf( flOuterCutoff ) * M_SQRT2), uiBaseSize, 1.0f, uiRenderPriority )
+CSpotShadowCamera::CSpotShadowCamera()
 {
-	m_matProjection = glm::perspective( flOuterCutoff * 2.0f, 1.0f, flZNear, flZFar );
-	m_matTotal = m_matProjection * glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+	m_flNear = 0.1f;
+	m_flFar = 1000.0f;
+	m_flOuterCutoff = 0.7071f;
+	m_flBlurRadius = 0.0f;
+
+	SetSizeRatio( 1.0f );
 }
 
-CSpotShadowCamera::~CSpotShadowCamera()
+void CSpotShadowCamera::Init( void )
 {
-	DestroyTextureBuffers();
+	m_bUpdateProjection = false;
+	m_bUpdateBlurScale = false;
+
+	m_matProjection = glm::perspective( m_flOuterCutoff * 2.0f, 1.0f, m_flNear, m_flFar );
+	m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+	m_matTotal = m_matProjection * m_matView;
+
+	SetBlurScale( m_flBlurRadius / (tanf( m_flOuterCutoff ) * M_SQRT2) );
+
+	BaseClass::Init();
 }
 
 void CSpotShadowCamera::PostThink( void )
 {
+	bool bUpdateTotal = false;
+
+	if (m_bUpdateProjection)
+	{
+		m_matProjection = glm::perspective( m_flOuterCutoff * 2.0f, 1.0f, m_flNear, m_flFar );
+		m_bUpdateBlurScale = false;
+
+		bUpdateTotal = true;
+	}
+
 	if (PositionUpdated() || RotationUpdated())
-		m_matTotal = m_matProjection * glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+	{
+		m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+
+		bUpdateTotal = true;
+	}
+
+	if (bUpdateTotal)
+	{
+		m_matTotal = m_matProjection * m_matView;
+	}
+
+	if (m_bUpdateBlurScale)
+	{
+		SetBlurScale( m_flBlurRadius / (tanf( m_flOuterCutoff ) * M_SQRT2) );
+		m_bUpdateBlurScale = false;
+	}
+
+	BaseClass::PostThink();
 }
 
 void CSpotShadowCamera::Render( void )
@@ -29,7 +70,42 @@ void CSpotShadowCamera::Render( void )
 	pRenderManager->SetRenderPass( RENDERPASS_SHADOW_SPOT );
 
 	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 1, &m_matTotal );
-	pRenderManager->DrawNonLitEntities();
+
+	pEntityManager->DrawUnlitEntities();
+}
+
+void CSpotShadowCamera::ActivateLight( void )
+{
+	BaseClass::ActivateLight();
+
+	pRenderManager->SetShadowMapIndex( pAssetManager->BindTexture( m_uiTexture, GL_TEXTURE_2D ) );
+
+	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 1, &m_matTotal );
+}
+
+void CSpotShadowCamera::SetNear( float flNear )
+{
+	m_flNear = flNear;
+	m_bUpdateProjection = true;
+}
+
+void CSpotShadowCamera::SetFar( float flFar )
+{
+	m_flFar = flFar;
+	m_bUpdateProjection = true;
+}
+
+void CSpotShadowCamera::SetOuterCutoff( float flOuterCutoff )
+{
+	m_flOuterCutoff = flOuterCutoff;
+	m_bUpdateProjection = true;
+	m_bUpdateBlurScale = true;
+}
+
+void CSpotShadowCamera::SetBlurRadius( float flBlurRadius )
+{
+	m_flBlurRadius = flBlurRadius;
+	m_bUpdateBlurScale = true;
 }
 
 void CSpotShadowCamera::CreateTextureBuffers( void )
@@ -58,13 +134,4 @@ void CSpotShadowCamera::DestroyTextureBuffers( void )
 
 	glDeleteFramebuffers( 1, &m_uiTextureFBO );
 	glDeleteTextures( 1, &m_uiTexture );
-}
-
-void CSpotShadowCamera::ActivateLight( void )
-{
-	BaseClass::ActivateLight();
-
-	pRenderManager->SetShadowMapIndex( pAssetManager->BindTexture( m_uiTexture, GL_TEXTURE_2D ) );
-
-	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 1, &m_matTotal );
 }

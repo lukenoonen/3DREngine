@@ -10,7 +10,9 @@ class CDirLight : public CBaseLight
 public:
 	DECLARE_CLASS( CDirLight, CBaseLight );
 
-	CDirLight( CDirShadowCamera *pDirShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular );
+	CDirLight();
+
+	void SetShadowCamera( CDirShadowCamera *pDirShadowCamera );
 
 	virtual void ActivateLight( void );
 };

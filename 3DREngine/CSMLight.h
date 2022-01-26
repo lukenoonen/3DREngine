@@ -10,7 +10,9 @@ class CCSMLight : public CBaseLight
 public:
 	DECLARE_CLASS( CCSMLight, CBaseLight );
 
-	CCSMLight( CCSMShadowCamera *pCSMShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular );
+	CCSMLight();
+
+	void SetShadowCamera( CCSMShadowCamera *pCSMShadowCamera );
 
 	virtual void ActivateLight( void );
 };

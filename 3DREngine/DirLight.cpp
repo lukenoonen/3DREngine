@@ -2,9 +2,14 @@
 #include "RenderManager.h"
 #include "ShaderManager.h"
 
-CDirLight::CDirLight( CDirShadowCamera *pDirShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular ) : BaseClass( pDirShadowCamera, vecAmbient, vecDiffuse, vecSpecular )
+CDirLight::CDirLight()
 {
 
+}
+
+void CDirLight::SetShadowCamera( CDirShadowCamera *pDirShadowCamera )
+{
+	BaseClass::SetShadowCamera( pDirShadowCamera );
 }
 
 void CDirLight::ActivateLight( void )

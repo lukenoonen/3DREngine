@@ -1,34 +1,56 @@
 #include "OrthoWorldCamera.h"
 #include "RenderManager.h"
 #include "ShaderManager.h"
+#include "EntityManager.h"
 #include "AssetManager.h"
 
-COrthoWorldCamera::COrthoWorldCamera( float flHeight, float flNear, float flFar, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority ) : BaseClass( uiBaseSize, flSizeRatio, uiBaseMSAALevel, uiRenderPriority )
+COrthoWorldCamera::COrthoWorldCamera()
 {
-	flHeight *= 0.5f;
-	float flWidth = flHeight * flSizeRatio;
-	m_matProjection = glm::ortho( -flWidth, flWidth, -flHeight, flHeight, flNear, flFar );
-
-	glm::mat4 matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
-	m_matTotal = m_matProjection * matView;
-	m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( matView ) );
-
-	CreateTextureBuffers();
+	m_flHeight = 16.0f;
+	m_flNear = -16.0f;
+	m_flFar = 16.0f;
 }
 
-COrthoWorldCamera::~COrthoWorldCamera()
+void COrthoWorldCamera::Init( void )
 {
-	DestroyTextureBuffers();
+	m_bUpdateProjection = false;
+
+	float flWidth = m_flHeight * GetSizeRatio();
+	m_matProjection = glm::ortho( -flWidth, flWidth, -m_flHeight, m_flHeight, m_flNear, m_flFar );
+	m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+	m_matTotal = m_matProjection * m_matView;
+	m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( m_matView ) );
+
+	BaseClass::Init();
 }
 
 void COrthoWorldCamera::PostThink( void )
 {
+	bool bUpdateTotal = false;
+
+	if (m_bUpdateProjection)
+	{
+		float flWidth = m_flHeight * GetSizeRatio();
+		m_matProjection = glm::ortho( -flWidth, flWidth, -m_flHeight, m_flHeight, m_flNear, m_flFar );
+		m_bUpdateProjection = false;
+
+		bUpdateTotal = true;
+	}
+
 	if (PositionUpdated() || RotationUpdated())
 	{
-		glm::mat4 matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
-		m_matTotal = m_matProjection * matView;
-		m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( matView ) );
+		m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+
+		bUpdateTotal = true;
 	}
+
+	if (bUpdateTotal)
+	{
+		m_matTotal = m_matProjection * m_matView;
+		m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( m_matView ) );
+	}
+
+	BaseClass::PostThink();
 }
 
 void COrthoWorldCamera::Render( void )
@@ -43,7 +65,7 @@ void COrthoWorldCamera::Render( void )
 	pShaderManager->SetUniformBufferObject( UBO_VIEW, 1, &m_matTotalLocked );
 	pShaderManager->SetUniformBufferObject( UBO_VIEW, 2, &GetPosition() );
 
-	pRenderManager->DrawEntities();
+	pEntityManager->DrawEntities();
 
 	if (bMSAA)
 	{
@@ -51,6 +73,24 @@ void COrthoWorldCamera::Render( void )
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_uiTextureFBO );
 		glBlitFramebuffer( 0, 0, vecSize.x, vecSize.y, 0, 0, vecSize.x, vecSize.y, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 	}
+}
+
+void COrthoWorldCamera::SetHeight( float flHeight )
+{
+	m_flHeight = flHeight * 0.5f;
+	m_bUpdateProjection = true;
+}
+
+void COrthoWorldCamera::SetNear( float flNear )
+{
+	m_flNear = flNear;
+	m_bUpdateProjection = true;
+}
+
+void COrthoWorldCamera::SetFar( float flFar )
+{
+	m_flFar = flFar;
+	m_bUpdateProjection = true;
 }
 
 void COrthoWorldCamera::CreateTextureBuffers( void )

@@ -31,8 +31,6 @@ bool CFileManager::ReadEntireFile( const char *sFilePath, char *&sData )
 	return bSuccess;
 }
 
-#include <iostream>
-
 bool CFileManager::OpenFile( const char *sFilePath )
 {
 	const char *sExtension = UTIL_extn( sFilePath );

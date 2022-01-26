@@ -2,6 +2,4 @@ type material;
 material lit;
 name testcharacter;
 diffuse testcharacter.3tx;
-specular testcharacter.3tx;
-normal testcharacter.3tx;
 shininess 4.0;

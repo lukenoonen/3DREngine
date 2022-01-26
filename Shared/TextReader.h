@@ -12,18 +12,14 @@ class CTextTerm;
 class CTextReader
 {
 public:
-	CTextReader();
+	CTextReader( const char *sText );
 	~CTextReader();
-
-	void InitFromFile( const char *sFilePath );
-	void InitFromText( const char *sText );
-	void Reset( void );
 
 	CTextInformation *GetTextInformation( void ) const;
 
 private:
-	CTextInformation *m_pTextInformation;
 	char *m_sText;
+	CTextInformation *m_pTextInformation;
 };
 
 class CTextInformation

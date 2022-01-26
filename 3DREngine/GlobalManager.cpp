@@ -16,7 +16,7 @@ CGlobalValues::CGlobalValues()
 	m_flCurrentTime = 0.0f;
 	m_flPreviousTime = 0.0f;
 
-	m_ulFrameCount = 0;
+	m_uiFrameCount = 1;
 
 	m_flTime = 0.0f;
 	m_flFrameTime = 0.0f;
@@ -37,9 +37,9 @@ bool CGlobalValues::ShouldLoop( void )
 	return m_flCurrentTime - m_flPreviousTime > flSecondsPerFrame;
 }
 
-unsigned long CGlobalValues::GetFrameCount( void )
+unsigned int CGlobalValues::GetFrameCount( void )
 {
-	return m_ulFrameCount;
+	return m_uiFrameCount;
 }
 
 float CGlobalValues::GetTime( void )
@@ -69,7 +69,7 @@ bool CGlobalValues::MarkedForQuit( void )
 
 void CGlobalValues::OnLoop( void )
 {
-	m_ulFrameCount++;
+	m_uiFrameCount++;
 
 	m_flFrameTimeNoScale = m_flCurrentTime - m_flPreviousTime;
 	m_flFrameTime = m_flFrameTimeNoScale * cf_timescale.GetValue();

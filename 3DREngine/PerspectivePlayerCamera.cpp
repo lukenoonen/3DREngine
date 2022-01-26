@@ -1,14 +1,22 @@
 #include "PerspectivePlayerCamera.h"
 #include "RenderManager.h"
 #include "ShaderManager.h"
+#include "EntityManager.h"
 
-CPerspectivePlayerCamera::CPerspectivePlayerCamera( unsigned int uiRenderPriority ) : BaseClass( uiRenderPriority )
+CPerspectivePlayerCamera::CPerspectivePlayerCamera()
+{
+
+}
+
+void CPerspectivePlayerCamera::Init( void )
 {
 	const glm::ivec2 &vecSize = GetSize();
 	m_matProjection = glm::perspective( glm::radians( cf_r_fov.GetValue() ), (float)vecSize.x / (float)vecSize.y, cf_r_near.GetValue(), cf_r_far.GetValue() );
 	m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
 	m_matTotal = m_matProjection * m_matView;
 	m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( m_matView ) );
+
+	BaseClass::Init();
 }
 
 void CPerspectivePlayerCamera::PostThink( void )
@@ -33,6 +41,8 @@ void CPerspectivePlayerCamera::PostThink( void )
 		m_matTotal = m_matProjection * m_matView;
 		m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( m_matView ) );
 	}
+
+	BaseClass::PostThink();
 }
 
 void CPerspectivePlayerCamera::Render( void )
@@ -47,7 +57,7 @@ void CPerspectivePlayerCamera::Render( void )
 	pShaderManager->SetUniformBufferObject( UBO_VIEW, 1, &m_matTotalLocked );
 	pShaderManager->SetUniformBufferObject( UBO_VIEW, 2, &GetPosition() );
 
-	pRenderManager->DrawEntities();
+	pEntityManager->DrawEntities();
 
 	if (bMSAA)
 	{

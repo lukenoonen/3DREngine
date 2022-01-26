@@ -9,7 +9,9 @@ class COrthoPlayerCamera : public CBasePlayerCamera
 public:
 	DECLARE_CLASS( COrthoPlayerCamera, CBasePlayerCamera );
 
-	COrthoPlayerCamera( unsigned int uiRenderPriority );
+	COrthoPlayerCamera();
+
+	virtual void Init( void );
 
 	virtual void PostThink( void );
 

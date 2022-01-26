@@ -6,7 +6,7 @@
 #include "GlobalManager.h"
 
 bool CV_R_WindowSize( void );
-CConIVec2 cv_r_windowsize( glm::ivec2( 1920, 1080 ), "r_windowsize", CV_R_WindowSize );
+CConIVec2 cv_r_windowsize( glm::ivec2( 800, 600 ), "r_windowsize", CV_R_WindowSize );
 bool CV_R_WindowSize( void )
 {
 	const glm::ivec2 &vecWindowSize = cv_r_windowsize.GetValue();
@@ -15,7 +15,7 @@ bool CV_R_WindowSize( void )
 }
 
 bool CB_R_Fullscreen( void );
-CConBool cb_r_fullscreen( true, "r_fullscreen", CB_R_Fullscreen );
+CConBool cb_r_fullscreen( false, "r_fullscreen", CB_R_Fullscreen );
 bool CB_R_Fullscreen( void )
 {
 	const glm::ivec2 &vecWindowSize = cv_r_windowsize.GetValue();
@@ -91,12 +91,6 @@ CRenderManager::~CRenderManager()
 
 void CRenderManager::OnLoop( void )
 {
-	for (unsigned int i = 0; i < (unsigned int)m_pCameraEntities.size(); i++)
-	{
-		if (m_pCameraEntities[i]->ShouldDraw())
-			m_pCameraEntities[i]->Render();
-	}
-
 	glfwSwapBuffers( m_pWindow );
 }
 
@@ -118,131 +112,6 @@ GLFWmonitor *CRenderManager::GetMonitor( void )
 GLFWwindow *CRenderManager::GetWindow( void )
 {
 	return m_pWindow;
-}
-
-void CRenderManager::DrawEntities( void )
-{
-	SetRenderPass( RENDERPASS_DEPTH );
-	DrawNonLitEntities();
-
-	SetRenderPass( RENDERPASS_UNLIT );
-	DrawNonLitEntities();
-
-	DrawLitEntities();
-}
-
-void CRenderManager::DrawNonLitEntities( void )
-{
-	for (unsigned int i = 0; i < m_pDrawEntities.size(); i++)
-	{
-		if (m_pDrawEntities[i]->ShouldDraw())
-		{
-			m_pDrawEntities[i]->PreDraw();
-			m_pDrawEntities[i]->Draw();
-			m_pDrawEntities[i]->PostDraw();
-		}
-	}
-}
-
-void CRenderManager::DrawLitEntities( void )
-{
-	for (unsigned int i = 0; i < m_pDrawEntities.size(); i++)
-	{
-		if (m_pDrawEntities[i]->ShouldDraw())
-		{
-			SetBlend( false );
-			m_pDrawEntities[i]->PreDraw();
-			unsigned int uiDrawCount = 0;
-			for (unsigned int j = 0; j < m_pLightEntities.size(); j++)
-			{
-				if (m_pLightEntities[j]->ShouldDraw())
-				{
-					if (uiDrawCount == 1)
-						SetBlend( true );
-
-					m_pLightEntities[j]->ActivateLight();
-					m_pDrawEntities[i]->Draw();
-					uiDrawCount++;
-				}
-			}
-			m_pDrawEntities[i]->PostDraw();
-		}
-	}
-
-	SetBlend( false );
-}
-
-void CRenderManager::AddEntity( CBaseEntity *pEntity )
-{
-	if (pEntity->IsLight())
-	{
-		m_pLightEntities.push_back( dynamic_cast<CBaseLight *>(pEntity) );
-	}
-	else if (pEntity->IsCamera())
-	{
-		bool bSuccess = false;
-		CBaseCamera *pCamera = dynamic_cast<CBaseCamera *>(pEntity);
-		for (unsigned int i = 0; i < (unsigned int)m_pCameraEntities.size(); i++)
-		{
-			if (pCamera->GetRenderPriority() <= m_pCameraEntities[i]->GetRenderPriority())
-			{
-				m_pCameraEntities.insert( m_pCameraEntities.begin() + i, pCamera );
-				bSuccess = true;
-				break;
-			}
-		}
-
-		if (!bSuccess)
-			m_pCameraEntities.push_back( pCamera );
-	}
-	else if (pEntity->IsDrawable())
-	{
-		m_pDrawEntities.push_back( dynamic_cast<CBaseDrawable *>(pEntity) );
-	}
-}
-
-void CRenderManager::RemoveEntity( CBaseEntity *pEntity )
-{
-	if (pEntity->IsLight())
-	{
-		for (unsigned int i = 0; i < m_pLightEntities.size(); i++)
-		{
-			if (m_pLightEntities[i] == pEntity)
-			{
-				m_pLightEntities.erase( m_pLightEntities.begin() + i );
-				return;
-			}
-		}
-	}
-	else if (pEntity->IsDrawable())
-	{
-		for (unsigned int i = 0; i < m_pDrawEntities.size(); i++)
-		{
-			if (m_pDrawEntities[i] == pEntity)
-			{
-				m_pDrawEntities.erase( m_pDrawEntities.begin() + i );
-				return;
-			}
-		}
-	}
-	else if (pEntity->IsCamera())
-	{
-		for (unsigned int i = 0; i < m_pCameraEntities.size(); i++)
-		{
-			if (m_pCameraEntities[i] == pEntity)
-			{
-				m_pCameraEntities.erase( m_pCameraEntities.begin() + i );
-				return;
-			}
-		}
-	}
-}
-
-void CRenderManager::ClearEntities( void )
-{
-	m_pDrawEntities.clear();
-	m_pLightEntities.clear();
-	m_pCameraEntities.clear();
 }
 
 void CRenderManager::SetFrameBuffer( unsigned int uiFrameBuffer )

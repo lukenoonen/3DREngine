@@ -9,10 +9,11 @@ class CBaseSizeCamera : public CBaseCamera
 public:
 	DECLARE_CLASS( CBaseSizeCamera, CBaseCamera );
 
-	CBaseSizeCamera( const glm::vec2 &vecSize, unsigned int uiRenderPriority );
+	CBaseSizeCamera();
 
 	void SetSize( const glm::ivec2 vecSize );
 
+protected:
 	const glm::ivec2 &GetSize( void ) const;
 
 private:

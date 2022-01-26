@@ -6,11 +6,9 @@
 #include "ShaderManager.h"
 #include "CommandManager.h"
 
-CBasePlayer::CBasePlayer( CBasePlayerCamera *pCamera )
+CBasePlayer::CBasePlayer()
 {
-	pCamera->SetPlayerCamera( true );
-
-	m_pCamera = pCamera;
+	m_pCamera = NULL;
 }
 
 bool CBasePlayer::IsPlayer( void ) const
@@ -20,10 +18,16 @@ bool CBasePlayer::IsPlayer( void ) const
 
 void CBasePlayer::SetCamera( CBasePlayerCamera *pCamera )
 {
-	m_pCamera->SetPlayerCamera( false );
-	pCamera->SetPlayerCamera( true );
+	if (m_pCamera != pCamera)
+	{
+		if (m_pCamera)
+			m_pCamera->SetPlayerCamera( false );
 
-	m_pCamera = pCamera;
+		m_pCamera = pCamera;
+
+		if (m_pCamera)
+			m_pCamera->SetPlayerCamera( true );
+	}
 }
 
 CBasePlayerCamera *CBasePlayer::GetCamera( void ) const

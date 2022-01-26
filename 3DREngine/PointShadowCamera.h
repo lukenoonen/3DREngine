@@ -9,23 +9,35 @@ class CPointShadowCamera : public CBaseShadowCamera
 public:
 	DECLARE_CLASS( CPointShadowCamera, CBaseShadowCamera );
 
-	CPointShadowCamera( float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority );
-	virtual ~CPointShadowCamera();
+	CPointShadowCamera();
+
+	virtual void Init( void );
 
 	virtual void PostThink( void );
 
 	virtual void Render( void );
 
+	virtual void ActivateLight( void );
+
+	void SetNear( float flNear );
+
+	void SetFar( float flFar );
+
+	void SetBlurRadius( float flBlurRadius );
+
+protected:
 	virtual void CreateTextureBuffers( void );
 	virtual void DestroyTextureBuffers( void );
 
-	virtual void ActivateLight( void );
-
 private:
-	float m_flMaxRadius;
+	float m_flNear;
+	float m_flFar;
 
 	glm::mat4 m_matProjection;
+	glm::mat4 m_matView[6];
 	glm::mat4 m_matTotal[6];
+
+	bool m_bUpdateProjection;
 
 	unsigned int m_uiTextureFBO;
 	unsigned int m_uiTexture;

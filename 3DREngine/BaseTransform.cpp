@@ -15,9 +15,19 @@ CBaseTransform::CBaseTransform()
 	m_bParentScale = true;
 	m_bParentScalePosition = true;
 	
-	m_uiLastFramePositionUpdated = pGlobalValues->GetFrameCount();
-	m_uiLastFrameRotationUpdated = pGlobalValues->GetFrameCount();
-	m_uiLastFrameScaleUpdated = pGlobalValues->GetFrameCount();
+	m_uiLastFramePositionUpdated = 0;
+	m_uiLastFrameRotationUpdated = 0;
+	m_uiLastFrameScaleUpdated = 0;
+}
+
+
+void CBaseTransform::Init( void )
+{
+	m_uiLastFramePositionUpdated = 0;
+	m_uiLastFrameRotationUpdated = 0;
+	m_uiLastFrameScaleUpdated = 0;
+
+	BaseClass::Init();
 }
 
 void CBaseTransform::SetPosition( const glm::vec3 &vecPosition )

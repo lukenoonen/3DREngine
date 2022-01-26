@@ -1,6 +1,6 @@
 #include "BasePlayerCamera.h"
 
-CBasePlayerCamera::CBasePlayerCamera( unsigned int uiRenderPriority ) : BaseClass( uiRenderPriority )
+CBasePlayerCamera::CBasePlayerCamera()
 {
 	m_bPlayerCamera = false;
 }

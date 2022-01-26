@@ -20,8 +20,13 @@ public:
 	virtual bool ShouldDraw( void ) const;
 	void SetShouldDraw( bool bShouldDraw );
 
+	void SetDrawIndex( unsigned int uiDrawIndex );
+	unsigned int GetDrawIndex( void ) const;
+
 private:
 	bool m_bShouldDraw;
+
+	unsigned int m_uiDrawIndex;
 };
 
 #endif // BASEDRAWABLE_H

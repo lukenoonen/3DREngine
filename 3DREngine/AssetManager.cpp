@@ -9,9 +9,9 @@ CAssetManager::CAssetManager()
 {
 	GLint iTempMaxTextures;
 	glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &iTempMaxTextures );
-	m_uiMaxTextures = (unsigned int)iTempMaxTextures;
+	m_uiMaxTextures = (unsigned int)iTempMaxTextures - 1;
 
-	glActiveTexture( GL_TEXTURE0 + m_uiMaxTextures - 1 );
+	glActiveTexture( GL_TEXTURE0 + m_uiMaxTextures );
 
 	m_uiTextureIndex = 0;
 }
@@ -522,18 +522,14 @@ CMaterial *CAssetManager::CreateMaterial( const char *sPath )
 		pSpecular = GetTexture( sSpecularPath );
 		delete[] sSpecularPath;
 
-		if (!pSpecular)
-		{
-			CheckTexture( pDiffuse );
-			pFileManager->CloseFile();
-			return NULL;
-		}
-
 		char *sNormalPath;
 		if (!pFileManager->Read( sNormalPath ))
 		{
 			CheckTexture( pDiffuse );
-			CheckTexture( pSpecular );
+
+			if (pSpecular)
+				CheckTexture( pSpecular );
+
 			pFileManager->CloseFile();
 			return NULL;
 		}
@@ -541,19 +537,16 @@ CMaterial *CAssetManager::CreateMaterial( const char *sPath )
 		pNormal = GetTexture( sNormalPath );
 		delete[] sNormalPath;
 
-		if (!pNormal)
-		{
-			CheckTexture( pDiffuse );
-			CheckTexture( pSpecular );
-			pFileManager->CloseFile();
-			return NULL;
-		}
-
 		if (!pFileManager->Read( flShininess ) || !pFileManager->Read( vecTextureScale ))
 		{
 			CheckTexture( pDiffuse );
-			CheckTexture( pSpecular );
-			CheckTexture( pNormal );
+
+			if (pSpecular)
+				CheckTexture( pSpecular );
+
+			if (pNormal)
+				CheckTexture( pNormal );
+
 			pFileManager->CloseFile();
 			return NULL;
 		}
@@ -1176,7 +1169,7 @@ int CAssetManager::BindTexture( unsigned int uiTextureID, unsigned int uiTexture
 	if (itTextureIDSearch == m_mapTextureIDToIndex.end())
 	{
 		unsigned int uiPrevTextureIndex = m_uiTextureIndex;
-		m_uiTextureIndex = (m_uiTextureIndex + 1) % (m_uiMaxTextures - 1);
+		m_uiTextureIndex = (m_uiTextureIndex + 1) % m_uiMaxTextures;
 
 		std::unordered_map<int, unsigned int>::iterator itIndexSearch = m_mapIndexToTextureID.find( uiPrevTextureIndex );
 		if (itIndexSearch != m_mapIndexToTextureID.end())
@@ -1190,7 +1183,7 @@ int CAssetManager::BindTexture( unsigned int uiTextureID, unsigned int uiTexture
 
 		glActiveTexture( GL_TEXTURE0 + uiPrevTextureIndex );
 		glBindTexture( uiTextureType, uiTextureID );
-		glActiveTexture( GL_TEXTURE0 + m_uiMaxTextures - 1 );
+		glActiveTexture( GL_TEXTURE0 + m_uiMaxTextures );
 
 		return uiPrevTextureIndex;
 	}

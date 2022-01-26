@@ -81,7 +81,7 @@ bool CBaseConCommand::Dispatch( CTextItem *pTextInformation )
 	m_uiFrameLastDispatched = pGlobalValues->GetFrameCount();
 
 	if (m_fnCommandCallbackVoid)
-		return !(*m_fnCommandCallbackVoid)();
+		return (*m_fnCommandCallbackVoid)();
 	else if (m_fnCommandCallback)
 		return (*m_fnCommandCallback)(pTextInformation);
 
@@ -525,13 +525,9 @@ void CCommandManager::ProcessCommand( const char *sCommand )
 		m_uiPreviousCommandsCount++;
 
 	if (!m_pCommands)
-	{
-		// pHUDManager->AddConsoleEntry( FONTTYPE_NORMAL, c_red, "Warning: no console commands!" );
 		return;
-	}
 
-	CTextReader trCommand;
-	trCommand.InitFromText( sCommand );
+	CTextReader trCommand( sCommand );
 	CTextInformation *pTextInformation = trCommand.GetTextInformation();
 
 	for (unsigned int i = 0; i < pTextInformation->GetTextItemCount(); i++)

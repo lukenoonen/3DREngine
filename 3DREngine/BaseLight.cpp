@@ -1,20 +1,13 @@
 #include "BaseLight.h"
 #include "ShaderManager.h"
 
-CBaseLight::CBaseLight( CBaseShadowCamera *pShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular )
+CBaseLight::CBaseLight()
 {
-	m_pShadowCamera = pShadowCamera;
-	if (m_pShadowCamera)
-	{
-		m_pShadowCamera->SetPosition( GetPosition() );
-		m_pShadowCamera->SetRotation( GetRotation() );
-		m_pShadowCamera->SetScale( GetScale() );
-		m_pShadowCamera->SetParent( this );
-	}
+	m_pShadowCamera = NULL;
 
-	m_vecAmbient = vecAmbient;
-	m_vecDiffuse = vecDiffuse;
-	m_vecSpecular = vecSpecular;
+	m_vecAmbient = g_vecOne * 0.1f;
+	m_vecDiffuse = g_vecOne * 0.9f;
+	m_vecSpecular = g_vecOne * 0.4f;
 }
 
 bool CBaseLight::IsLight( void ) const
@@ -37,4 +30,50 @@ void CBaseLight::ActivateLight( void )
 	{
 		pShaderManager->SetShaderShadow( SHADERSHADOW_FALSE );
 	}
+}
+
+void CBaseLight::SetAmbient( const glm::vec3 &vecAmbient )
+{
+	m_vecAmbient = vecAmbient;
+}
+
+void CBaseLight::SetDiffuse( const glm::vec3 &vecDiffuse )
+{
+	m_vecDiffuse = vecDiffuse;
+}
+
+void CBaseLight::SetSpecular( const glm::vec3 &vecSpecular )
+{
+	m_vecSpecular = vecSpecular;
+}
+
+void CBaseLight::SetShadowCamera( CBaseShadowCamera *pShadowCamera )
+{
+	if (m_pShadowCamera != pShadowCamera)
+	{
+		if (m_pShadowCamera)
+		{
+			m_pShadowCamera->SetParent( NULL );
+		}
+
+		m_pShadowCamera = pShadowCamera;
+
+		if (m_pShadowCamera)
+		{
+			m_pShadowCamera->SetPosition( GetPosition() );
+			m_pShadowCamera->SetRotation( GetRotation() );
+			m_pShadowCamera->SetScale( GetScale() );
+			m_pShadowCamera->SetParent( this );
+		}
+	}
+}
+
+void CBaseLight::CalculateMaxRadius( void )
+{
+
+}
+
+float CBaseLight::GetMaxDiffuse( void ) const
+{
+	return std::fmaxf( std::fmaxf( m_vecDiffuse.r, m_vecDiffuse.g ), m_vecDiffuse.b );
 }

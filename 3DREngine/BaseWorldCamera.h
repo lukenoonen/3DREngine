@@ -9,7 +9,7 @@ class CBaseWorldCamera : public CBaseVariableMSAACamera
 public:
 	DECLARE_CLASS( CBaseWorldCamera, CBaseVariableMSAACamera );
 
-	CBaseWorldCamera( unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority );
+	CBaseWorldCamera();
 };
 
 #endif // BASEWORLDCAMERA_H

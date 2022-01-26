@@ -11,6 +11,8 @@ public:
 
 	CBaseTransform();
 
+	virtual void Init( void );
+
 	void SetPosition( const glm::vec3 &vecPosition );
 	void SetRotation( const glm::quat &qRotation );
 	void SetScale( const glm::vec3 &vecScale );

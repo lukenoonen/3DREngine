@@ -2,13 +2,13 @@
 #include "RenderManager.h"
 #include "ShaderManager.h"
 
-CPointLight::CPointLight( float flConstant, float flLinear, float flQuadratic, CPointShadowCamera *pPointShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular ) : BaseClass( pPointShadowCamera, vecAmbient, vecDiffuse, vecSpecular )
+CPointLight::CPointLight()
 {
-	m_flConstant = flConstant;
-	m_flLinear = flLinear;
-	m_flQuadratic = flQuadratic;
+	m_flConstant = 1.0f;
+	m_flLinear = 0.09f;
+	m_flQuadratic = 0.032f;
 		
-	m_flMaxRadius = (-flLinear + std::sqrtf( flLinear * flLinear - 4.0f * flQuadratic * (flConstant - 100.0f * std::fmaxf( std::fmaxf( vecDiffuse.r, vecDiffuse.g ), vecDiffuse.b )) )) / (2.0f * flQuadratic);
+	m_flMaxRadius = 51.3501f;
 }
 
 void CPointLight::ActivateLight( void )
@@ -22,4 +22,32 @@ void CPointLight::ActivateLight( void )
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOINT, 1, &m_flLinear );
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOINT, 2, &m_flQuadratic );
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTMAXDISTANCE, 0, &m_flMaxRadius );
+}
+
+void CPointLight::SetShadowCamera( CPointShadowCamera *pPointShadowCamera )
+{
+	BaseClass::SetShadowCamera( pPointShadowCamera );
+}
+
+void CPointLight::SetConstant( float flConstant )
+{
+	m_flConstant = flConstant;
+	CalculateMaxRadius();
+}
+
+void CPointLight::SetLinear( float flLinear )
+{
+	m_flLinear = flLinear;
+	CalculateMaxRadius();
+}
+
+void CPointLight::SetQuadratic( float flQuadratic )
+{
+	m_flQuadratic = flQuadratic;
+	CalculateMaxRadius();
+}
+
+void CPointLight::CalculateMaxRadius( void )
+{
+	m_flMaxRadius = (-m_flConstant + std::sqrtf( m_flLinear * m_flLinear - 4.0f * m_flQuadratic * (m_flQuadratic - 100.0f * GetMaxDiffuse()) )) / (2.0f * m_flQuadratic);
 }

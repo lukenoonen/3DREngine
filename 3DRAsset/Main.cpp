@@ -18,205 +18,6 @@ const char *g_sFilePath = NULL;
 
 static inline glm::mat4 mat4_cast( const aiMatrix4x4 &m ) { return glm::transpose( glm::make_mat4( &m.a1 ) ); }
 
-/*void ProcessMesh( unsigned int iIndex, aiMesh *pMesh, std::fstream &fOutput )
-{
-	if (pMesh->HasBones())
-	{
-		for (unsigned int i = 0; i < pMesh->mNumBones; i++)
-		{
-			std::string sBoneName( pMesh->mBones[i]->mName.data );
-			if (g_uiBoneMapping.find( sBoneName ) == g_uiBoneMapping.end())
-			{
-				UTIL_Write( fOutput, "b", 1, char );
-
-				g_uiBoneMapping[sBoneName] = g_uiNumBones++;
-
-				glm::mat4 matOffset = mat4_cast( pMesh->mBones[i]->mOffsetMatrix );
-				UTIL_Write( fOutput, &matOffset, 1, glm::mat4 );
-			}
-		}
-	}
-
-	UTIL_Write( fOutput, "m", 1, char );
-	UTIL_Write( fOutput, &pMesh->mNumVertices, 1, unsigned int );
-	for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
-	{
-		UTIL_Write( fOutput, &pMesh->mVertices[i].x, 1, float );
-		UTIL_Write( fOutput, &pMesh->mVertices[i].y, 1, float );
-		UTIL_Write( fOutput, &pMesh->mVertices[i].z, 1, float );
-		UTIL_Write( fOutput, &pMesh->mNormals[i].x, 1, float );
-		UTIL_Write( fOutput, &pMesh->mNormals[i].y, 1, float );
-		UTIL_Write( fOutput, &pMesh->mNormals[i].z, 1, float );
-		UTIL_Write( fOutput, &pMesh->mTangents[i].x, 1, float );
-		UTIL_Write( fOutput, &pMesh->mTangents[i].y, 1, float );
-		UTIL_Write( fOutput, &pMesh->mTangents[i].z, 1, float );
-		UTIL_Write( fOutput, &pMesh->mBitangents[i].x, 1, float );
-		UTIL_Write( fOutput, &pMesh->mBitangents[i].y, 1, float );
-		UTIL_Write( fOutput, &pMesh->mBitangents[i].z, 1, float );
-		UTIL_Write( fOutput, &pMesh->mTextureCoords[0][i].x, 1, float );
-		UTIL_Write( fOutput, &pMesh->mTextureCoords[0][i].y, 1, float );
-
-		if (pMesh->HasBones())
-		{
-			std::vector<unsigned int> uiBoneIDs;
-			std::vector<float> flBoneWeights;
-
-			for (unsigned int j = 0; j < pMesh->mNumBones; j++)
-			{
-				unsigned int uiNumWeights = pMesh->mBones[j]->mNumWeights;
-				aiVertexWeight *pWeights = pMesh->mBones[j]->mWeights;
-				for (unsigned int k = 0; k < uiNumWeights; k++)
-				{
-					if (pWeights[k].mVertexId == i)
-					{
-						std::string sBoneName( pMesh->mBones[j]->mName.data );
-						uiBoneIDs.push_back( g_uiBoneMapping[sBoneName] );
-						flBoneWeights.push_back( pWeights[k].mWeight );
-						break;
-					}
-				}
-			}
-
-			unsigned int iNumAffectingBones = (unsigned int)uiBoneIDs.size();
-			UTIL_Write( fOutput, &iNumAffectingBones, 1, unsigned int );
-			for (unsigned int j = 0; j < iNumAffectingBones; j++)
-			{
-				UTIL_Write( fOutput, &uiBoneIDs[j], 1, unsigned int );
-				UTIL_Write( fOutput, &flBoneWeights[j], 1, float );
-			}
-		}
-		else
-		{
-			unsigned int uiTemp = 0;
-			UTIL_Write( fOutput, &uiTemp, 1, unsigned int );
-		}
-	}
-
-	UTIL_Write( fOutput, &pMesh->mNumFaces, 1, unsigned int );
-	for (unsigned int i = 0; i < pMesh->mNumFaces; i++)
-	{
-		const aiFace &face = pMesh->mFaces[i];
-		UTIL_Write( fOutput, &face.mNumIndices, 1, unsigned int );
-		for (unsigned int j = 0; j < face.mNumIndices; j++)
-			UTIL_Write( fOutput, &face.mIndices[j], 1, unsigned int );
-	}
-}
-
-void ProcessNode( unsigned int iIndex, aiNode *pNode, std::fstream &fOutput )
-{
-	std::string sNodeName = pNode->mName.C_Str();
-	if (!sNodeName.empty())
-		g_uiNodeMapping[sNodeName] = iIndex;
-
-	UTIL_Write( fOutput, "n", 1, char );
-
-	UTIL_Write( fOutput, &iIndex, 1, unsigned int );
-
-	bool bShouldWriteNode = g_uiBoneMapping.find( sNodeName ) != g_uiBoneMapping.end();
-	UTIL_Write( fOutput, &bShouldWriteNode, 1, bool );
-
-	if (bShouldWriteNode)
-		UTIL_Write( fOutput, &g_uiBoneMapping[sNodeName], 1, unsigned int );
-
-	glm::mat4 matTransform = mat4_cast( pNode->mTransformation );
-	UTIL_Write( fOutput, &matTransform, 1, glm::mat4 );
-
-	UTIL_Write( fOutput, &pNode->mNumMeshes, 1, unsigned int );
-	for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
-		UTIL_Write( fOutput, &pNode->mMeshes[i], 1, unsigned int );
-
-	unsigned int uiPrevNodeMaxIndex = g_uiNodeMaxIndex;
-	g_uiNodeMaxIndex += pNode->mNumChildren;
-
-	UTIL_Write( fOutput, &pNode->mNumChildren, 1, unsigned int );
-	for (unsigned int i = 0; i < pNode->mNumChildren; i++)
-	{
-		unsigned int uiWriteIndex = uiPrevNodeMaxIndex + i + 1;
-		UTIL_Write( fOutput, &uiWriteIndex, 1, unsigned int );
-	}
-
-	for (unsigned int i = 0; i < pNode->mNumChildren; i++)
-		ProcessNode( uiPrevNodeMaxIndex + i + 1, pNode->mChildren[i], fOutput );
-}
-
-bool ProcessAnimationNode( aiNodeAnim *pNodeAnim, std::fstream &fAnimationOutput )
-{
-	std::string sNodeName = pNodeAnim->mNodeName.C_Str();
-	if (g_uiNodeMapping.find( sNodeName ) == g_uiNodeMapping.end())
-	{
-		if (g_bDebug)
-			std::cout << "Cannot find associated node '" << sNodeName << "' in animation node!\n";
-
-		return false;
-	}
-
-	UTIL_Write( fAnimationOutput, &g_uiNodeMapping[sNodeName], 1, unsigned int );
-
-	UTIL_Write( fAnimationOutput, &pNodeAnim->mNumPositionKeys, 1, unsigned int );
-	for (unsigned int i = 0; i < pNodeAnim->mNumPositionKeys; i++)
-	{
-		float flWriteTime = (float)pNodeAnim->mPositionKeys[i].mTime;
-		UTIL_Write( fAnimationOutput, &flWriteTime, 1, float );
-		UTIL_Write( fAnimationOutput, &pNodeAnim->mPositionKeys[i].mValue.x, 1, float );
-		UTIL_Write( fAnimationOutput, &pNodeAnim->mPositionKeys[i].mValue.y, 1, float );
-		UTIL_Write( fAnimationOutput, &pNodeAnim->mPositionKeys[i].mValue.z, 1, float );
-	}
-
-	UTIL_Write( fAnimationOutput, &pNodeAnim->mNumRotationKeys, 1, unsigned int );
-	for (unsigned int i = 0; i < pNodeAnim->mNumRotationKeys; i++)
-	{
-		float flWriteTime = (float)pNodeAnim->mRotationKeys[i].mTime;
-		UTIL_Write( fAnimationOutput, &flWriteTime, 1, float );
-		UTIL_Write( fAnimationOutput, &pNodeAnim->mRotationKeys[i].mValue.w, 1, float );
-		UTIL_Write( fAnimationOutput, &pNodeAnim->mRotationKeys[i].mValue.x, 1, float );
-		UTIL_Write( fAnimationOutput, &pNodeAnim->mRotationKeys[i].mValue.y, 1, float );
-		UTIL_Write( fAnimationOutput, &pNodeAnim->mRotationKeys[i].mValue.z, 1, float );
-	}
-
-	UTIL_Write( fAnimationOutput, &pNodeAnim->mNumScalingKeys, 1, unsigned int );
-	for (unsigned int i = 0; i < pNodeAnim->mNumScalingKeys; i++)
-	{
-		float flWriteTime = (float)pNodeAnim->mScalingKeys[i].mTime;
-		UTIL_Write( fAnimationOutput, &flWriteTime, 1, float );
-		UTIL_Write( fAnimationOutput, &pNodeAnim->mScalingKeys[i].mValue.x, 1, float );
-		UTIL_Write( fAnimationOutput, &pNodeAnim->mScalingKeys[i].mValue.y, 1, float );
-		UTIL_Write( fAnimationOutput, &pNodeAnim->mScalingKeys[i].mValue.z, 1, float );
-	}
-
-	return true;
-}
-
-bool ProcessAnimation( unsigned int iIndex, aiAnimation *pAnimation, const std::string &sAnimationName )
-{
-	std::string sAnimationOutputPath;
-	if (!pAnimation->mName.C_Str() || !*pAnimation->mName.C_Str())
-		sAnimationOutputPath = sAnimationName + std::to_string( iIndex ) + ".3an";
-	else
-		sAnimationOutputPath = std::string( pAnimation->mName.C_Str() ) + ".3an";
-
-	std::fstream fAnimationOutput( sAnimationOutputPath, std::ios::out | std::ios::binary );
-
-	float flWriteDuration = (float)pAnimation->mDuration;
-	UTIL_Write( fAnimationOutput, &flWriteDuration, 1, float );
-	float flWriteTicksPerSecond = (float)pAnimation->mTicksPerSecond;
-	UTIL_Write( fAnimationOutput, &flWriteTicksPerSecond, 1, float );
-
-	for (unsigned int i = 0; i < pAnimation->mNumChannels; i++)
-	{
-		if (!ProcessAnimationNode( pAnimation->mChannels[i], fAnimationOutput ))
-		{
-			if (g_bDebug)
-				std::cout << "ERROR: animation node error.\n";
-
-			return false;
-		}
-	}
-
-	fAnimationOutput.close();
-
-	return true;
-}*/
-
 bool CreateMaterial( const char *sRootPath, const char *sName, CTextInformation *pTextInformation )
 {
 	const char *sMaterial;
@@ -363,9 +164,18 @@ bool CreateGeometry( const char *sRootPath, const char *sName, CTextInformation 
 		char *sFullGeometryName;
 		if (!pMesh->mName.C_Str() || !*pMesh->mName.C_Str())
 		{
-			char *sGeometryName = UTIL_stradd( sName, 'A' + i );
-			sFullGeometryName = UTIL_stradd( sGeometryName, ".3gm" );
-			delete[] sGeometryName;
+			if (pScene->mNumMeshes == 1)
+			{
+				sFullGeometryName = UTIL_stradd( sName, ".3gm" );
+			}
+			else
+			{
+				char *sIndex = UTIL_uitoa( i );
+				char *sGeometryName = UTIL_stradd( sName, sIndex );
+				sFullGeometryName = UTIL_stradd( sGeometryName, ".3gm" );
+				delete[] sGeometryName;
+				delete[] sIndex;
+			}
 		}
 		else
 		{
@@ -511,9 +321,18 @@ bool CreateGeometry( const char *sRootPath, const char *sName, CTextInformation 
 		char *sFullAnimationName;
 		if (!pAnimation->mName.C_Str() || !*pAnimation->mName.C_Str())
 		{
-			char *sAnimationName = UTIL_stradd( sName, 'A' + i );
-			sFullAnimationName = UTIL_stradd( sAnimationName, ".3an" );
-			delete[] sAnimationName;
+			if (pScene->mNumAnimations == 1)
+			{
+				sFullAnimationName = UTIL_stradd( sName, ".3an" );
+			}
+			else
+			{
+				char *sIndex = UTIL_uitoa( i );
+				char *sAnimationName = UTIL_stradd( sName, sIndex );
+				sFullAnimationName = UTIL_stradd( sAnimationName, ".3an" );
+				delete[] sAnimationName;
+				delete[] sIndex;
+			}
 		}
 		else
 		{
@@ -1028,16 +847,18 @@ int main( int iArgC, const char *sArgV[] )
 
 	if (g_sFilePath)
 	{
-		CTextReader trTextReader;
-		trTextReader.InitFromFile( g_sFilePath );
-		CTextInformation *pTextInformation = trTextReader.GetTextInformation();
-		if (!pTextInformation)
+		char *sText = UTIL_readf( g_sFilePath );
+
+		if (!sText)
 		{
 			if (g_bDebug)
 				std::cout << "ERROR: file information could not be read.\n";
 
 			return 0;
 		}
+
+		CTextReader trTextReader( sText );
+		CTextInformation *pTextInformation = trTextReader.GetTextInformation();
 
 		if (!pTextInformation->IsSuccess())
 		{

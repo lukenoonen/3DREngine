@@ -115,15 +115,16 @@ CConCommand cc_mdown( "-down", CC_MDown );
 CConFloat cf_pl_speed( 10.0f, "pl_speed" );
 CConVec2 cv2_pl_mousesens( g_vec2One * 0.08f, "pl_mousesens" );
 
-CTestPlayer::CTestPlayer() : BaseClass( new CPerspectivePlayerCamera( 1 ) )
+CTestPlayer::CTestPlayer()
 {
-	CBaseCamera *pCamera = GetCamera();
-	pEntityManager->AddEntity( pCamera );
-
+	CPerspectivePlayerCamera *pCamera = new CPerspectivePlayerCamera();
+	SetCamera( pCamera );
 	pCamera->SetParent( this );
 	pCamera->SetPosition( GetPosition() );
 	pCamera->SetRotation( GetRotation() );
 	pCamera->SetScale( GetScale() );
+	pCamera->SetRenderPriority( 100 );
+	pEntityManager->AddEntity( pCamera );
 
 	for (unsigned int i = 0; i < MOVEMENT_COUNT; i++)
 		m_bMovement[i] = false;
@@ -168,6 +169,8 @@ void CTestPlayer::PreThink( void )
 		AddPosition( g_vecUp * flVelocity );
 	if (m_bMovement[MOVEMENT_DOWN])
 		AddPosition( -g_vecUp * flVelocity );
+
+	BaseClass::PreThink();
 }
 
 void CTestPlayer::SetMovement( Movement_t tMovement, bool bMoving )

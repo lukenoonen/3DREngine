@@ -5,9 +5,14 @@
 #include "CommandManager.h"
 #include "AssetManager.h"
 
-CCSMLight::CCSMLight( CCSMShadowCamera *pCSMShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular ) : BaseClass( pCSMShadowCamera, vecAmbient, vecDiffuse, vecSpecular )
+CCSMLight::CCSMLight()
 {
 
+}
+
+void CCSMLight::SetShadowCamera( CCSMShadowCamera *pCSMShadowCamera )
+{
+	BaseClass::SetShadowCamera( pCSMShadowCamera );
 }
 
 void CCSMLight::ActivateLight( void )

@@ -9,9 +9,9 @@ class CBaseUniformMSAACamera : public CBaseMSAACamera
 public:
 	DECLARE_CLASS( CBaseUniformMSAACamera, CBaseMSAACamera );
 
-	CBaseUniformMSAACamera( unsigned int uiRenderPriority );
+	CBaseUniformMSAACamera();
 
-	virtual void PreThink( void );
+	virtual void PostThink( void );
 };
 
 #endif // BASEUNIFORMMSAACAMERA_H

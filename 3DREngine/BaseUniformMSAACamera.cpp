@@ -1,16 +1,20 @@
 #include "BaseUniformMSAACamera.h"
 #include "RenderManager.h"
 
-CBaseUniformMSAACamera::CBaseUniformMSAACamera( unsigned int uiRenderPriority ) : BaseClass( (unsigned int)ci_r_msaalevel.GetValue(), cv_r_windowsize.GetValue(), uiRenderPriority )
+CBaseUniformMSAACamera::CBaseUniformMSAACamera()
 {
+	SetSize( cv_r_windowsize.GetValue() );
 
+	SetMSAALevel( (unsigned int)ci_r_msaalevel.GetValue() );
 }
 
-void CBaseUniformMSAACamera::PreThink( void )
+void CBaseUniformMSAACamera::PostThink( void )
 {
 	if (cv_r_windowsize.WasDispatched())
 		SetSize( cv_r_windowsize.GetValue() );
 
 	if (ci_r_msaalevel.WasDispatched())
 		SetMSAALevel( (unsigned int)ci_r_msaalevel.GetValue() );
+
+	BaseClass::PostThink();
 }

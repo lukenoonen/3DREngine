@@ -11,6 +11,8 @@ public:
 
 	CBaseWorld();
 
+	virtual void Init( void );
+
 	virtual void PostThink( void );
 
 	const glm::mat4 &GetModelMatrix( void ) const;

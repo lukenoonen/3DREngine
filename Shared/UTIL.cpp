@@ -645,6 +645,56 @@ float UTIL_atof( const char *sStr, unsigned int uiLen )
 	return bNegativeSign ? -fOutput : fOutput;
 }
 
+unsigned int UTIL_ilen( int iVal )
+{
+	unsigned int uiLen = iVal < 0 ? 2 : 1;
+	while (iVal /= 10) uiLen++;
+	return uiLen;
+}
+
+unsigned int UTIL_uilen( int uiVal )
+{
+	unsigned int uiLen = 1;
+	while (uiVal /= 10) uiLen++;
+	return uiLen;
+}
+
+char *UTIL_itoa( int iVal )
+{
+	unsigned int uiLen = UTIL_ilen( iVal );
+	char *sStr = new char[uiLen];
+
+	if (iVal < 0)
+	{
+		sStr[0] = '-';
+		iVal *= -1;
+	}
+
+	unsigned int uiIndex = uiLen - 1;
+
+	do
+	{
+		sStr[uiIndex--] = '0' + iVal % 10;
+	} while (iVal /= 10);
+
+	return sStr;
+}
+
+char *UTIL_uitoa( unsigned int uiVal )
+{
+	unsigned int uiLen = UTIL_uilen( uiVal );
+	char *sStr = new char[uiLen];
+
+	unsigned int uiIndex = uiLen - 1;
+
+	do
+	{
+		sStr[uiIndex--] = '0' + uiVal % 10;
+	} while (uiVal /= 10);
+
+	return sStr;
+}
+
 int UTIL_distc( const char *sStr, const char cChar )
 {
 	const char *sStrSearch = sStr;

@@ -1,27 +1,64 @@
 #include "DirShadowCamera.h"
 #include "CommandManager.h"
-#include "RenderManager.h"
 #include "ShaderManager.h"
+#include "RenderManager.h"
+#include "EntityManager.h"
 #include "AssetManager.h"
 
-CDirShadowCamera::CDirShadowCamera( float flLength, float flZNear, float flZFar, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority ) : BaseClass( flFadeNear, flFadeFar, flBlurRadius / flLength, uiBaseSize, 1.0f, uiRenderPriority )
+CDirShadowCamera::CDirShadowCamera()
 {
-	flLength *= 0.5f;
-	m_matProjection = glm::ortho( -flLength, flLength, -flLength, flLength, flZNear, flZFar );
-	m_matTotal = m_matProjection * glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
-
-	CreateTextureBuffers();
+	m_flHeight = 16.0f;
+	m_flNear = -16.0f;
+	m_flFar = 16.0f;
+	m_flBlurRadius = 0.0f;
 }
 
-CDirShadowCamera::~CDirShadowCamera()
+void CDirShadowCamera::Init( void )
 {
-	DestroyTextureBuffers();
+	m_bUpdateProjection = false;
+	m_bUpdateBlurScale = false;
+
+	float flWidth = m_flHeight * GetSizeRatio();
+	m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+	m_matProjection = glm::ortho( -flWidth, flWidth, -m_flHeight, m_flHeight, m_flNear, m_flFar );
+	m_matTotal = m_matProjection * m_matView;
+
+	SetBlurScale( m_flBlurRadius / (m_flHeight * 2.0f) );
+
+	BaseClass::Init();
 }
 
 void CDirShadowCamera::PostThink( void )
 {
+	bool bUpdateTotal = false;
+
+	if (m_bUpdateProjection)
+	{
+		float flWidth = m_flHeight * GetSizeRatio();
+		m_matProjection = glm::ortho( -flWidth, flWidth, -m_flHeight, m_flHeight, m_flNear, m_flFar );
+
+		bUpdateTotal = true;
+	}
+
 	if (PositionUpdated() || RotationUpdated())
-		m_matTotal = m_matProjection * glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+	{
+		m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+
+		bUpdateTotal = true;
+	}
+
+	if (bUpdateTotal)
+	{
+		m_matTotal = m_matProjection * m_matView;
+	}
+
+	if (m_bUpdateBlurScale)
+	{
+		SetBlurScale( m_flBlurRadius / (m_flHeight * 2.0f) );
+		m_bUpdateBlurScale = false;
+	}
+
+	BaseClass::PostThink();
 }
 
 void CDirShadowCamera::Render( void )
@@ -32,7 +69,42 @@ void CDirShadowCamera::Render( void )
 	pRenderManager->SetRenderPass( RENDERPASS_SHADOW_DIR );
 
 	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 1, &m_matTotal );
-	pRenderManager->DrawNonLitEntities();
+
+	pEntityManager->DrawUnlitEntities();
+}
+
+void CDirShadowCamera::ActivateLight( void )
+{
+	BaseClass::ActivateLight();
+
+	pRenderManager->SetShadowMapIndex( pAssetManager->BindTexture( m_uiTexture, GL_TEXTURE_2D ) );
+
+	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 1, &m_matTotal );
+}
+
+void CDirShadowCamera::SetHeight( float flHeight )
+{
+	m_flHeight = flHeight * 0.5f;
+	m_bUpdateProjection = true;
+	m_bUpdateBlurScale = true;
+}
+
+void CDirShadowCamera::SetNear( float flNear )
+{
+	m_flNear = flNear;
+	m_bUpdateProjection = true;
+}
+
+void CDirShadowCamera::SetFar( float flFar )
+{
+	m_flFar = flFar;
+	m_bUpdateProjection = true;
+}
+
+void CDirShadowCamera::SetBlurRadius( float flBlurRadius )
+{
+	m_flBlurRadius = flBlurRadius;
+	m_bUpdateBlurScale = true;
 }
 
 void CDirShadowCamera::CreateTextureBuffers( void )
@@ -61,13 +133,4 @@ void CDirShadowCamera::DestroyTextureBuffers( void )
 
 	glDeleteFramebuffers( 1, &m_uiTextureFBO );
 	glDeleteTextures( 1, &m_uiTexture );
-}
-
-void CDirShadowCamera::ActivateLight( void )
-{
-	BaseClass::ActivateLight();
-
-	pRenderManager->SetShadowMapIndex( pAssetManager->BindTexture( m_uiTexture, GL_TEXTURE_2D ) );
-
-	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 1, &m_matTotal );
 }

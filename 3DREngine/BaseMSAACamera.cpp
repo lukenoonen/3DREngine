@@ -1,21 +1,17 @@
 #include "BaseMSAACamera.h"
 
-CBaseMSAACamera::CBaseMSAACamera( unsigned int uiMSAALevel, const glm::vec2 &vecSize, unsigned int uiRenderPriority ) : BaseClass( vecSize, uiRenderPriority )
+CBaseMSAACamera::CBaseMSAACamera()
 {
-	m_uiMSAALevel = uiMSAALevel;
-
-	CreateMSAABuffers();
+	m_uiMSAALevel = 0;
 }
 
 void CBaseMSAACamera::SetMSAALevel( unsigned int uiMSAALevel )
 {
 	if (m_uiMSAALevel != uiMSAALevel)
 	{
-		DestroyMSAABuffers();
-
 		m_uiMSAALevel = uiMSAALevel;
 
-		CreateMSAABuffers();
+		SetUpdateMSAABuffers( true );
 	}
 }
 

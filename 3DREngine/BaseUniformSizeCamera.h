@@ -9,9 +9,9 @@ class CBaseUniformSizeCamera : public CBaseSizeCamera
 public:
 	DECLARE_CLASS( CBaseUniformSizeCamera, CBaseSizeCamera );
 
-	CBaseUniformSizeCamera( unsigned int uiRenderPriority );
+	CBaseUniformSizeCamera();
 
-	virtual void PreThink( void );
+	virtual void PostThink( void );
 };
 
 #endif // BASEUNIFORMSIZECAMERA_H

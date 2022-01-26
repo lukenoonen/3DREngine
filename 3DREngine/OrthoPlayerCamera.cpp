@@ -1,16 +1,22 @@
 #include "OrthoPlayerCamera.h"
 #include "RenderManager.h"
 #include "ShaderManager.h"
+#include "EntityManager.h"
 
-COrthoPlayerCamera::COrthoPlayerCamera( unsigned int uiRenderPriority ) : BaseClass( uiRenderPriority )
+COrthoPlayerCamera::COrthoPlayerCamera()
+{
+
+}
+
+void COrthoPlayerCamera::Init( void )
 {
 	const glm::ivec2 &vecSize = GetSize();
-	float flHeight = cf_r_height.GetValue() * 0.5f;
-	float flWidth = flHeight * (float)vecSize.x / (float)vecSize.y;
-	m_matProjection = glm::ortho( -flWidth, flWidth, -flHeight, flHeight, cf_r_near.GetValue(), cf_r_far.GetValue() );
+	m_matProjection = glm::perspective( glm::radians( cf_r_fov.GetValue() ), (float)vecSize.x / (float)vecSize.y, cf_r_near.GetValue(), cf_r_far.GetValue() );
 	m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
 	m_matTotal = m_matProjection * m_matView;
 	m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( m_matView ) );
+
+	BaseClass::Init();
 }
 
 void COrthoPlayerCamera::PostThink( void )
@@ -37,6 +43,8 @@ void COrthoPlayerCamera::PostThink( void )
 		m_matTotal = m_matProjection * m_matView;
 		m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( m_matView ) );
 	}
+
+	BaseClass::PostThink();
 }
 
 void COrthoPlayerCamera::Render( void )
@@ -51,7 +59,7 @@ void COrthoPlayerCamera::Render( void )
 	pShaderManager->SetUniformBufferObject( UBO_VIEW, 1, &m_matTotalLocked );
 	pShaderManager->SetUniformBufferObject( UBO_VIEW, 2, &GetPosition() );
 
-	pRenderManager->DrawEntities();
+	pEntityManager->DrawEntities();
 
 	if (bMSAA)
 	{

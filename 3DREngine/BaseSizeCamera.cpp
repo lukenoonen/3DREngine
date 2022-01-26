@@ -1,21 +1,18 @@
 #include "BaseSizeCamera.h"
 
-CBaseSizeCamera::CBaseSizeCamera( const glm::vec2 &vecSize, unsigned int uiRenderPriority ) : BaseClass( uiRenderPriority )
+CBaseSizeCamera::CBaseSizeCamera()
 {
-	m_vecSize = vecSize;
+	m_vecSize = g_vecOne * 1024.0f;
 }
 
 void CBaseSizeCamera::SetSize( const glm::ivec2 vecSize )
 {
 	if (m_vecSize != vecSize)
 	{
-		DestroyTextureBuffers();
-		DestroyMSAABuffers();
-
 		m_vecSize = vecSize;
 
-		CreateMSAABuffers();
-		CreateTextureBuffers();
+		SetUpdateTextureBuffers( true );
+		SetUpdateMSAABuffers( true );
 	}
 }
 

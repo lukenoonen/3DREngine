@@ -1,13 +1,15 @@
 #include "BaseUniformSizeCamera.h"
 #include "RenderManager.h"
 
-CBaseUniformSizeCamera::CBaseUniformSizeCamera( unsigned int uiRenderPriority ) : BaseClass( cv_r_windowsize.GetValue(), uiRenderPriority )
+CBaseUniformSizeCamera::CBaseUniformSizeCamera()
 {
-
+	SetSize( cv_r_windowsize.GetValue() );
 }
 
-void CBaseUniformSizeCamera::PreThink( void )
+void CBaseUniformSizeCamera::PostThink( void )
 {
 	if (cv_r_windowsize.WasDispatched())
 		SetSize( cv_r_windowsize.GetValue() );
+
+	BaseClass::PostThink();
 }

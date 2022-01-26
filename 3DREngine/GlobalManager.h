@@ -10,7 +10,7 @@ public:
 	CGlobalValues();
 
 	bool			ShouldLoop( void );
-	unsigned long	GetFrameCount( void );
+	unsigned int	GetFrameCount( void );
 	float			GetTime( void );
 	float			GetFrameTime( void );
 	float			GetTimeNoScale( void );
@@ -22,7 +22,7 @@ public:
 	void			MarkForQuit( void );
 
 private:
-	unsigned long	m_ulFrameCount;
+	unsigned int	m_uiFrameCount;
 
 	float			m_flCurrentTime;
 	float			m_flPreviousTime;

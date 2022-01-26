@@ -9,10 +9,11 @@ class CBaseMSAACamera : public CBaseSizeCamera
 public:
 	DECLARE_CLASS( CBaseMSAACamera, CBaseSizeCamera );
 
-	CBaseMSAACamera( unsigned int uiMSAALevel, const glm::vec2 &vecSize, unsigned int uiRenderPriority );
+	CBaseMSAACamera();
 
 	void SetMSAALevel( unsigned int uiMSAALevel );
 
+protected:
 	unsigned int GetMSAALevel( void ) const;
 
 	unsigned int GetMSAAFBO( void ) const;

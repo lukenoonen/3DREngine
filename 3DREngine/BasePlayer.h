@@ -11,7 +11,7 @@ class CBasePlayer : public CBaseTransform
 public:
 	DECLARE_CLASS( CBasePlayer, CBaseTransform );
 
-	CBasePlayer( CBasePlayerCamera *pCamera );
+	CBasePlayer();
 
 	virtual bool IsPlayer( void ) const;
 

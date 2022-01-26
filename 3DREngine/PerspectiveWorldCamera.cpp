@@ -1,30 +1,53 @@
 #include "PerspectiveWorldCamera.h"
+#include "ShaderManager.h"
+#include "RenderManager.h"
+#include "EntityManager.h"
 #include "AssetManager.h"
 
-CPerspectiveWorldCamera::CPerspectiveWorldCamera( float flFOV, float flNear, float flFar, unsigned int uiBaseSize, float flSizeRatio, unsigned int uiBaseMSAALevel, unsigned int uiRenderPriority ) : BaseClass( uiBaseSize, flSizeRatio, uiBaseMSAALevel, uiRenderPriority )
+CPerspectiveWorldCamera::CPerspectiveWorldCamera()
 {
-	m_matProjection = glm::perspective( flFOV, flSizeRatio, flNear, flFar );
-
-	glm::mat4 matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
-	m_matTotal = m_matProjection * matView;
-	m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( matView ) );
-
-	CreateTextureBuffers();
+	m_flFOV = M_PI;
+	m_flNear = 0.1f;
+	m_flFar = 1000.0f;
 }
 
-CPerspectiveWorldCamera::~CPerspectiveWorldCamera()
+
+void CPerspectiveWorldCamera::Init( void )
 {
-	DestroyTextureBuffers();
+	m_bUpdateProjection = false;
+
+	m_matProjection = glm::perspective( m_flFOV, GetSizeRatio(), m_flNear, m_flFar );
+	m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+	m_matTotal = m_matProjection * m_matView;
+	m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( m_matView ) );
 }
 
 void CPerspectiveWorldCamera::PostThink( void )
 {
+	bool bUpdateTotal = false;
+
+	if (m_bUpdateProjection)
+	{
+		m_matProjection = glm::perspective( m_flFOV, GetSizeRatio(), m_flNear, m_flFar );
+		m_bUpdateProjection = false;
+
+		bUpdateTotal = true;
+	}
+
 	if (PositionUpdated() || RotationUpdated())
 	{
-		glm::mat4 matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
-		m_matTotal = m_matProjection * matView;
-		m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( matView ) );
+		m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vecFront, GetRotation() * g_vecUp );
+
+		bUpdateTotal = true;
 	}
+
+	if (bUpdateTotal)
+	{
+		m_matTotal = m_matProjection * m_matView;
+		m_matTotalLocked = m_matProjection * glm::mat4( glm::mat3( m_matView ) );
+	}
+
+	BaseClass::PostThink();
 }
 
 void CPerspectiveWorldCamera::Render( void )
@@ -39,7 +62,7 @@ void CPerspectiveWorldCamera::Render( void )
 	pShaderManager->SetUniformBufferObject( UBO_VIEW, 1, &m_matTotalLocked );
 	pShaderManager->SetUniformBufferObject( UBO_VIEW, 2, &GetPosition() );
 
-	pRenderManager->DrawEntities();
+	pEntityManager->DrawEntities();
 
 	if (bMSAA)
 	{
@@ -47,6 +70,24 @@ void CPerspectiveWorldCamera::Render( void )
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_uiTextureFBO );
 		glBlitFramebuffer( 0, 0, vecSize.x, vecSize.y, 0, 0, vecSize.x, vecSize.y, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 	}
+}
+
+void CPerspectiveWorldCamera::SetFOV( float flFOV )
+{
+	m_flFOV = flFOV * 0.5f;
+	m_bUpdateProjection = true;
+}
+
+void CPerspectiveWorldCamera::SetNear( float flNear )
+{
+	m_flNear = flNear;
+	m_bUpdateProjection = true;
+}
+
+void CPerspectiveWorldCamera::SetFar( float flFar )
+{
+	m_flFar = flFar;
+	m_bUpdateProjection = true;
 }
 
 void CPerspectiveWorldCamera::CreateTextureBuffers( void )

@@ -9,7 +9,7 @@ class CBasePlayerCamera : public CBaseUniformMSAACamera
 public:
 	DECLARE_CLASS( CBasePlayerCamera, CBaseUniformMSAACamera );
 
-	CBasePlayerCamera( unsigned int uiRenderPriority );
+	CBasePlayerCamera();
 
 	virtual bool ShouldDraw( void ) const;
 

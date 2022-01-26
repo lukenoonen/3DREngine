@@ -2,16 +2,18 @@
 #include "RenderManager.h"
 #include "ShaderManager.h"
 
-CSpotLight::CSpotLight( float flCutoff, float flOuterCutoff, float flConstant, float flLinear, float flQuadratic, CSpotShadowCamera *pSpotShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular ) : BaseClass( pSpotShadowCamera, vecAmbient, vecDiffuse, vecSpecular )
+CSpotLight::CSpotLight()
 {
-	m_flConstant = flConstant;
-	m_flLinear = flLinear;
-	m_flQuadratic = flQuadratic;
+	m_pSpotShadowCamera = NULL;
 
-	m_flMaxRadius = (-flLinear + std::sqrtf( flLinear * flLinear - 4.0f * flQuadratic * (flConstant - 100.0f * std::fmaxf( std::fmaxf( vecDiffuse.r, vecDiffuse.g ), vecDiffuse.b )) )) / (2.0f * flQuadratic);
+	m_flCutoff = 0.7660f;
+	m_flOuterCutoff = 0.7071f;
 
-	m_flCutoff = glm::cos( flCutoff );
-	m_flOuterCutoff = glm::cos( flOuterCutoff );
+	m_flConstant = 1.0f;
+	m_flLinear = 0.09f;
+	m_flQuadratic = 0.032f;
+
+	m_flMaxRadius = 51.3501f;
 }
 
 void CSpotLight::ActivateLight( void )
@@ -28,4 +30,47 @@ void CSpotLight::ActivateLight( void )
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTDIRECTION, 0, &(GetRotation() * g_vecFront) );
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTSPOT, 0, &m_flCutoff );
 	pShaderManager->SetUniformBufferObject( UBO_LIGHTSPOT, 1, &m_flOuterCutoff );
+}
+
+void CSpotLight::SetShadowCamera( CSpotShadowCamera *pSpotShadowCamera )
+{
+	m_pSpotShadowCamera = pSpotShadowCamera;
+
+	BaseClass::SetShadowCamera( pSpotShadowCamera );
+}
+
+void CSpotLight::SetCutoff( float flCutoff )
+{
+	m_flCutoff = glm::cos( flCutoff );
+}
+
+void CSpotLight::SetOuterCutoff( float flOuterCutoff )
+{
+	m_flOuterCutoff = glm::cos( flOuterCutoff );
+
+	if (m_pSpotShadowCamera)
+		m_pSpotShadowCamera->SetOuterCutoff( flOuterCutoff );
+}
+
+void CSpotLight::SetConstant( float flConstant )
+{
+	m_flConstant = flConstant;
+	CalculateMaxRadius();
+}
+
+void CSpotLight::SetLinear( float flLinear )
+{
+	m_flLinear = flLinear;
+	CalculateMaxRadius();
+}
+
+void CSpotLight::SetQuadratic( float flQuadratic )
+{
+	m_flQuadratic = flQuadratic;
+	CalculateMaxRadius();
+}
+
+void CSpotLight::CalculateMaxRadius( void )
+{
+	m_flMaxRadius = (-m_flConstant + std::sqrtf( m_flLinear * m_flLinear - 4.0f * m_flQuadratic * (m_flQuadratic - 100.0f * GetMaxDiffuse()) )) / (2.0f * m_flQuadratic);
 }

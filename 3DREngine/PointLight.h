@@ -10,9 +10,18 @@ class CPointLight : public CBaseLight
 public:
 	DECLARE_CLASS( CPointLight, CBaseLight );
 
-	CPointLight( float flConstant, float flLinear, float flQuadratic, CPointShadowCamera *pPointShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular );
+	CPointLight();
 
 	virtual void ActivateLight( void );
+
+	void SetShadowCamera( CPointShadowCamera *pPointShadowCamera );
+
+	void SetConstant( float flConstant );
+	void SetLinear( float flLinear );
+	void SetQuadratic( float flQuadratic );
+
+protected:
+	virtual void CalculateMaxRadius( void );
 
 private:
 	float m_flConstant;

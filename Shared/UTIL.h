@@ -57,6 +57,10 @@ bool			UTIL_ffmt( const char *sStr, unsigned int uiLen );
 float			UTIL_atof( const char *sStr );
 float			UTIL_atof( const char *sStr, unsigned int uiLen );
 int				UTIL_distc( const char *sStr, const char cChar );
+unsigned int	UTIL_ilen( int iVal );
+unsigned int	UTIL_uilen( int uiVal );
+char			*UTIL_itoa( int iVal );
+char			*UTIL_uitoa( unsigned int uiVal );
 char			*UTIL_readf( const char *sFile );
 
 #define			UTIL_Read( a, b, c, d ) ((a).read( (char *)(b), (c) * sizeof(d) ))

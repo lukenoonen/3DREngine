@@ -9,7 +9,9 @@ class CPerspectivePlayerCamera : public CBasePlayerCamera
 public:
 	DECLARE_CLASS( CPerspectivePlayerCamera, CBasePlayerCamera );
 
-	CPerspectivePlayerCamera( unsigned int uiRenderPriority );
+	CPerspectivePlayerCamera();
+
+	virtual void Init( void );
 
 	virtual void PostThink( void );
 

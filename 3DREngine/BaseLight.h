@@ -10,11 +10,22 @@ class CBaseLight : public CBaseTransform
 public:
 	DECLARE_CLASS( CBaseLight, CBaseTransform );
 
-	CBaseLight( CBaseShadowCamera *pShadowCamera, const glm::vec3 &vecAmbient, const glm::vec3 &vecDiffuse, const glm::vec3 &vecSpecular );
+	CBaseLight();
 
 	virtual bool IsLight( void ) const;
 
 	virtual void ActivateLight( void );
+
+	void SetAmbient( const glm::vec3 &vecAmbient );
+	void SetDiffuse( const glm::vec3 &vecDiffuse );
+	void SetSpecular( const glm::vec3 &vecSpecular );
+
+protected:
+	void SetShadowCamera( CBaseShadowCamera *pShadowCamera );
+
+	virtual void CalculateMaxRadius( void );
+
+	float GetMaxDiffuse( void ) const;
 
 private:
 	CBaseShadowCamera *m_pShadowCamera;

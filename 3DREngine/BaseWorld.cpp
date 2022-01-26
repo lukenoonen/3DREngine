@@ -2,8 +2,15 @@
 
 CBaseWorld::CBaseWorld()
 {
+
+}
+
+void CBaseWorld::Init( void )
+{
 	m_matModel = glm::translate( glm::mat4( 1.0f ), GetPosition() ) * glm::toMat4( GetRotation() ) * glm::scale( glm::mat4( 1.0f ), GetScale() );
 	m_matModelInverse = glm::transpose( glm::inverse( m_matModel ) );
+
+	BaseClass::Init();
 }
 
 void CBaseWorld::PostThink( void )
@@ -13,6 +20,8 @@ void CBaseWorld::PostThink( void )
 		m_matModel = glm::translate( glm::mat4( 1.0f ), GetPosition() ) * glm::toMat4( GetRotation() ) * glm::scale( glm::mat4( 1.0f ), GetScale() );
 		m_matModelInverse = glm::transpose( glm::inverse( m_matModel ) );
 	}
+
+	BaseClass::PostThink();
 }
 
 const glm::mat4 &CBaseWorld::GetModelMatrix( void ) const

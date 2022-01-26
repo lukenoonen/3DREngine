@@ -4,6 +4,9 @@
 #include "Global.h"
 #include "BaseEntity.h"
 #include "BasePlayer.h"
+#include "BaseDrawable.h"
+#include "BaseLight.h"
+#include "BaseCamera.h"
 
 class CEntityManager
 {
@@ -12,19 +15,29 @@ public:
 
 	CEntityManager();
 	~CEntityManager();
-
-	void Reset( void );
 	
 	void OnLoop( void );
 
-	void AddEntity( CBaseEntity *pNewEntity );
+	void DrawEntities( void );
+	void DrawUnlitEntities( void );
+	void DrawLitEntities( void );
+
+	void AddEntity( CBaseEntity *pEntity );
 	void RemoveEntity( CBaseEntity *pEntity );
+
 	void ClearEntities( void );
 
 	CBasePlayer *GetPlayer( void );
 
 private:
+	std::vector<CBaseEntity *> m_pEntitiesToAdd;
 	std::vector<CBaseEntity *> m_pEntities;
+	std::vector<CBaseEntity *> m_pEntitiesToRemove;
+
+	std::vector<CBaseLight *> m_pLightEntities;
+	std::vector<CBaseCamera *> m_pCameraEntities;
+	std::vector<CBaseDrawable *> m_pDrawEntities;
+
 	CBasePlayer *m_pPlayer;
 };
 

@@ -2,9 +2,6 @@
 #define RENDERMANAGER_H
 
 #include "Global.h"
-#include "BaseDrawable.h"
-#include "BaseLight.h"
-#include "BaseCamera.h"
 #include "CommandManager.h"
 
 extern CConIVec2 cv_r_windowsize;
@@ -44,19 +41,11 @@ public:
 
 	void OnLoop( void );
 
-	void DrawEntities( void );
-	void DrawNonLitEntities( void );
-	void DrawLitEntities( void );
-
 	RenderPass_t GetRenderPass( void ) const;
 	void SetRenderPass( RenderPass_t tRenderPass );
 
 	GLFWmonitor *GetMonitor( void );
 	GLFWwindow *GetWindow( void );
-
-	void AddEntity( CBaseEntity *pEntity );
-	void RemoveEntity( CBaseEntity *pEntity );
-	void ClearEntities( void );
 
 	void SetFrameBuffer( unsigned int uiFrameBuffer );
 	void SetDepthFunc( unsigned int uiDepthFunc );
@@ -72,10 +61,6 @@ private:
 
 	GLFWmonitor *m_pMonitor;
 	GLFWwindow *m_pWindow;
-
-	std::vector<CBaseLight *> m_pLightEntities;
-	std::vector<CBaseDrawable *> m_pDrawEntities;
-	std::vector<CBaseCamera *> m_pCameraEntities;
 
 	unsigned int m_uiFrameBuffer;
 	unsigned int m_uiDepthFunc;

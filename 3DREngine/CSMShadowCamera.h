@@ -9,17 +9,31 @@ class CCSMShadowCamera : public CBaseShadowCamera
 public:
 	DECLARE_CLASS( CCSMShadowCamera, CBaseShadowCamera );
 
-	CCSMShadowCamera( float flBlendDistance, float flDistanceFactor, float flInitialDistance, float flNearZError, float flFarZError, float flFadeNear, float flFadeFar, float flBlurRadius, unsigned int uiBaseSize, unsigned int uiRenderPriority );
-	virtual ~CCSMShadowCamera();
+	CCSMShadowCamera();
+
+	virtual void Init( void );
 
 	virtual void PostThink( void );
 
 	virtual void Render( void );
 
+	virtual void ActivateLight( void );
+
+	void SetBlendDistance( float flBlendDistance );
+
+	void SetDistanceFactor( float flDistanceFactor );
+
+	void SetInitialDistance( float flInitialDistance );
+
+	void SetNearError( float flNearError );
+
+	void SetFarError( float flFarError );
+
+	void SetBlurRadius( float flBlurRadius );
+
+protected:
 	virtual void CreateTextureBuffers( void );
 	virtual void DestroyTextureBuffers( void );
-
-	virtual void ActivateLight( void );
 
 private:
 	void CalculateCascade( void );
@@ -31,9 +45,8 @@ private:
 	float m_flBlendDistance;
 	float m_flDistanceFactor;
 	float m_flInitialDistance;
-	float m_flNearZError;
-	float m_flFarZError;
-
+	float m_flNearError;
+	float m_flFarError;
 	float m_flBlurRadius;
 
 	glm::mat4 m_matTotal[4];
@@ -42,6 +55,12 @@ private:
 	float m_flRadius[4];
 	glm::vec4 m_vecCascadeEndClipSpaceNear;
 	glm::vec4 m_vecCascadeEndClipSpaceFar;
+
+	bool m_bUpdateCascade;
+	bool m_bUpdateRadius;
+	bool m_bUpdateTotal;
+	bool m_bUpdateNearFar;
+	bool m_bUpdateBlurScale;
 
 	unsigned int m_uiTextureFBO;
 	unsigned int m_uiTexture;

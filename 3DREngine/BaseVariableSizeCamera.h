@@ -9,13 +9,26 @@ class CBaseVariableSizeCamera : public CBaseSizeCamera
 public:
 	DECLARE_CLASS( CBaseVariableSizeCamera, CBaseSizeCamera );
 
-	CBaseVariableSizeCamera( unsigned int uiBaseSize, float flSizeRatio, unsigned int uiRenderPriority );
+	CBaseVariableSizeCamera();
 
-	virtual void PreThink( void );
+	virtual void Init( void );
+
+	virtual void PostThink( void );
+
+	void SetBaseSize( unsigned int uiBaseSize );
+
+	void SetSizeRatio( float flSizeRatio );
+
+protected:
+	unsigned int GetBaseSize( void ) const;
+
+	float GetSizeRatio( void ) const;
 
 private:
 	unsigned int m_uiBaseSize;
 	float m_flSizeRatio;
+
+	bool m_bUpdateSize;
 };
 
 #endif // BASEVARIABLESIZECAMERA_H
