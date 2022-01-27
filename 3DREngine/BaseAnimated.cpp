@@ -66,7 +66,9 @@ void CBaseAnimated::PostDraw( void )
 void CBaseAnimated::SetModel( CModel *pModel )
 {
 	BaseClass::SetModel( pModel );
-	pModel->SetUpBoneTransforms( m_matBoneTransforms );
+
+	if (pModel)
+		pModel->SetUpBoneTransforms( m_matBoneTransforms );
 }
 
 void CBaseAnimated::SetAnimate( bool bAnimate )

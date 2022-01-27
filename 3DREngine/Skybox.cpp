@@ -2,22 +2,24 @@
 #include "RenderManager.h"
 #include "AssetManager.h"
 
-CSkybox::CSkybox( const char *sMaterialPath )
+CSkybox::CSkybox()
 {
-	m_pMaterial = pAssetManager->GetMaterial( sMaterialPath );
-	m_pGeometry = pAssetManager->GetGeometry( "inversecube.3gm" );
+	m_pMaterial = NULL;
 
-	m_pMaterial->Activate();
+	m_pGeometry = pAssetManager->GetGeometry( "inversecube.3gm" );
 	m_pGeometry->Activate();
 }
 
-CSkybox::~CSkybox()
+void CSkybox::Exit( void )
 {
-	m_pMaterial->Inactivate();
-	m_pGeometry->Inactivate();
+	if (m_pMaterial)
+	{
+		m_pMaterial->Inactivate();
+		pAssetManager->CheckGeometry( m_pGeometry );
+	}
 
+	m_pGeometry->Inactivate();
 	pAssetManager->CheckMaterial( m_pMaterial );
-	pAssetManager->CheckGeometry( m_pGeometry );
 }
 
 void CSkybox::PreDraw( void )
@@ -32,5 +34,19 @@ void CSkybox::Draw( void )
 
 bool CSkybox::ShouldDraw( void ) const
 {
-	return BaseClass::ShouldDraw() && m_pMaterial->ShouldDraw();
+	return BaseClass::ShouldDraw() && m_pMaterial != NULL && m_pMaterial->ShouldDraw();
+}
+
+void CSkybox::SetMaterial( const char *sMaterialPath )
+{
+	if (m_pMaterial)
+	{
+		m_pMaterial->Inactivate();
+		pAssetManager->CheckMaterial( m_pMaterial );
+	}
+
+	m_pMaterial = pAssetManager->GetMaterial( sMaterialPath );
+
+	if (m_pMaterial)
+		m_pMaterial->Activate();
 }

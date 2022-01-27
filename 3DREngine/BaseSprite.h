@@ -11,8 +11,9 @@ class CBaseSprite : public CBaseWorld
 public:
 	DECLARE_CLASS( CBaseSprite, CBaseWorld );
 
-	CBaseSprite( const char *sMaterialPath );
-	virtual ~CBaseSprite();
+	CBaseSprite();
+
+	virtual void Exit( void );
 
 	virtual void PostThink( void );
 
@@ -20,6 +21,8 @@ public:
 	virtual void Draw( void );
 
 	virtual bool ShouldDraw( void ) const;
+
+	void SetMaterial( const char *sMaterialPath );
 
 private:
 	CMaterial *m_pMaterial;

@@ -9,8 +9,11 @@ class CStaticProp : public CBaseModeled
 public:
 	DECLARE_CLASS( CStaticProp, CBaseModeled );
 
-	CStaticProp( const char *sModelPath );
-	virtual ~CStaticProp();
+	CStaticProp();
+
+	virtual void Exit( void );
+
+	void SetModel( const char *sModelPath );
 };
 
 #endif // STATICPROP_H

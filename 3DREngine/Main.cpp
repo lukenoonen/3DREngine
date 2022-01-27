@@ -54,114 +54,134 @@ void CreateLevel( void )
 	{
 		CSkybox *pNewSkybox;
 
-		pNewSkybox = new CSkybox( "skybox.3mt" );
+		pNewSkybox = new CSkybox();
+		pNewSkybox->SetMaterial( "skybox.3mt" );
 		pEntityManager->AddEntity( pNewSkybox );
 	}
 
 	{
 		CStaticProp *pNewStaticProp;
 
-		pNewStaticProp = new CStaticProp( "plane_brick.3md" );
+		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 0.0f, 0.0f, -2.0f ) );
 		pNewStaticProp->SetScale( g_vecOne * 500.0f );
+		pNewStaticProp->SetModel( "plane_brick.3md" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
-		pNewStaticProp = new CStaticProp( "cube_brick.3md" );
+		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 0.0f, 20.0f, -2.0f ) );
 		pNewStaticProp->SetScale( glm::vec3( 50.0f, 2.0f, 50.0f ) );
+		pNewStaticProp->SetModel( "cube_brick.3md" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
-		pNewStaticProp = new CStaticProp( "cube_brick.3md" );
+		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 20.0f, 0.0f, -2.0f ) );
 		pNewStaticProp->SetScale( glm::vec3( 2.0f, 50.0f, 50.0f ) );
+		pNewStaticProp->SetModel( "cube_brick.3md" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
-		pNewStaticProp = new CStaticProp( "cube_brick.3md" );
+		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 0.0f, -20.0f, -2.0f ) );
 		pNewStaticProp->SetScale( glm::vec3( 50.0f, 2.0f, 50.0f ) );
+		pNewStaticProp->SetModel( "cube_brick.3md" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
-		pNewStaticProp = new CStaticProp( "cube_brick.3md" );
+		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( -20.0f, 0.0f, -2.0f ) );
 		pNewStaticProp->SetScale( glm::vec3( 2.0f, 50.0f, 50.0f ) );
+		pNewStaticProp->SetModel( "cube_brick.3md" );
 		pEntityManager->AddEntity( pNewStaticProp );
 	}
 
 	{
 		CAnimatedProp *pNewAnimatedProp;
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 4.0f, 0.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		g_pAnimatedPropTest = pNewAnimatedProp;
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 4.0f, 5.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 4.0f, 10.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -4.0f, 0.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -4.0f, 5.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -4.0f, 10.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 8.0f, 0.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 8.0f, 5.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 8.0f, 10.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -8.0f, 0.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -8.0f, 5.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "boblampclean.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -8.0f, 10.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vecOne * 0.1f ) );
+		pNewAnimatedProp->SetModel( "boblampclean.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
-		pNewAnimatedProp = new CAnimatedProp( "testcharacter.3md" );
+		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 0.0f, 3.0f, 4.0f ) );
+		pNewAnimatedProp->SetModel( "testcharacter.3md" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 	}
 
 	{
 		CBaseSprite *pNewSprite;
 		
-		pNewSprite = new CBaseSprite( "brick.3mt" );
+		pNewSprite = new CBaseSprite();
 		pNewSprite->SetPosition( glm::vec3( 0.0f, 0.0f, 1.0f ) );
+		pNewSprite->SetMaterial( "brick.3mt" );
 		pEntityManager->AddEntity( pNewSprite );
 	}
 
@@ -203,7 +223,6 @@ void CreateLevel( void )
 
 	// pEntityManager->AddEntity( new CPointLightShadow( 0.01f, 1.0f, 0.09f, 0.032f, g_vecZero, g_vecOne * 4.0f, g_vecOne * 0.4f, glm::vec3( 0.0f, 0.0f, 0.0f ), glm::radians( glm::vec3( 0.0f, 0.0, 180.0f ) ), g_vecOne, true, true ) );
 	
-	// pEntityManager->AddEntity( new CBaseModeled( "brick_master.3mc", "cube.3md", glm::vec3( 0.0f, 0.0f, 2.0f ), g_vecZero, glm::vec3( 1.0f, 1.0f, 1.0f ), true, true ) );
 }
 
 int main()

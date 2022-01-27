@@ -11,13 +11,16 @@ class CSkybox : public CBaseDrawable
 public:
 	DECLARE_CLASS( CSkybox, CBaseDrawable );
 
-	CSkybox( const char *sMaterialPath );
-	virtual ~CSkybox();
+	CSkybox();
+
+	virtual void Exit( void );
 
 	virtual void PreDraw( void );
 	virtual void Draw( void );
 
 	virtual bool ShouldDraw( void ) const;
+
+	void SetMaterial( const char *sMaterialPath );
 
 private:
 	CMaterial *m_pMaterial;

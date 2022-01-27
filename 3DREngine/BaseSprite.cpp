@@ -2,22 +2,24 @@
 #include "AssetManager.h"
 #include "EntityManager.h"
 
-CBaseSprite::CBaseSprite( const char *sMaterialPath )
+CBaseSprite::CBaseSprite()
 {
-	m_pMaterial = pAssetManager->GetMaterial( sMaterialPath );
-	m_pGeometry = pAssetManager->GetGeometry( "plane.3gm" );
+	m_pMaterial = NULL;
 
-	m_pMaterial->Activate();
+	m_pGeometry = pAssetManager->GetGeometry( "plane.3gm" );
 	m_pGeometry->Activate();
 }
 
-CBaseSprite::~CBaseSprite()
+void CBaseSprite::Exit( void )
 {
-	m_pMaterial->Inactivate();
-	m_pGeometry->Inactivate();
+	if (m_pMaterial)
+	{
+		m_pMaterial->Inactivate();
+		pAssetManager->CheckGeometry( m_pGeometry );
+	}
 
+	m_pGeometry->Inactivate();
 	pAssetManager->CheckMaterial( m_pMaterial );
-	pAssetManager->CheckGeometry( m_pGeometry );
 }
 
 void CBaseSprite::PostThink( void )
@@ -43,5 +45,19 @@ void CBaseSprite::Draw( void )
 
 bool CBaseSprite::ShouldDraw( void ) const
 {
-	return BaseClass::ShouldDraw() && m_pMaterial->ShouldDraw();
+	return BaseClass::ShouldDraw() && m_pMaterial != NULL && m_pMaterial->ShouldDraw();
+}
+
+void CBaseSprite::SetMaterial( const char *sMaterialPath )
+{
+	if (m_pMaterial)
+	{
+		m_pMaterial->Inactivate();
+		pAssetManager->CheckMaterial( m_pMaterial );
+	}
+
+	m_pMaterial = pAssetManager->GetMaterial( sMaterialPath );
+
+	if (m_pMaterial)
+		m_pMaterial->Activate();
 }

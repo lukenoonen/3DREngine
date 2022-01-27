@@ -9,8 +9,12 @@ class CAnimatedProp : public CBaseAnimated
 public:
 	DECLARE_CLASS( CAnimatedProp, CBaseAnimated );
 
-	CAnimatedProp( const char *sModelPath );
-	virtual ~CAnimatedProp();
+	CAnimatedProp();
+
+	virtual void Init( void );
+	virtual void Exit( void );
+
+	void SetModel( const char *sModelPath );
 };
 
 #endif // ANIMATEDPROP_H
