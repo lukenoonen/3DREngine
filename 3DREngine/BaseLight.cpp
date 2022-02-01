@@ -1,13 +1,14 @@
 #include "BaseLight.h"
-#include "ShaderManager.h"
+#include "RenderManager.h"
+#include "EntityManager.h"
 
 CBaseLight::CBaseLight()
 {
 	m_pShadowCamera = NULL;
 
-	m_vecAmbient = g_vecOne * 0.1f;
-	m_vecDiffuse = g_vecOne * 0.9f;
-	m_vecSpecular = g_vecOne * 0.4f;
+	m_vec3Ambient = g_vec3One * 0.1f;
+	m_vec3Diffuse = g_vec3One * 0.9f;
+	m_vec3Specular = g_vec3One * 0.4f;
 }
 
 bool CBaseLight::IsLight( void ) const
@@ -17,34 +18,29 @@ bool CBaseLight::IsLight( void ) const
 
 void CBaseLight::ActivateLight( void )
 {
-	pShaderManager->SetUniformBufferObject( UBO_LIGHT, 0, &m_vecAmbient );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHT, 1, &m_vecDiffuse );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHT, 2, &m_vecSpecular );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_light, 0, &m_vec3Ambient );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_light, 1, &m_vec3Diffuse );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_light, 2, &m_vec3Specular );
 
 	if (m_pShadowCamera)
-	{
-		pShaderManager->SetShaderShadow( SHADERSHADOW_TRUE );
 		m_pShadowCamera->ActivateLight();
-	}
-	else
-	{
-		pShaderManager->SetShaderShadow( SHADERSHADOW_FALSE );
-	}
+
+	pEntityManager->SetShadowCamera( m_pShadowCamera );
 }
 
-void CBaseLight::SetAmbient( const glm::vec3 &vecAmbient )
+void CBaseLight::SetAmbient( const glm::vec3 &vec3Ambient )
 {
-	m_vecAmbient = vecAmbient;
+	m_vec3Ambient = vec3Ambient;
 }
 
-void CBaseLight::SetDiffuse( const glm::vec3 &vecDiffuse )
+void CBaseLight::SetDiffuse( const glm::vec3 &vec3Diffuse )
 {
-	m_vecDiffuse = vecDiffuse;
+	m_vec3Diffuse = vec3Diffuse;
 }
 
-void CBaseLight::SetSpecular( const glm::vec3 &vecSpecular )
+void CBaseLight::SetSpecular( const glm::vec3 &vec3Specular )
 {
-	m_vecSpecular = vecSpecular;
+	m_vec3Specular = vec3Specular;
 }
 
 void CBaseLight::SetShadowCamera( CBaseShadowCamera *pShadowCamera )
@@ -75,5 +71,5 @@ void CBaseLight::CalculateMaxRadius( void )
 
 float CBaseLight::GetMaxDiffuse( void ) const
 {
-	return std::fmaxf( std::fmaxf( m_vecDiffuse.r, m_vecDiffuse.g ), m_vecDiffuse.b );
+	return std::fmaxf( std::fmaxf( m_vec3Diffuse.r, m_vec3Diffuse.g ), m_vec3Diffuse.b );
 }

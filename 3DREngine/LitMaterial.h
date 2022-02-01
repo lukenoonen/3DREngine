@@ -10,17 +10,24 @@ class CLitMaterial : public CMaterial
 public:
 	DECLARE_CLASS( CLitMaterial, CMaterial );
 
-	CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, CTexture *pNormal, float flShininess, const glm::vec2 &vecTextureScale, const char *sPath );
+	CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, float flShininess, CTexture *pNormal, CTexture *pCamera, const glm::vec2 &vec2TextureScale, bool bCastShadows, bool bRecieveShadows, const char *sPath );
 	virtual ~CLitMaterial();
 
 	virtual void Use( void );
 
 private:
 	CTexture *m_pDiffuse;
+
 	CTexture *m_pSpecular;
-	CTexture *m_pNormal;
-	glm::vec2 m_vecTextureScale;
 	float m_flShininess;
+
+	CTexture *m_pNormal;
+
+	CTexture *m_pCamera;
+
+	glm::vec2 m_vec2TextureScale;
+
+	bool m_bRecieveShadows;
 };
 
 #endif // LITMATERIAL_H

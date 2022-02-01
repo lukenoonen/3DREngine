@@ -2,6 +2,7 @@
 #define RENDERMANAGER_H
 
 #include "Global.h"
+#include "Shader.h"
 #include "CommandManager.h"
 
 extern CConIVec2 cv_r_windowsize;
@@ -16,19 +17,21 @@ extern CConFloat cf_r_vcsizefactor;
 extern CConFloat cf_r_vcmsaalevelfactor;
 extern CConString cs_r_windowname;
 
-enum RenderPass_t : unsigned char
+enum class ERenderPass : EBaseEnum
 {
-	RENDERPASS_SHADOW_DIR = 0,
-	RENDERPASS_SHADOW_POINT,
-	RENDERPASS_SHADOW_SPOT,
-	RENDERPASS_SHADOW_CSM,
-	RENDERPASS_DEPTH,
-	RENDERPASS_UNLIT,
-	RENDERPASS_LIT_DIR,
-	RENDERPASS_LIT_POINT,
-	RENDERPASS_LIT_SPOT,
-	RENDERPASS_LIT_CSM,
-	RENDERPASS_COUNT,
+	t_shadowdir = 0,
+	t_shadowpoint,
+	t_shadowspot,
+	t_shadowcsm,
+	t_depth,
+	t_unlit,
+	t_litdir,
+	t_litpoint,
+	t_litspot,
+	t_litcsm,
+
+	i_count,
+	i_invalid = i_count,
 };
 
 class CRenderManager
@@ -41,23 +44,42 @@ public:
 
 	void OnLoop( void );
 
-	RenderPass_t GetRenderPass( void ) const;
-	void SetRenderPass( RenderPass_t tRenderPass );
-
 	GLFWmonitor *GetMonitor( void );
 	GLFWwindow *GetWindow( void );
 
 	void SetFrameBuffer( unsigned int uiFrameBuffer );
 	void SetDepthFunc( unsigned int uiDepthFunc );
 	void SetBlend( bool bBlend );
-	void SetViewportSize( const glm::ivec2 &ivecViewportSize );
-	void SetViewportOffset( const glm::ivec2 &ivecViewportOffset );
+	void SetViewportSize( const glm::ivec2 &ivec2ViewportSize );
+	void SetViewportOffset( const glm::ivec2 &ivec2ViewportOffset );
 
-	int GetShadowMapIndex( void ) const;
-	void SetShadowMapIndex( int iShadowMapIndex );
+	void SetRenderPass( ERenderPass eRenderPass );
+
+	ERenderPass GetRenderPass( void ) const;
+
+	void UseShader( EShaderType eShaderType );
+
+	void SetUniformBufferObject( EUniformBufferObjects eBufferObject, unsigned int uiIndex, const void *pData );
+	void SetUniformBufferObject( EUniformBufferObjects eBufferObject, unsigned int uiIndex, unsigned int uiParamIndex, unsigned int uiParams, const void *pData );
+
+	void SetUniform( const char *sName, bool bValue );
+	void SetUniform( const char *sName, int iValue );
+	void SetUniform( const char *sName, float flValue );
+	void SetUniform( const char *sName, const glm::vec2 &vec2Value );
+	void SetUniform( const char *sName, float x, float y );
+	void SetUniform( const char *sName, const glm::vec3 &vec3Value );
+	void SetUniform( const char *sName, float x, float y, float z );
+	void SetUniform( const char *sName, const glm::vec4 &vec4Value );
+	void SetUniform( const char *sName, float x, float y, float z, float w );
+	void SetUniform( const char *sName, const glm::mat2 &matValue );
+	void SetUniform( const char *sName, const glm::mat3 &matValue );
+	void SetUniform( const char *sName, const glm::mat4 &matValue );
+
+	void SetShaderPreprocessor( EShaderPreprocessor eShaderPreprocessor, EBaseEnum eValue );
+	EBaseEnum GetShaderPreprocessor( EShaderPreprocessor eShaderPreprocessor );
 
 private:
-	RenderPass_t m_tRenderPass;
+	ERenderPass m_eRenderPass;
 
 	GLFWmonitor *m_pMonitor;
 	GLFWwindow *m_pWindow;
@@ -65,10 +87,15 @@ private:
 	unsigned int m_uiFrameBuffer;
 	unsigned int m_uiDepthFunc;
 	bool m_bBlend;
-	glm::ivec2 m_ivecViewportSize;
-	glm::ivec2 m_ivecViewportOffset;
+	glm::ivec2 m_ivec2ViewportSize;
+	glm::ivec2 m_ivec2ViewportOffset;
 
-	int m_iShadowMapIndex;
+	unsigned int m_uiUBOs[(EBaseEnum)EUniformBufferObjects::i_count];
+
+	CShader *m_pShaders[(EBaseEnum)EShaderType::i_count];
+	CSubShader *m_pActiveSubShader;
+
+	EBaseEnum m_eShaderPreprocessors[(EBaseEnum)EShaderPreprocessor::i_count];
 };
 
 #endif // RENDERMANAGER_H

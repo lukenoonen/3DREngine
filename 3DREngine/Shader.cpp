@@ -1,23 +1,7 @@
 #include "Shader.h"
-#include "ShaderManager.h"
 #include "FileManager.h"
+#include "RenderManager.h"
 #include <iostream>
-
-ShaderType_t UTIL_ShaderNameToType( const char *sShaderName )
-{
-	for (int i = 0; i < SHADERTYPE_COUNT; i++)
-	{
-		if (UTIL_streq( g_sShaderNames[i], sShaderName ))
-			return (ShaderType_t)i;
-	}
-
-	return SHADERTYPE_INVALID;
-}
-
-const char *UTIL_ShaderTypeToName( ShaderType_t tShaderType )
-{
-	return g_sShaderNames[tShaderType];
-}
 
 CSubShader::CSubShader( const char *sVertexCode, const char *sGeometryCode, const char *sFragmentCode )
 {
@@ -55,7 +39,7 @@ CSubShader::CSubShader( const char *sVertexCode, const char *sGeometryCode, cons
 
 	glDeleteShader( uiFragment );
 
-	for (unsigned int i = 0; i < UBO_COUNT; i++)
+	for (EBaseEnum i = 0; i < (EBaseEnum)EUniformBufferObjects::i_count; i++)
 	{
 		unsigned int uiIndex = glGetUniformBlockIndex( m_uiID, g_sUniformBufferObjects[i] );
 		if (uiIndex != GL_INVALID_INDEX)
@@ -112,14 +96,14 @@ CSubShader::~CSubShader()
 	glDeleteProgram( m_uiID );
 }
 
-void CSubShader::Use( void )
+void CSubShader::Use( void ) const
 {
 	glUseProgram( m_uiID );
 }
 
 GLint CSubShader::GetLocation( const char *sName )
 {
-	std::unordered_map<const char *, GLint>::iterator itUniformSearch = m_mapUniformNameToLocation.find( sName );
+	std::unordered_map<const char *, GLint>::const_iterator itUniformSearch = m_mapUniformNameToLocation.find( sName );
 	if (itUniformSearch == m_mapUniformNameToLocation.end())
 	{
 		for (unsigned int i = 0; i < m_sUniformNames.size(); i++)
@@ -154,31 +138,16 @@ CShader::CShader( const char *sVertexPath, const char *sGeometryPath, const char
 {
 	m_bSuccess = false;
 
-	for (unsigned int i = 0; i < (unsigned int)SHADERQUALITY_COUNT; i++)
-	{
-		for (unsigned int j = 0; j < (unsigned int)SHADERANIMATE_COUNT; j++)
-		{
-			for (unsigned int k = 0; k < (unsigned int)SHADERSHADOW_COUNT; k++)
-				m_pSubShaders[i][j][k] = NULL;
-		}
-	}
-
-	std::vector<unsigned int> uiVertexQualityIndices;
-	std::vector<unsigned int> uiVertexAnimateIndices;
-	std::vector<unsigned int> uiVertexShadowIndices;
-	char *sVertexCode = ReadShaderFile( sVertexPath, uiVertexQualityIndices, uiVertexAnimateIndices, uiVertexShadowIndices );
+	std::vector<unsigned int> uiVertexIndices[(EBaseEnum)EShaderPreprocessor::i_count];
+	char *sVertexCode = ReadShaderFile( sVertexPath, uiVertexIndices );
 	if (!sVertexCode)
 		return;
 
-	std::vector<unsigned int> uiGeometryQualityIndices;
-	std::vector<unsigned int> uiGeometryAnimateIndices;
-	std::vector<unsigned int> uiGeometryShadowIndices;
-	char *sGeometryCode = ReadShaderFile( sGeometryPath, uiGeometryQualityIndices, uiGeometryAnimateIndices, uiGeometryShadowIndices );
+	std::vector<unsigned int> uiGeometryIndices[(EBaseEnum)EShaderPreprocessor::i_count];
+	char *sGeometryCode = ReadShaderFile( sGeometryPath, uiGeometryIndices );
 
-	std::vector<unsigned int> uiFragmentQualityIndices;
-	std::vector<unsigned int> uiFragmentAnimateIndices;
-	std::vector<unsigned int> uiFragmentShadowIndices;
-	char *sFragmentCode = ReadShaderFile( sFragmentPath, uiFragmentQualityIndices, uiFragmentAnimateIndices, uiFragmentShadowIndices );
+	std::vector<unsigned int> uiFragmentIndices[(EBaseEnum)EShaderPreprocessor::i_count];
+	char *sFragmentCode = ReadShaderFile( sFragmentPath, uiFragmentIndices );
 	if (!sFragmentCode)
 	{
 		delete[] sVertexCode;
@@ -189,92 +158,10 @@ CShader::CShader( const char *sVertexPath, const char *sGeometryPath, const char
 		return;
 	}
 
-	m_bHasQualityPreprocessor = uiVertexQualityIndices.empty() || uiGeometryQualityIndices.empty() || uiFragmentQualityIndices.empty();
-	m_bHasAnimatePreprocessor = uiVertexAnimateIndices.empty() || uiGeometryAnimateIndices.empty() || uiFragmentAnimateIndices.empty();
-	m_bHasShadowPreprocessor = uiVertexShadowIndices.empty() || uiGeometryShadowIndices.empty() || uiFragmentShadowIndices.empty();
+	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderPreprocessor::i_count; i++)
+		m_bHasPreprocessor[i] = !uiVertexIndices[i].empty() || !uiGeometryIndices[i].empty() || !uiFragmentIndices[i].empty();
 
-	for (unsigned int i = 0; i < (unsigned int)SHADERQUALITY_COUNT; i++)
-	{
-		if (m_bHasQualityPreprocessor)
-		{
-			if (!uiVertexQualityIndices.empty())
-				sVertexCode[uiVertexQualityIndices[i]] = '1';
-
-			if (!uiGeometryQualityIndices.empty())
-				sGeometryCode[uiGeometryQualityIndices[i]] = '1';
-
-			if (!uiFragmentQualityIndices.empty())
-				sFragmentCode[uiFragmentQualityIndices[i]] = '1';
-		}
-
-		for (unsigned int j = 0; j < (unsigned int)SHADERANIMATE_COUNT; j++)
-		{
-			if (m_bHasAnimatePreprocessor)
-			{
-				if (!uiVertexAnimateIndices.empty())
-					sVertexCode[uiVertexAnimateIndices[j]] = '1';
-
-				if (!uiGeometryAnimateIndices.empty())
-					sGeometryCode[uiGeometryAnimateIndices[j]] = '1';
-
-				if (!uiFragmentAnimateIndices.empty())
-					sFragmentCode[uiFragmentAnimateIndices[j]] = '1';
-			}
-
-			for (unsigned int k = 0; k < (unsigned int)SHADERSHADOW_COUNT; k++)
-			{
-				if (m_bHasShadowPreprocessor)
-				{
-					if (!uiVertexShadowIndices.empty())
-						sVertexCode[uiVertexShadowIndices[k]] = '1';
-
-					if (!uiGeometryShadowIndices.empty())
-						sGeometryCode[uiGeometryShadowIndices[k]] = '1';
-
-					if (!uiFragmentShadowIndices.empty())
-						sFragmentCode[uiFragmentShadowIndices[k]] = '1';
-				}
-
-				m_pSubShaders[i][j][k] = new CSubShader( sVertexCode, sGeometryCode, sFragmentCode );
-
-				if (!m_bHasShadowPreprocessor)
-					break;
-
-				if (!uiVertexShadowIndices.empty())
-					sVertexCode[uiVertexShadowIndices[k]] = '0';
-
-				if (!uiGeometryShadowIndices.empty())
-					sGeometryCode[uiGeometryShadowIndices[k]] = '0';
-
-				if (!uiFragmentShadowIndices.empty())
-					sFragmentCode[uiFragmentShadowIndices[k]] = '0';
-			}
-
-			if (!m_bHasAnimatePreprocessor)
-				break;
-
-			if (!uiVertexAnimateIndices.empty())
-				sVertexCode[uiVertexAnimateIndices[j]] = '0';
-
-			if (!uiGeometryAnimateIndices.empty())
-				sGeometryCode[uiGeometryAnimateIndices[j]] = '0';
-
-			if (!uiFragmentAnimateIndices.empty())
-				sFragmentCode[uiFragmentAnimateIndices[j]] = '0';
-		}
-
-		if (!m_bHasQualityPreprocessor)
-			break;
-
-		if (!uiVertexQualityIndices.empty())
-			sVertexCode[uiVertexQualityIndices[i]] = '0';
-
-		if (!uiGeometryQualityIndices.empty())
-			sGeometryCode[uiGeometryQualityIndices[i]] = '0';
-
-		if (!uiFragmentQualityIndices.empty())
-			sFragmentCode[uiFragmentQualityIndices[i]] = '0';
-	}
+	CreateSubShaders( sVertexCode, sGeometryCode, sFragmentCode, uiVertexIndices, uiGeometryIndices, uiFragmentIndices, (EBaseEnum)0, 0, 1 );
 
 	delete[] sVertexCode;
 	if (sGeometryCode)
@@ -287,22 +174,21 @@ CShader::CShader( const char *sVertexPath, const char *sGeometryPath, const char
 
 CShader::~CShader()
 {
-	for (unsigned int i = 0; i < (unsigned int)SHADERQUALITY_COUNT; i++)
-	{
-		for (unsigned int j = 0; j < (unsigned int)SHADERANIMATE_COUNT; j++)
-		{
-			for (unsigned int k = 0; k < (unsigned int)SHADERSHADOW_COUNT; k++)
-			{
-				if (m_pSubShaders[i][j][k])
-					delete m_pSubShaders[i][j][k];
-			}
-		}
-	}
+	for (std::pair<unsigned int, CSubShader *> itSubShaders : m_mapSubShaders)
+		delete itSubShaders.second;
 }
 
-CSubShader *CShader::GetSubShader( ShaderQuality_t tShaderQuality, ShaderAnimate_t tShaderAnimate, ShaderShadow_t tShaderShadow ) const
+CSubShader *CShader::GetSubShader( EBaseEnum *eShaderPreprocessors ) const
 {
-	return m_pSubShaders[m_bHasQualityPreprocessor ? tShaderQuality : 0][m_bHasAnimatePreprocessor ? tShaderAnimate : 0][m_bHasShadowPreprocessor ? tShaderShadow : 0];
+	unsigned int uiKey = 0;
+	unsigned int uiPreviousCount = 1;
+	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderPreprocessor::i_count; i++)
+	{
+		uiKey += uiPreviousCount * (m_bHasPreprocessor[i] ? (unsigned int)eShaderPreprocessors[i] : 0);
+		uiPreviousCount *= (unsigned int)g_eShaderPreprocessorCount[i];
+	}
+
+	return m_mapSubShaders.find( uiKey )->second;
 }
 
 bool CShader::IsSuccess( void ) const
@@ -310,7 +196,45 @@ bool CShader::IsSuccess( void ) const
 	return m_bSuccess;
 }
 
-char *CShader::ReadShaderFile( const char *sPath, std::vector<unsigned int> &uiQualityIndices, std::vector<unsigned int> &uiAnimateIndices, std::vector<unsigned int> &uiShadowIndices )
+void CShader::CreateSubShaders( char *sVertexCode, char *sGeometryCode, char *sFragmentCode, std::vector<unsigned int> *uiVertexIndices, std::vector<unsigned int> *uiGeometryIndices, std::vector<unsigned int> *uiFragmentIndices, EBaseEnum eIndex, unsigned int uiIndex, unsigned int uiPreviousCount )
+{
+	if (eIndex == (EBaseEnum)EShaderPreprocessor::i_count)
+	{
+		m_mapSubShaders.emplace( uiIndex, new CSubShader( sVertexCode, sGeometryCode, sFragmentCode ) );
+		return;
+	}
+
+	for (EBaseEnum i = 0; i < (EBaseEnum)g_eShaderPreprocessorCount[eIndex]; i++)
+	{
+		if (m_bHasPreprocessor[eIndex])
+		{
+			if (!uiVertexIndices[eIndex].empty())
+				sVertexCode[uiVertexIndices[eIndex][i]] = '1';
+
+			if (!uiGeometryIndices[eIndex].empty())
+				sGeometryCode[uiGeometryIndices[eIndex][i]] = '1';
+
+			if (!uiFragmentIndices[eIndex].empty())
+				sFragmentCode[uiFragmentIndices[eIndex][i]] = '1';
+		}
+
+		CreateSubShaders( sVertexCode, sGeometryCode, sFragmentCode, uiVertexIndices, uiGeometryIndices, uiFragmentIndices, eIndex + (EBaseEnum)1, uiIndex + (unsigned int)i * uiPreviousCount, uiPreviousCount * (unsigned int)g_eShaderPreprocessorCount[eIndex]);
+
+		if (!m_bHasPreprocessor[eIndex])
+			break;
+
+		if (!uiVertexIndices[eIndex].empty())
+			sVertexCode[uiVertexIndices[eIndex][i]] = '0';
+
+		if (!uiGeometryIndices[eIndex].empty())
+			sGeometryCode[uiGeometryIndices[eIndex][i]] = '0';
+
+		if (!uiFragmentIndices[eIndex].empty())
+			sFragmentCode[uiFragmentIndices[eIndex][i]] = '0';
+	}
+}
+
+char *CShader::ReadShaderFile( const char *sPath, std::vector<unsigned int> *uiIndices )
 {
 	char *sSource = ReadShaderFile( sPath );
 	if (!sSource)
@@ -331,55 +255,19 @@ char *CShader::ReadShaderFile( const char *sPath, std::vector<unsigned int> &uiQ
 				sPreProcessorChar = UTIL_strchri( sPreProcessorChar + iPreProcessorSize, " \t\n" );
 				int iSubShaderSize = (int)(UTIL_strchr( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
 
-				if (uiQualityIndices.empty() && UTIL_streq( "QUALITY", sPreProcessorChar, UTIL_Min( sizeof( "QUALITY" ), iSubShaderSize ) - 1 ))
+				for (EBaseEnum i = 0; i < (EBaseEnum)EShaderPreprocessor::i_count; i++)
 				{
-					uiQualityIndices.resize( SHADERQUALITY_COUNT );
+					if (uiIndices[i].empty() && UTIL_streq( g_sShaderPreprocessorNames[i], sPreProcessorChar, UTIL_Min( sizeof( g_sShaderPreprocessorNames[i] ), iSubShaderSize ) - 1 ))
+					{
+						uiIndices[i].resize( g_eShaderPreprocessorCount[i]);
 
-					const char *sSubShaderDefines;
-
-					sSubShaderDefines = "#define QUALITY_LOW 0\n";
-					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
-					uiQualityIndices[SHADERQUALITY_LOW] = (unsigned int)cOutput.size() - 2;
-
-					sSubShaderDefines = "#define QUALITY_MEDIUM 0\n";
-					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
-					uiQualityIndices[SHADERQUALITY_MEDIUM] = (unsigned int)cOutput.size() - 2;
-
-					sSubShaderDefines = "#define QUALITY_HIGH 0\n";
-					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
-					uiQualityIndices[SHADERQUALITY_HIGH] = (unsigned int)cOutput.size() - 2;
-
-					sSubShaderDefines = "#define QUALITY_ULTRA 0\n";
-					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
-					uiQualityIndices[SHADERQUALITY_ULTRA] = (unsigned int)cOutput.size() - 2;
-				}
-				else if (uiAnimateIndices.empty() && UTIL_streq( "ANIMATE", sPreProcessorChar, UTIL_Min( sizeof( "ANIMATE" ), iSubShaderSize ) - 1 ))
-				{
-					uiAnimateIndices.resize( SHADERANIMATE_COUNT );
-
-					const char *sSubShaderDefines;
-
-					sSubShaderDefines = "#define ANIMATE_FALSE 0\n";
-					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
-					uiAnimateIndices[SHADERANIMATE_FALSE] = (unsigned int)cOutput.size() - 2;
-
-					sSubShaderDefines = "#define ANIMATE_TRUE 0\n";
-					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
-					uiAnimateIndices[SHADERANIMATE_TRUE] = (unsigned int)cOutput.size() - 2;
-				}
-				else if (uiShadowIndices.empty() && UTIL_streq( "SHADOW", sPreProcessorChar, UTIL_Min( sizeof( "SHADOW" ), iSubShaderSize ) - 1 ))
-				{
-					uiShadowIndices.resize( SHADERSHADOW_COUNT );
-
-					const char *sSubShaderDefines;
-
-					sSubShaderDefines = "#define SHADOW_FALSE 0\n";
-					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
-					uiShadowIndices[SHADERSHADOW_FALSE] = (unsigned int)cOutput.size() - 2;
-
-					sSubShaderDefines = "#define SHADOW_TRUE 0\n";
-					while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
-					uiShadowIndices[SHADERSHADOW_TRUE] = (unsigned int)cOutput.size() - 2;
+						for (EBaseEnum j = 0; j < g_eShaderPreprocessorCount[i]; j++)
+						{
+							const char *sSubShaderDefines = g_pShaderPreprocessorDefines[i][j];
+							while (*sSubShaderDefines) cOutput.push_back( *sSubShaderDefines++ );
+							uiIndices[i][j] = (unsigned int)cOutput.size() - 2;
+						}
+					}
 				}
 
 				sReadChar = sPreProcessorChar + iSubShaderSize + 1;

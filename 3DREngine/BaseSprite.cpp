@@ -1,4 +1,5 @@
 #include "BaseSprite.h"
+#include "RenderManager.h"
 #include "AssetManager.h"
 #include "EntityManager.h"
 
@@ -26,15 +27,15 @@ void CBaseSprite::PostThink( void )
 {
 	CBaseCamera *pCamera = pEntityManager->GetPlayer()->GetCamera();
 
-	SetRotation( glm::quat( glm::eulerAngles( pCamera->GetRotation() ) * glm::vec3( 0.0f, 1.0f, 1.0f ) ) * glm::quat( glm::radians( glm::vec3( 90.0f, 0.0f, 0.0f ) ) ) );
+	SetRotation( glm::quat( glm::eulerAngles( pCamera->GetRotation() ) * glm::vec3( 1.0f, 1.0f, 1.0f ) ) * glm::quat( glm::radians( glm::vec3( 90.0f, 0.0f, 0.0f ) ) ) );
 
 	BaseClass::PostThink();
 }
 
 void CBaseSprite::PreDraw( void )
 {
-	pShaderManager->SetUniformBufferObject( UBO_MODEL, 0, &GetModelMatrix() );
-	pShaderManager->SetUniformBufferObject( UBO_MODEL, 1, &GetModelMatrixInverse() );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_model, 0, &GetModelMatrix() );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_model, 1, &GetModelMatrixInverse() );
 }
 
 void CBaseSprite::Draw( void )

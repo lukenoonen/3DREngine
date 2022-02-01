@@ -1,11 +1,8 @@
 #include "BaseDrawable.h"
-#include "ShaderManager.h"
 
 CBaseDrawable::CBaseDrawable()
 {
 	m_bShouldDraw = true;
-
-	m_uiDrawIndex = 0;
 }
 
 void CBaseDrawable::PreDraw( void )
@@ -36,14 +33,4 @@ bool CBaseDrawable::ShouldDraw( void ) const
 void CBaseDrawable::SetShouldDraw( bool bShouldDraw )
 {
 	m_bShouldDraw = bShouldDraw;
-}
-
-void CBaseDrawable::SetDrawIndex( unsigned int uiDrawIndex )
-{
-	m_uiDrawIndex = uiDrawIndex;
-}
-
-unsigned int CBaseDrawable::GetDrawIndex( void ) const
-{
-	return m_uiDrawIndex;
 }

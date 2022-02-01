@@ -10,13 +10,6 @@ public:
 	DECLARE_CLASS( CBasePlayerCamera, CBaseUniformMSAACamera );
 
 	CBasePlayerCamera();
-
-	virtual bool ShouldDraw( void ) const;
-
-	void SetPlayerCamera( bool bPlayerCamera );
-
-private:
-	bool m_bPlayerCamera;
 };
 
 #endif // BASEPLAYERCAMERA_H

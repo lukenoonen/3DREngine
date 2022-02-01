@@ -46,21 +46,24 @@ void CBaseAnimated::PostThink( void )
 
 void CBaseAnimated::PreDraw( void )
 {
-	BaseClass::PreDraw();
-
-	pShaderManager->SetShaderAnimate( SHADERANIMATE_TRUE );
-
 	if (m_bAnimate)
 	{
+		pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_animate, (EBaseEnum)EShaderPreprocessorAnimate::t_true );
+
 		CModel *pModel = GetModel();
 		if (pModel->IsAnimated())
-			pShaderManager->SetUniformBufferObject( UBO_BONES, 0, 0, (unsigned int)UTIL_Min( (unsigned int)m_matBoneTransforms.size(), 64 ), &m_matBoneTransforms[0] );
+			pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_bones, 0, 0, (unsigned int)UTIL_Min( (unsigned int)m_matBoneTransforms.size(), 64 ), &m_matBoneTransforms[0] );
 	}
+
+	BaseClass::PreDraw();
 }
 
 void CBaseAnimated::PostDraw( void )
 {
-	pShaderManager->SetShaderAnimate( SHADERANIMATE_FALSE );
+	if (m_bAnimate)
+		pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_animate, (EBaseEnum)EShaderPreprocessorAnimate::t_false );
+
+	BaseClass::PostDraw();
 }
 
 void CBaseAnimated::SetModel( CModel *pModel )

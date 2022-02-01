@@ -36,15 +36,6 @@ private:
 	std::vector<float> m_flAnimationTransitionFactors;
 	std::vector<float> m_flAnimationTransitionTimes;
 
-	/*
-	unsigned int m_uiAnimationIndex;
-	unsigned int m_uiAnimationIndexTransition;
-	float m_flAnimationTime;
-	float m_flAnimationTimeTransition;
-	float m_flAnimationTransitionFactor;
-	float m_flAnimationTransitionTime;
-	*/
-
 	float m_flAnimationTimeScale;
 
 	std::vector<glm::mat4> m_matBoneTransforms;

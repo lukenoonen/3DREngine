@@ -1,17 +1,16 @@
 #include "UnlitMaterial.h"
-#include "ShaderManager.h"
+#include "RenderManager.h"
 #include "AssetManager.h"
 
-CUnlitMaterial::CUnlitMaterial( CTexture *pDiffuse, const glm::vec2 &vecTextureScale, const char *sPath ) : BaseClass( sPath )
+CUnlitMaterial::CUnlitMaterial( CTexture *pDiffuse, const glm::vec2 &vec2TextureScale, const char *sPath ) : BaseClass( sPath )
 {
 	m_pDiffuse = pDiffuse;
+	m_vec2TextureScale = vec2TextureScale;
 
 	m_pDiffuse->Activate();
 
-	m_vecTextureScale = vecTextureScale;
-
-	SetShaderType( RENDERPASS_DEPTH, SHADERTYPE_DEPTH );
-	SetShaderType( RENDERPASS_UNLIT, SHADERTYPE_UNLIT );
+	SetShaderType( ERenderPass::t_depth, EShaderType::t_depth );
+	SetShaderType( ERenderPass::t_unlit, EShaderType::t_unlit );
 }
 
 CUnlitMaterial::~CUnlitMaterial()
@@ -25,7 +24,7 @@ void CUnlitMaterial::Use( void )
 {
 	BaseClass::Use();
 
-	pShaderManager->SetValue( "u_vecTextureScale", m_vecTextureScale );
+	pRenderManager->SetUniform( "u_vecTextureScale", m_vec2TextureScale );
 
-	pShaderManager->SetValue( "u_sDiffuse", pAssetManager->BindTexture( m_pDiffuse->GetID(), GL_TEXTURE_2D ) );
+	pRenderManager->SetUniform( "u_sDiffuse", pAssetManager->BindTexture( m_pDiffuse->GetID(), GL_TEXTURE_2D ) );
 }

@@ -4,7 +4,6 @@
 #include "Global.h"
 #include "BaseAsset.h"
 #include "RenderManager.h"
-#include "ShaderManager.h"
 
 class CMaterial : public CBaseAsset
 {
@@ -17,11 +16,11 @@ public:
 
 	virtual void Use( void );
 
-	ShaderType_t GetShaderType( void ) const;
-	void SetShaderType( RenderPass_t tRenderPass, ShaderType_t tShaderType );
+	EShaderType GetShaderType( void ) const;
+	void SetShaderType( ERenderPass eRenderPass, EShaderType eShaderType );
 
 private:
-	ShaderType_t m_tShaderTypes[RENDERPASS_COUNT];
+	EShaderType m_tShaderTypes[(EBaseEnum)ERenderPass::i_count];
 };
 
 #endif // MATERIAL_H

@@ -1,6 +1,5 @@
 #include "SpotLight.h"
 #include "RenderManager.h"
-#include "ShaderManager.h"
 
 CSpotLight::CSpotLight()
 {
@@ -20,16 +19,16 @@ void CSpotLight::ActivateLight( void )
 {
 	BaseClass::ActivateLight();
 
-	pRenderManager->SetRenderPass( RENDERPASS_LIT_SPOT );
+	pRenderManager->SetRenderPass( ERenderPass::t_litspot );
 
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOSITION, 0, &GetPosition() );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOINT, 0, &m_flConstant );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOINT, 1, &m_flLinear );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOINT, 2, &m_flQuadratic );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTMAXDISTANCE, 0, &m_flMaxRadius );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTDIRECTION, 0, &(GetRotation() * g_vecFront) );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTSPOT, 0, &m_flCutoff );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTSPOT, 1, &m_flOuterCutoff );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightposition, 0, &GetPosition() );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightpoint, 0, &m_flConstant );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightpoint, 1, &m_flLinear );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightpoint, 2, &m_flQuadratic );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightmaxdistance, 0, &m_flMaxRadius );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightdirection, 0, &(GetRotation() * g_vec3Front) );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightspot, 0, &m_flCutoff );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightspot, 1, &m_flOuterCutoff );
 }
 
 void CSpotLight::SetShadowCamera( CSpotShadowCamera *pSpotShadowCamera )

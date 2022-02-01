@@ -247,8 +247,6 @@ void CAssetManager::CheckSkeleton( CSkeleton *pSkeleton )
 	}
 }
 
-#include <iostream>
-
 CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 {
 	float flTime;
@@ -295,11 +293,11 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 		}
 
 		std::vector<float> flPositionTimes;
-		std::vector<glm::vec3> vecPositions;
+		std::vector<glm::vec3> vec3Positions;
 		std::vector<float> flRotationTimes;
 		std::vector<glm::quat> qRotations;
 		std::vector<float> flScaleTimes;
-		std::vector<glm::vec3> vecScales;
+		std::vector<glm::vec3> vec3Scales;
 
 		unsigned int uiPositionsCount;
 		if (!pFileManager->Read( uiPositionsCount ))
@@ -315,11 +313,11 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 		}
 
 		flPositionTimes.resize( uiPositionsCount );
-		vecPositions.resize( uiPositionsCount );
+		vec3Positions.resize( uiPositionsCount );
 
 		for (unsigned int j = 0; j < uiPositionsCount; j++)
 		{
-			if (!pFileManager->Read( flPositionTimes[j] ) || !pFileManager->Read( vecPositions[j] ))
+			if (!pFileManager->Read( flPositionTimes[j] ) || !pFileManager->Read( vec3Positions[j] ))
 			{
 				for (unsigned int k = 0; k < uiAnimationChannelSlots; k++)
 				{
@@ -377,11 +375,11 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 		}
 
 		flScaleTimes.resize( uiScalesCount );
-		vecScales.resize( uiScalesCount );
+		vec3Scales.resize( uiScalesCount );
 
 		for (unsigned int j = 0; j < uiScalesCount; j++)
 		{
-			if (!pFileManager->Read( flScaleTimes[j] ) || !pFileManager->Read( vecScales[j] ))
+			if (!pFileManager->Read( flScaleTimes[j] ) || !pFileManager->Read( vec3Scales[j] ))
 			{
 				for (unsigned int k = 0; k < uiAnimationChannelSlots; k++)
 				{
@@ -394,7 +392,7 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 			}
 		}
 
-		pAnimationChannels[uiAnimationChannelSlot] = new CAnimationChannel( flPositionTimes, vecPositions, flRotationTimes, qRotations, flScaleTimes, vecScales );
+		pAnimationChannels[uiAnimationChannelSlot] = new CAnimationChannel( flPositionTimes, vec3Positions, flRotationTimes, qRotations, flScaleTimes, vec3Scales );
 	}
 
 	pFileManager->CloseFile();
@@ -423,7 +421,7 @@ CGeometry *CAssetManager::CreateGeometry( const char *sPath )
 	{
 		SVertex &verVertex = verVertices[i];
 		unsigned int uiNumAffectingBones;
-		if (!pFileManager->Read( verVertex.vecPosition ) || !pFileManager->Read( verVertex.vecNormal ) || !pFileManager->Read( verVertex.vecTangent ) || !pFileManager->Read( verVertex.vecBitangent ) || !pFileManager->Read( verVertex.vecTexCoords ) || !pFileManager->Read( uiNumAffectingBones ))
+		if (!pFileManager->Read( verVertex.vec3Position ) || !pFileManager->Read( verVertex.vec3Normal ) || !pFileManager->Read( verVertex.vec3Tangent ) || !pFileManager->Read( verVertex.vec3Bitangent ) || !pFileManager->Read( verVertex.vec2TexCoords ) || !pFileManager->Read( uiNumAffectingBones ))
 		{
 			pFileManager->CloseFile();
 			return NULL;
@@ -431,7 +429,7 @@ CGeometry *CAssetManager::CreateGeometry( const char *sPath )
 
 		for (unsigned int j = 0; j < uiNumAffectingBones; j++)
 		{
-			if (!pFileManager->Read( verVertex.vecBoneIDs[j] ) || !pFileManager->Read( verVertex.vecWeights[j] ))
+			if (!pFileManager->Read( verVertex.vec4BoneIDs[j] ) || !pFileManager->Read( verVertex.vec4Weights[j] ))
 			{
 				pFileManager->CloseFile();
 				return NULL;
@@ -448,14 +446,14 @@ CGeometry *CAssetManager::CreateGeometry( const char *sPath )
 
 	for (unsigned int i = 0; i < uiFacesCount; i++)
 	{
-		unsigned int uiIndiciesCount;
-		if (!pFileManager->Read( uiIndiciesCount ))
+		unsigned int uiIndicesCount;
+		if (!pFileManager->Read( uiIndicesCount ))
 		{
 			pFileManager->CloseFile();
 			return NULL;
 		}
 
-		for (unsigned int j = 0; j < uiIndiciesCount; j++)
+		for (unsigned int j = 0; j < uiIndicesCount; j++)
 		{
 			unsigned int uiIndex;
 			if (!pFileManager->Read( uiIndex ))
@@ -477,33 +475,37 @@ CMaterial *CAssetManager::CreateMaterial( const char *sPath )
 	if (!pFileManager->OpenFile( sPath ))
 		return NULL;
 
-	MaterialType_t tMaterialType;
-	if (!pFileManager->Read( tMaterialType ))
+	EMaterialType eMaterialType;
+	if (!pFileManager->Read( eMaterialType ))
 	{
 		pFileManager->CloseFile();
 		return NULL;
 	}
 
 	CMaterial *pNewMaterial = NULL;
-	switch (tMaterialType)
+	switch (eMaterialType)
 	{
-	case MATERIALTYPE_LIT:
+	case EMaterialType::t_lit:
 	{
 		CTexture *pDiffuse;
-		CTexture *pSpecular;
-		CTexture *pNormal;
+		CTexture *pSpecular = NULL;
+		CTexture *pNormal = NULL;
 		float flShininess;
-		glm::vec2 vecTextureScale;
+		CTexture *pCamera = NULL;
+		glm::vec2 vec2TextureScale;
+		bool bRecieveShadows;
+		bool bCastShadows;
 
-		char *sDiffusePath;
-		if (!pFileManager->Read( sDiffusePath ))
+		char *sTexturePath;
+
+		if (!pFileManager->Read( sTexturePath ))
 		{
 			pFileManager->CloseFile();
 			return NULL;
 		}
 
-		pDiffuse = GetTexture( sDiffusePath );
-		delete[] sDiffusePath;
+		pDiffuse = GetTexture( sTexturePath );
+		delete[] sTexturePath;
 
 		if (!pDiffuse)
 		{
@@ -511,53 +513,101 @@ CMaterial *CAssetManager::CreateMaterial( const char *sPath )
 			return NULL;
 		}
 
-		char *sSpecularPath;
-		if (!pFileManager->Read( sSpecularPath ))
+		if (!pFileManager->Read( sTexturePath ) || !pFileManager->Read( flShininess ))
 		{
 			CheckTexture( pDiffuse );
 			pFileManager->CloseFile();
 			return NULL;
 		}
 
-		pSpecular = GetTexture( sSpecularPath );
-		delete[] sSpecularPath;
+		if (*sTexturePath)
+		{
+			pSpecular = GetTexture( sTexturePath );
+			delete[] sTexturePath;
 
-		char *sNormalPath;
-		if (!pFileManager->Read( sNormalPath ))
+			if (!pSpecular)
+			{
+				CheckTexture( pDiffuse );
+				pFileManager->CloseFile();
+				return NULL;
+			}
+		}
+		else
+		{
+			delete[] sTexturePath;
+		}
+
+		if (!pFileManager->Read( sTexturePath ))
 		{
 			CheckTexture( pDiffuse );
-
-			if (pSpecular)
-				CheckTexture( pSpecular );
-
+			if (pSpecular) CheckTexture( pSpecular );
 			pFileManager->CloseFile();
 			return NULL;
 		}
 
-		pNormal = GetTexture( sNormalPath );
-		delete[] sNormalPath;
+		if (*sTexturePath)
+		{
+			pNormal = GetTexture( sTexturePath );
+			delete[] sTexturePath;
 
-		if (!pFileManager->Read( flShininess ) || !pFileManager->Read( vecTextureScale ))
+			if (!pNormal)
+			{
+				CheckTexture( pDiffuse );
+				if (pSpecular) CheckTexture( pSpecular );
+				pFileManager->CloseFile();
+				return NULL;
+			}
+		}
+		else
+		{
+			delete[] sTexturePath;
+		}
+
+		if (!pFileManager->Read( sTexturePath ))
 		{
 			CheckTexture( pDiffuse );
-
-			if (pSpecular)
-				CheckTexture( pSpecular );
-
-			if (pNormal)
-				CheckTexture( pNormal );
-
+			if (pSpecular) CheckTexture( pSpecular );
+			if (pNormal) CheckTexture( pNormal );
 			pFileManager->CloseFile();
 			return NULL;
 		}
 
-		pNewMaterial = new CLitMaterial( pDiffuse, pSpecular, pNormal, flShininess, vecTextureScale, sPath );
+		if (*sTexturePath)
+		{
+			pCamera = GetTexture( sTexturePath );
+			delete[] sTexturePath;
+
+			if (!pCamera)
+			{
+				CheckTexture( pDiffuse );
+				if (pSpecular) CheckTexture( pSpecular );
+				if (pNormal) CheckTexture( pNormal );
+				pFileManager->CloseFile();
+				return NULL;
+			}
+		}
+		else
+		{
+			delete[] sTexturePath;
+		}
+
+		if (!pFileManager->Read( vec2TextureScale ) || !pFileManager->Read( bCastShadows ) || !pFileManager->Read( bRecieveShadows ))
+		{
+			CheckTexture( pDiffuse );
+			if (pSpecular) CheckTexture( pSpecular );
+			if (pNormal) CheckTexture( pNormal );
+			if (pCamera) CheckTexture( pCamera );
+			pFileManager->CloseFile();
+			return NULL;
+		}
+
+		pNewMaterial = new CLitMaterial( pDiffuse, pSpecular, flShininess, pNormal, pCamera, vec2TextureScale, bCastShadows, bRecieveShadows, sPath );
 		break;
 	}
-	case MATERIALTYPE_UNLIT:
+	case EMaterialType::t_unlit:
 	{
 		CTexture *pDiffuse;
-		glm::vec2 vecTextureScale;
+		glm::vec2 vec2TextureScale;
 
 		char *sDiffusePath;
 		if (!pFileManager->Read( sDiffusePath ))
@@ -575,17 +625,17 @@ CMaterial *CAssetManager::CreateMaterial( const char *sPath )
 			return NULL;
 		}
 
-		if (!pFileManager->Read( vecTextureScale ))
+		if (!pFileManager->Read( vec2TextureScale ))
 		{
 			CheckTexture( pDiffuse );
 			pFileManager->CloseFile();
 			return NULL;
 		}
 
-		pNewMaterial = new CUnlitMaterial( pDiffuse, vecTextureScale, sPath );
+		pNewMaterial = new CUnlitMaterial( pDiffuse, vec2TextureScale, sPath );
 		break;
 	}
-	case MATERIALTYPE_SKYBOX:
+	case EMaterialType::t_skybox:
 	{
 		CTexture *pSkybox;
 
@@ -796,11 +846,11 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 	if (!pFileManager->OpenFile( sPath ))
 		return NULL;
 
-	TextureType_t tTextureType;
+	ETextureType eTextureType;
 	bool bFilter;
 	GLint tFilter;
 
-	if (!pFileManager->Read( tTextureType ) || !pFileManager->Read( bFilter ))
+	if (!pFileManager->Read( eTextureType ) || !pFileManager->Read( bFilter ))
 	{
 		pFileManager->CloseFile();
 		return NULL;
@@ -810,12 +860,12 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 
 	unsigned int uiTextureID;
 
-	switch (tTextureType)
+	switch (eTextureType)
 	{
-	case TEXTURETYPE_2D:
+	case ETextureType::t_2d:
 	{
-		TextureWrap_t tTextureWrap;
-		glm::vec4 vecBorderColor;
+		ETextureWrap eTextureWrap;
+		glm::vec4 vec4BorderColor;
 
 		char *sImagePath;
 		unsigned int uiWidth;
@@ -823,7 +873,7 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 		unsigned int uiChannels;
 		unsigned char *pData;
 
-		if (!pFileManager->Read( tTextureWrap ) || (tTextureType == TEXTUREWRAP_BORDER && !pFileManager->Read( vecBorderColor )) || !pFileManager->Read( sImagePath ))
+		if (!pFileManager->Read( eTextureWrap ) || (eTextureWrap == ETextureWrap::t_border && !pFileManager->Read( vec4BorderColor )) || !pFileManager->Read( sImagePath ))
 		{
 			pFileManager->CloseFile();
 			return NULL;
@@ -874,18 +924,18 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 		}
 
 		GLint tTextureWrapType;
-		switch (tTextureWrap)
+		switch (eTextureWrap)
 		{
-		case TEXTUREWRAP_REPEAT:
+		case ETextureWrap::t_repeat:
 			tTextureWrapType = GL_REPEAT;
 			break;
-		case TEXTUREWRAP_MIRRORED:
+		case ETextureWrap::t_mirrored:
 			tTextureWrapType = GL_MIRRORED_REPEAT;
 			break;
-		case TEXTUREWRAP_EDGE:
+		case ETextureWrap::t_edge:
 			tTextureWrapType = GL_CLAMP_TO_EDGE;
 			break;
-		case TEXTUREWRAP_BORDER:
+		case ETextureWrap::t_border:
 			tTextureWrapType = GL_CLAMP_TO_BORDER;
 			break;
 		default:
@@ -902,13 +952,13 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tTextureWrapType );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tFilter );
-		if (tTextureWrap == TEXTUREWRAP_BORDER)
-			glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr( vecBorderColor ) );
+		if (eTextureWrap == ETextureWrap::t_border)
+			glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr( vec4BorderColor ) );
 
 		delete[] pData;
 		break;
 	}
-	case TEXTURETYPE_CUBEMAP:
+	case ETextureType::t_cubemap:
 	{
 		unsigned int uiWidth[6];
 		unsigned int uiHeight[6];
@@ -999,7 +1049,7 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 
 		break;
 	}
-	case TEXTURETYPE_INVALID:
+	case ETextureType::i_invalid:
 	{
 		pFileManager->CloseFile();
 		return NULL;
@@ -1165,13 +1215,13 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 
 int CAssetManager::BindTexture( unsigned int uiTextureID, unsigned int uiTextureType )
 {
-	std::unordered_map<unsigned int, int>::iterator itTextureIDSearch = m_mapTextureIDToIndex.find( uiTextureID );
+	std::unordered_map<unsigned int, int>::const_iterator itTextureIDSearch = m_mapTextureIDToIndex.find( uiTextureID );
 	if (itTextureIDSearch == m_mapTextureIDToIndex.end())
 	{
 		unsigned int uiPrevTextureIndex = m_uiTextureIndex;
 		m_uiTextureIndex = (m_uiTextureIndex + 1) % m_uiMaxTextures;
 
-		std::unordered_map<int, unsigned int>::iterator itIndexSearch = m_mapIndexToTextureID.find( uiPrevTextureIndex );
+		std::unordered_map<int, unsigned int>::const_iterator itIndexSearch = m_mapIndexToTextureID.find( uiPrevTextureIndex );
 		if (itIndexSearch != m_mapIndexToTextureID.end())
 		{
 			m_mapTextureIDToIndex.erase( itIndexSearch->second );
@@ -1193,7 +1243,7 @@ int CAssetManager::BindTexture( unsigned int uiTextureID, unsigned int uiTexture
 
 void CAssetManager::UnbindTexture( unsigned int uiTextureID )
 {
-	std::unordered_map<unsigned int, int>::iterator itTextureIDSearch = m_mapTextureIDToIndex.find( uiTextureID );
+	std::unordered_map<unsigned int, int>::const_iterator itTextureIDSearch = m_mapTextureIDToIndex.find( uiTextureID );
 	if (itTextureIDSearch != m_mapTextureIDToIndex.end())
 	{
 		m_mapTextureIDToIndex.erase( itTextureIDSearch );

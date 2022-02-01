@@ -10,8 +10,8 @@ CBaseModeled::CBaseModeled()
 
 void CBaseModeled::PreDraw( void )
 {
-	pShaderManager->SetUniformBufferObject( UBO_MODEL, 0, &GetModelMatrix() );
-	pShaderManager->SetUniformBufferObject( UBO_MODEL, 1, &GetModelMatrixInverse() );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_model, 0, &GetModelMatrix() );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_model, 1, &GetModelMatrixInverse() );
 }
 
 void CBaseModeled::Draw( void )

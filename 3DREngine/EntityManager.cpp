@@ -5,6 +5,9 @@
 CEntityManager::CEntityManager()
 {
 	m_pPlayer = NULL;
+
+	m_pShadowCamera = NULL;
+	m_pTextureCamera = NULL;
 }
 
 CEntityManager::~CEntityManager()
@@ -28,8 +31,14 @@ void CEntityManager::OnLoop( void )
 		{
 			CBaseEntity *pEntity = m_pEntitiesToRemove[i];
 
-			uiMinEntityIndex = pEntity->GetEntityIndex();
-			m_pEntities.erase( m_pEntities.begin() + uiMinEntityIndex );
+			for (unsigned int i = 0; i < (unsigned int)m_pEntities.size(); i++)
+			{
+				if (m_pEntities[i] == pEntity)
+				{
+					m_pEntities.erase( m_pEntities.begin() + i );
+					break;
+				}
+			}
 
 			if (pEntity->IsPlayer() && m_pPlayer == pEntity)
 			{
@@ -41,18 +50,36 @@ void CEntityManager::OnLoop( void )
 
 				if (pEntity->IsLight())
 				{
-					uiMinLightEntityIndex = pDrawable->GetDrawIndex();
-					m_pLightEntities.erase( m_pLightEntities.begin() + uiMinLightEntityIndex );
+					for (unsigned int i = 0; i < (unsigned int)m_pLightEntities.size(); i++)
+					{
+						if (m_pLightEntities[i] == pEntity)
+						{
+							m_pLightEntities.erase( m_pLightEntities.begin() + i );
+							break;
+						}
+					}
 				}
 				else if (pEntity->IsCamera())
 				{
-					uiMinCameraEntityIndex = pDrawable->GetDrawIndex();
-					m_pCameraEntities.erase( m_pCameraEntities.begin() + uiMinCameraEntityIndex );
+					for (unsigned int i = 0; i < (unsigned int)m_pCameraEntities.size(); i++)
+					{
+						if (m_pCameraEntities[i] == pEntity)
+						{
+							m_pCameraEntities.erase( m_pCameraEntities.begin() + i );
+							break;
+						}
+					}
 				}
 				else
 				{
-					uiMinDrawEntityIndex = pDrawable->GetDrawIndex();
-					m_pDrawEntities.erase( m_pDrawEntities.begin() + uiMinDrawEntityIndex );
+					for (unsigned int i = 0; i < (unsigned int)m_pDrawEntities.size(); i++)
+					{
+						if (m_pDrawEntities[i] == pEntity)
+						{
+							m_pDrawEntities.erase( m_pDrawEntities.begin() + i );
+							break;
+						}
+					}
 				}
 			}
 
@@ -60,30 +87,6 @@ void CEntityManager::OnLoop( void )
 		}
 
 		m_pEntitiesToRemove.clear();
-
-		while (uiMinEntityIndex < (unsigned int)m_pEntities.size())
-		{
-			m_pEntities[uiMinEntityIndex]->SetEntityIndex( uiMinEntityIndex );
-			uiMinEntityIndex++;
-		}
-
-		while (uiMinEntityIndex < (unsigned int)m_pEntities.size())
-		{
-			m_pEntities[uiMinEntityIndex]->SetEntityIndex( uiMinEntityIndex );
-			uiMinEntityIndex++;
-		}
-
-		while (uiMinLightEntityIndex < (unsigned int)m_pCameraEntities.size())
-		{
-			m_pLightEntities[uiMinLightEntityIndex]->SetEntityIndex( uiMinLightEntityIndex );
-			uiMinLightEntityIndex++;
-		}
-
-		while (uiMinDrawEntityIndex < (unsigned int)m_pEntities.size())
-		{
-			m_pDrawEntities[uiMinDrawEntityIndex]->SetEntityIndex( uiMinDrawEntityIndex );
-			uiMinDrawEntityIndex++;
-		}
 	}
 
 	for (unsigned int i = 0; i < (unsigned int)m_pEntities.size(); i++)
@@ -116,7 +119,6 @@ void CEntityManager::OnLoop( void )
 		{
 			CBaseEntity *pEntity = m_pEntitiesToAdd[i];
 
-			pEntity->SetEntityIndex( (unsigned int)m_pEntities.size() );
 			m_pEntities.push_back( pEntity );
 
 			if (pEntity->IsPlayer() && !m_pPlayer)
@@ -127,9 +129,7 @@ void CEntityManager::OnLoop( void )
 			{
 				if (pEntity->IsLight())
 				{
-					CBaseLight *pLight = dynamic_cast<CBaseLight *>(pEntity);
-					pLight->SetDrawIndex( (unsigned int)m_pLightEntities.size() );
-					m_pLightEntities.push_back( pLight );
+					m_pLightEntities.push_back( dynamic_cast<CBaseLight *>(pEntity) );
 				}
 				else if (pEntity->IsCamera())
 				{
@@ -139,7 +139,6 @@ void CEntityManager::OnLoop( void )
 					{
 						if (pCamera->GetRenderPriority() <= m_pCameraEntities[i]->GetRenderPriority())
 						{
-							pCamera->SetDrawIndex( i );
 							m_pCameraEntities.insert( m_pCameraEntities.begin() + i, pCamera );
 							bSuccess = true;
 							break;
@@ -147,16 +146,11 @@ void CEntityManager::OnLoop( void )
 					}
 
 					if (!bSuccess)
-					{
-						pCamera->SetDrawIndex( (unsigned int)m_pCameraEntities.size() );
 						m_pCameraEntities.push_back( pCamera );
-					}
 				}
 				else
 				{
-					CBaseDrawable *pDrawable = dynamic_cast<CBaseDrawable *>(pEntity);
-					pDrawable->SetDrawIndex( (unsigned int)m_pDrawEntities.size() );
-					m_pDrawEntities.push_back( pDrawable );
+					m_pDrawEntities.push_back( dynamic_cast<CBaseDrawable *>(pEntity) );
 				}
 			}
 		}
@@ -170,10 +164,10 @@ void CEntityManager::OnLoop( void )
 
 void CEntityManager::DrawEntities( void )
 {
-	pRenderManager->SetRenderPass( RENDERPASS_DEPTH );
+	pRenderManager->SetRenderPass( ERenderPass::t_depth );
 	DrawUnlitEntities();
 
-	pRenderManager->SetRenderPass( RENDERPASS_UNLIT );
+	pRenderManager->SetRenderPass( ERenderPass::t_unlit );
 	DrawUnlitEntities();
 
 	DrawLitEntities();
@@ -218,6 +212,9 @@ void CEntityManager::DrawLitEntities( void )
 	}
 
 	pRenderManager->SetBlend( false );
+
+	SetShadowCamera( NULL );
+	SetTextureCamera( NULL );
 }
 
 void CEntityManager::AddEntity( CBaseEntity *pEntity )
@@ -228,20 +225,6 @@ void CEntityManager::AddEntity( CBaseEntity *pEntity )
 void CEntityManager::RemoveEntity( CBaseEntity *pEntity )
 {
 	m_pEntitiesToRemove.push_back( pEntity );
-
-	bool bSuccess = false;
-	for (unsigned int i = 0; i < (unsigned int)m_pEntitiesToRemove.size(); i++)
-	{
-		if (pEntity->GetEntityIndex() > m_pEntitiesToRemove[i]->GetEntityIndex())
-		{
-			m_pEntitiesToRemove.insert( m_pEntitiesToRemove.begin() + i, pEntity );
-			bSuccess = true;
-			break;
-		}
-	}
-
-	if (!bSuccess)
-		m_pEntitiesToRemove.push_back( pEntity );
 }
 
 void CEntityManager::ClearEntities( void )
@@ -263,7 +246,27 @@ void CEntityManager::ClearEntities( void )
 	m_pPlayer = NULL;
 }
 
-CBasePlayer *CEntityManager::GetPlayer( void )
+CBasePlayer *CEntityManager::GetPlayer( void ) const
 {
 	return m_pPlayer;
+}
+
+void CEntityManager::SetShadowCamera( CBaseCamera *pShadowCamera )
+{
+	m_pShadowCamera = pShadowCamera;
+}
+
+void CEntityManager::SetTextureCamera( CBaseCamera *pTextureCamera )
+{
+	m_pTextureCamera = pTextureCamera;
+}
+
+CBaseCamera *CEntityManager::GetShadowCamera( void ) const
+{
+	return m_pShadowCamera;
+}
+
+CBaseCamera *CEntityManager::GetTextureCamera( void ) const
+{
+	return m_pTextureCamera;
 }

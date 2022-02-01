@@ -1,6 +1,4 @@
 #include "PointShadowCamera.h"
-#include "CommandManager.h"
-#include "ShaderManager.h"
 #include "RenderManager.h"
 #include "EntityManager.h"
 #include "AssetManager.h"
@@ -15,19 +13,19 @@ CPointShadowCamera::CPointShadowCamera()
 
 void CPointShadowCamera::Init( void )
 {
+	BaseClass::Init();
+
 	m_bUpdateProjection = false;
 
 	m_matProjection = glm::perspective( M_PI * 0.5f, 1.0f, m_flNear, m_flFar );
-	m_matView[0] = glm::lookAt( GetPosition(), GetPosition() + g_vecLeft, g_vecUp );
-	m_matView[1] = glm::lookAt( GetPosition(), GetPosition() + g_vecRight, g_vecUp );
-	m_matView[2] = glm::lookAt( GetPosition(), GetPosition() + g_vecDown, g_vecBack );
-	m_matView[3] = glm::lookAt( GetPosition(), GetPosition() + g_vecUp, g_vecFront );
-	m_matView[4] = glm::lookAt( GetPosition(), GetPosition() + g_vecBack, g_vecUp );
-	m_matView[5] = glm::lookAt( GetPosition(), GetPosition() + g_vecFront, g_vecUp );
+	m_matView[0] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Left, g_vec3Up );
+	m_matView[1] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Right, g_vec3Up );
+	m_matView[2] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Down, g_vec3Back );
+	m_matView[3] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Up, g_vec3Front );
+	m_matView[4] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Back, g_vec3Up );
+	m_matView[5] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Front, g_vec3Up );
 	for (unsigned int i = 0; i < 6; i++)
 		m_matTotal[i] = m_matProjection * m_matView[i];
-
-	BaseClass::Init();
 }
 
 void CPointShadowCamera::PostThink( void )
@@ -44,12 +42,12 @@ void CPointShadowCamera::PostThink( void )
 
 	if (PositionUpdated())
 	{
-		m_matView[0] = glm::lookAt( GetPosition(), GetPosition() + g_vecLeft, g_vecUp );
-		m_matView[1] = glm::lookAt( GetPosition(), GetPosition() + g_vecRight, g_vecUp );
-		m_matView[2] = glm::lookAt( GetPosition(), GetPosition() + g_vecDown, g_vecBack );
-		m_matView[3] = glm::lookAt( GetPosition(), GetPosition() + g_vecUp, g_vecFront );
-		m_matView[4] = glm::lookAt( GetPosition(), GetPosition() + g_vecBack, g_vecUp );
-		m_matView[5] = glm::lookAt( GetPosition(), GetPosition() + g_vecFront, g_vecUp );
+		m_matView[0] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Left, g_vec3Up );
+		m_matView[1] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Right, g_vec3Up );
+		m_matView[2] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Down, g_vec3Back );
+		m_matView[3] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Up, g_vec3Front );
+		m_matView[4] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Back, g_vec3Up );
+		m_matView[5] = glm::lookAt( GetPosition(), GetPosition() + g_vec3Front, g_vec3Up );
 
 		bUpdateTotal = true;
 	}
@@ -68,22 +66,25 @@ void CPointShadowCamera::Render( void )
 	pRenderManager->SetViewportSize( GetSize() );
 	pRenderManager->SetFrameBuffer( m_uiTextureFBO );
 
-	pRenderManager->SetRenderPass( RENDERPASS_SHADOW_POINT );
+	pRenderManager->SetRenderPass( ERenderPass::t_shadowpoint );
 
-	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 6, m_matTotal );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTMAXDISTANCE, 0, &m_flFar );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOSITION, 0, &GetPosition() );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadow, 0, 0, 6, m_matTotal );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightmaxdistance, 0, &m_flFar );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightposition, 0, &GetPosition() );
 
 	pEntityManager->DrawUnlitEntities();
 }
 
 void CPointShadowCamera::ActivateLight( void )
 {
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadow, 0, 0, 6, m_matTotal );
+
 	BaseClass::ActivateLight();
+}
 
-	pRenderManager->SetShadowMapIndex( pAssetManager->BindTexture( m_uiTexture, GL_TEXTURE_CUBE_MAP ) );
-
-	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 6, m_matTotal );
+int CPointShadowCamera::BindTexture( void )
+{
+	return pAssetManager->BindTexture( m_uiTexture, GL_TEXTURE_CUBE_MAP );
 }
 
 void CPointShadowCamera::SetNear( float flNear )
@@ -105,14 +106,14 @@ void CPointShadowCamera::SetBlurRadius( float flBlurRadius )
 
 void CPointShadowCamera::CreateTextureBuffers( void )
 {
-	const glm::ivec2 &vecSize = GetSize();
+	const glm::ivec2 &vec2Size = GetSize();
 
 	glGenFramebuffers( 1, &m_uiTextureFBO );
 	glGenTextures( 1, &m_uiTexture );
 
 	glBindTexture( GL_TEXTURE_CUBE_MAP, m_uiTexture );
 	for (unsigned int i = 0; i < 6; i++)
-		glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT16, vecSize.x, vecSize.y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL );
+		glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT16, vec2Size.x, vec2Size.y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL );
 	glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );

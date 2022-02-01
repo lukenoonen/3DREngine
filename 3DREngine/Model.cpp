@@ -17,10 +17,10 @@ CModel::CModel( const std::vector<CMesh *> &pMeshes, const std::vector<CAnimatio
 	if (m_pSkeleton)
 		m_pSkeleton->Activate();
 	
-	RenderPass_t tRenderPass = pRenderManager->GetRenderPass();
-	for (unsigned int i = 0; i < (unsigned int)RENDERPASS_COUNT; i++)
+	ERenderPass eRenderPass = pRenderManager->GetRenderPass();
+	for (EBaseEnum i = 0; i < (EBaseEnum)ERenderPass::i_count; i++)
 	{
-		pRenderManager->SetRenderPass( (RenderPass_t)i );
+		pRenderManager->SetRenderPass( (ERenderPass)i );
 		m_bShouldDraw[i] = false;
 		for (unsigned int j = 0; j < (unsigned int)m_pMeshes.size(); j++)
 		{
@@ -31,7 +31,7 @@ CModel::CModel( const std::vector<CMesh *> &pMeshes, const std::vector<CAnimatio
 			}
 		}
 	}
-	pRenderManager->SetRenderPass( tRenderPass );
+	pRenderManager->SetRenderPass( eRenderPass );
 
 	m_bIsAnimated = m_pSkeleton != NULL && !m_pAnimations.empty();
 }
@@ -59,7 +59,7 @@ CModel::~CModel()
 
 bool CModel::ShouldDraw( void ) const
 {
-	return m_bShouldDraw[pRenderManager->GetRenderPass()];
+	return m_bShouldDraw[(EBaseEnum)pRenderManager->GetRenderPass()];
 }
 
 void CModel::Draw( void )

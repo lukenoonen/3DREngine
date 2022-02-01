@@ -17,6 +17,8 @@ public:
 
 	virtual void Render( void );
 
+	virtual int BindTexture( void );
+
 	void SetFOV( float flFOV );
 
 	void SetNear( float flNear );

@@ -1,29 +1,29 @@
 #include "Material.h"
+#include "RenderManager.h"
 #include "GlobalManager.h"
-#include "ShaderManager.h"
 
 CMaterial::CMaterial( const char *sPath ) : BaseClass( sPath )
 {
-	for (unsigned int i = 0; i < (unsigned int)RENDERPASS_COUNT; i++)
-		m_tShaderTypes[i] = SHADERTYPE_INVALID;
+	for (EBaseEnum i = 0; i < (EBaseEnum)ERenderPass::i_count; i++)
+		m_tShaderTypes[i] = EShaderType::i_invalid;
 }
 
 bool CMaterial::ShouldDraw( void ) const
 {
-	return GetShaderType() != SHADERTYPE_INVALID;
+	return GetShaderType() != EShaderType::i_invalid;
 }
 
 void CMaterial::Use( void )
 {
-	pShaderManager->Use( GetShaderType() );
+	pRenderManager->UseShader( GetShaderType() );
 }
 
-ShaderType_t CMaterial::GetShaderType( void ) const
+EShaderType CMaterial::GetShaderType( void ) const
 {
-	return m_tShaderTypes[pRenderManager->GetRenderPass()];
+	return m_tShaderTypes[(EBaseEnum)pRenderManager->GetRenderPass()];
 }
 
-void CMaterial::SetShaderType( RenderPass_t tRenderPass, ShaderType_t tShaderType )
+void CMaterial::SetShaderType( ERenderPass eRenderPass, EShaderType eShaderType )
 {
-	m_tShaderTypes[tRenderPass] = tShaderType;
+	m_tShaderTypes[(EBaseEnum)eRenderPass] = eShaderType;
 }

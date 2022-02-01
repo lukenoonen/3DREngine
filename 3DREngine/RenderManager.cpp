@@ -1,7 +1,5 @@
 #include "RenderManager.h"
-#include <stdlib.h>
 #include "InputManager.h"
-#include "ShaderManager.h"
 #include "EntityManager.h"
 #include "GlobalManager.h"
 
@@ -33,7 +31,7 @@ bool CB_R_VSync( void )
 
 CConFloat cf_r_fov( 90.0f, "r_fov" );
 
-CConFloat cf_r_height( 1.0f, "r_height" );
+CConFloat cf_r_height( 16.0f, "r_height" );
 
 CConFloat cf_r_near( 0.1f, "r_near" );
 
@@ -53,6 +51,24 @@ bool CB_R_WindowName( void )
 	return true;
 }
 
+bool CC_R_ShaderQuality( CTextItem *pCommand )
+{
+	if (pCommand->GetTextTermCount() < 2)
+		return false;
+
+	CTextTerm *pTextTerm = pCommand->GetTextTerm( 1 );
+	if (!pTextTerm->IsUnsignedIntFormat())
+		return false;
+
+	EBaseEnum eQuality = (EBaseEnum)pTextTerm->GetUnsignedInt();
+	if (eQuality >= (EBaseEnum)EShaderPreprocessorQuality::i_count)
+		return false;
+
+	pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_quality, eQuality );
+	return true;
+}
+CConCommand cc_r_shaderquality( "r_shaderquality", CC_R_ShaderQuality );
+
 CRenderManager::CRenderManager()
 {
 	glfwInit();
@@ -62,7 +78,7 @@ CRenderManager::CRenderManager()
 	glfwWindowHint( GLFW_DECORATED, GLFW_FALSE );
 	glfwWindowHint( GLFW_RESIZABLE, GLFW_FALSE );
 
-	m_tRenderPass = RENDERPASS_SHADOW_DIR;
+	m_eRenderPass = ERenderPass::i_invalid;
 
 	m_pMonitor = glfwGetPrimaryMonitor();
 	m_pWindow = glfwCreateWindow( 800, 600, "3DREngine", NULL, NULL );
@@ -73,18 +89,52 @@ CRenderManager::CRenderManager()
 	m_uiFrameBuffer = 0;
 	m_uiDepthFunc = GL_LEQUAL;
 	m_bBlend = false;
-	m_ivecViewportSize = g_vec2Zero;
-	m_ivecViewportOffset = g_vec2Zero;
+	m_ivec2ViewportSize = g_vec2Zero;
+	m_ivec2ViewportOffset = g_vec2Zero;
 
 	glEnable( GL_DEPTH_TEST );
 	glDepthFunc( GL_LEQUAL );
 	glEnable( GL_CULL_FACE );
 	glCullFace( GL_BACK );
 	glBlendFunc( GL_ONE, GL_ONE );
+
+	m_pActiveSubShader = NULL;
+
+	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderPreprocessor::i_count; i++)
+		m_eShaderPreprocessors[i] = (EBaseEnum)0;
+
+	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderType::i_count; i++)
+	{
+		char *sVertexPath = UTIL_stradd( g_sShaderTypeNames[i], ".vs" );
+		char *sGeometryPath = UTIL_stradd( g_sShaderTypeNames[i], ".gs" );
+		char *sFragmentPath = UTIL_stradd( g_sShaderTypeNames[i], ".fs" );
+		m_pShaders[i] = new CShader( sVertexPath, sGeometryPath, sFragmentPath );
+		delete[] sVertexPath;
+		delete[] sGeometryPath;
+		delete[] sFragmentPath;
+
+		if (!m_pShaders[i]->IsSuccess())
+		{
+			// TODO: What should happen on failure?
+		}
+	}
+
+	glGenBuffers( (EBaseEnum)EUniformBufferObjects::i_count, m_uiUBOs );
+	for (unsigned int i = 0; i < (EBaseEnum)EUniformBufferObjects::i_count; i++)
+	{
+		glBindBuffer( GL_UNIFORM_BUFFER, m_uiUBOs[i] );
+		glBufferData( GL_UNIFORM_BUFFER, g_uiUBOSizes[i], NULL, GL_DYNAMIC_DRAW );
+		glBindBufferRange( GL_UNIFORM_BUFFER, i, m_uiUBOs[i], 0, g_uiUBOSizes[i] );
+	}
 }
 
 CRenderManager::~CRenderManager()
 {
+	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderType::i_count; i++)
+		delete m_pShaders[i];
+
+	glDeleteBuffers( (EBaseEnum)EUniformBufferObjects::i_count, m_uiUBOs );
+
 	glfwDestroyWindow( m_pWindow );
 	glfwTerminate();
 }
@@ -92,16 +142,6 @@ CRenderManager::~CRenderManager()
 void CRenderManager::OnLoop( void )
 {
 	glfwSwapBuffers( m_pWindow );
-}
-
-RenderPass_t CRenderManager::GetRenderPass( void ) const
-{
-	return m_tRenderPass;
-}
-
-void CRenderManager::SetRenderPass( RenderPass_t tRenderPass )
-{
-	m_tRenderPass = tRenderPass;
 }
 
 GLFWmonitor *CRenderManager::GetMonitor( void )
@@ -145,30 +185,122 @@ void CRenderManager::SetBlend( bool bBlend )
 	}
 }
 
-void CRenderManager::SetViewportSize( const glm::ivec2 &ivecViewportSize )
+void CRenderManager::SetViewportSize( const glm::ivec2 &ivec2ViewportSize )
 {
-	if (m_ivecViewportSize != ivecViewportSize)
+	if (m_ivec2ViewportSize != ivec2ViewportSize)
 	{
-		m_ivecViewportSize = ivecViewportSize;
-		glViewport( m_ivecViewportOffset.x, m_ivecViewportOffset.y, ivecViewportSize.x, ivecViewportSize.y );
+		m_ivec2ViewportSize = ivec2ViewportSize;
+		glViewport( m_ivec2ViewportOffset.x, m_ivec2ViewportOffset.y, ivec2ViewportSize.x, ivec2ViewportSize.y );
 	}
 }
 
-void CRenderManager::SetViewportOffset( const glm::ivec2 &ivecViewportOffset )
+void CRenderManager::SetViewportOffset( const glm::ivec2 &ivec2ViewportOffset )
 {
-	if (m_ivecViewportOffset != ivecViewportOffset)
+	if (m_ivec2ViewportOffset != ivec2ViewportOffset)
 	{
-		m_ivecViewportOffset = ivecViewportOffset;
-		glViewport( ivecViewportOffset.x, ivecViewportOffset.y, m_ivecViewportSize.x, m_ivecViewportSize.y );
+		m_ivec2ViewportOffset = ivec2ViewportOffset;
+		glViewport( ivec2ViewportOffset.x, ivec2ViewportOffset.y, m_ivec2ViewportSize.x, m_ivec2ViewportSize.y );
 	}
 }
 
-int CRenderManager::GetShadowMapIndex( void ) const
+void CRenderManager::SetRenderPass( ERenderPass eRenderPass )
 {
-	return m_iShadowMapIndex;
+	m_eRenderPass = eRenderPass;
 }
 
-void CRenderManager::SetShadowMapIndex( int iShadowMapIndex )
+ERenderPass CRenderManager::GetRenderPass( void ) const
 {
-	m_iShadowMapIndex = iShadowMapIndex;
+	return m_eRenderPass;
+}
+
+void CRenderManager::UseShader( EShaderType eShaderType )
+{
+	CSubShader *pNewActiveSubShader = m_pShaders[(EBaseEnum)eShaderType]->GetSubShader( m_eShaderPreprocessors );
+	if (m_pActiveSubShader != pNewActiveSubShader)
+	{
+		m_pActiveSubShader = pNewActiveSubShader;
+		m_pActiveSubShader->Use();
+	}
+}
+
+void CRenderManager::SetUniformBufferObject( EUniformBufferObjects eBufferObject, unsigned int uiIndex, const void *pData )
+{
+	glBindBuffer( GL_UNIFORM_BUFFER, m_uiUBOs[(EBaseEnum)eBufferObject] );
+	glBufferSubData( GL_UNIFORM_BUFFER, g_pUBOParamOffsets[(EBaseEnum)eBufferObject][uiIndex], g_pUBOParamSizes[(EBaseEnum)eBufferObject][uiIndex], pData );
+}
+
+void CRenderManager::SetUniformBufferObject( EUniformBufferObjects eBufferObject, unsigned int uiIndex, unsigned int uiParamIndex, unsigned int uiParams, const void *pData )
+{
+	glBindBuffer( GL_UNIFORM_BUFFER, m_uiUBOs[(EBaseEnum)eBufferObject] );
+	glBufferSubData( GL_UNIFORM_BUFFER, g_pUBOParamOffsets[(EBaseEnum)eBufferObject][uiIndex] + g_pUBOParamSizes[(EBaseEnum)eBufferObject][uiIndex] * uiParamIndex, g_pUBOParamSizes[(EBaseEnum)eBufferObject][uiIndex] * uiParams, pData );
+}
+
+void CRenderManager::SetUniform( const char *sName, bool bValue )
+{
+	glUniform1i( m_pActiveSubShader->GetLocation( sName ), (int)bValue );
+}
+
+void CRenderManager::SetUniform( const char *sName, int iValue )
+{
+	glUniform1i( m_pActiveSubShader->GetLocation( sName ), iValue );
+}
+
+void CRenderManager::SetUniform( const char *sName, float flValue )
+{
+	glUniform1f( m_pActiveSubShader->GetLocation( sName ), flValue );
+}
+
+void CRenderManager::SetUniform( const char *sName, const glm::vec2 &vec2Value )
+{
+	glUniform2fv( m_pActiveSubShader->GetLocation( sName ), 1, &vec2Value[0] );
+}
+
+void CRenderManager::SetUniform( const char *sName, float x, float y )
+{
+	glUniform2f( m_pActiveSubShader->GetLocation( sName ), x, y );
+}
+
+void CRenderManager::SetUniform( const char *sName, const glm::vec3 &vec3Value )
+{
+	glUniform3fv( m_pActiveSubShader->GetLocation( sName ), 1, &vec3Value[0] );
+}
+
+void CRenderManager::SetUniform( const char *sName, float x, float y, float z )
+{
+	glUniform3f( m_pActiveSubShader->GetLocation( sName ), x, y, z );
+}
+
+void CRenderManager::SetUniform( const char *sName, const glm::vec4 &vec4Value )
+{
+	glUniform4fv( m_pActiveSubShader->GetLocation( sName ), 1, &vec4Value[0] );
+}
+
+void CRenderManager::SetUniform( const char *sName, float x, float y, float z, float w )
+{
+	glUniform4f( m_pActiveSubShader->GetLocation( sName ), x, y, z, w );
+}
+
+void CRenderManager::SetUniform( const char *sName, const glm::mat2 &matValue )
+{
+	glUniformMatrix2fv( m_pActiveSubShader->GetLocation( sName ), 1, GL_FALSE, &matValue[0][0] );
+}
+
+void CRenderManager::SetUniform( const char *sName, const glm::mat3 &matValue )
+{
+	glUniformMatrix3fv( m_pActiveSubShader->GetLocation( sName ), 1, GL_FALSE, &matValue[0][0] );
+}
+
+void CRenderManager::SetUniform( const char *sName, const glm::mat4 &matValue )
+{
+	glUniformMatrix4fv( m_pActiveSubShader->GetLocation( sName ), 1, GL_FALSE, &matValue[0][0] );
+}
+
+void CRenderManager::SetShaderPreprocessor( EShaderPreprocessor eShaderPreprocessor, EBaseEnum eValue )
+{
+	m_eShaderPreprocessors[(EBaseEnum)eShaderPreprocessor] = eValue;
+}
+
+EBaseEnum CRenderManager::GetShaderPreprocessor( EShaderPreprocessor eShaderPreprocessor )
+{
+	return m_eShaderPreprocessors[(EBaseEnum)eShaderPreprocessor];
 }

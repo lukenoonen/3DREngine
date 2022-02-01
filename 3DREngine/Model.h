@@ -31,7 +31,7 @@ private:
 	std::vector<CMesh *> m_pMeshes;
 	std::vector<CAnimation *> m_pAnimations;
 	CSkeleton *m_pSkeleton;
-	bool m_bShouldDraw[RENDERPASS_COUNT];
+	bool m_bShouldDraw[(EBaseEnum)ERenderPass::i_count];
 	bool m_bIsAnimated;
 };
 

@@ -56,6 +56,11 @@ void CBaseCamera::Render( void )
 
 }
 
+int CBaseCamera::BindTexture( void )
+{
+	return -1; // TODO: see if there is a better number than this
+}
+
 void CBaseCamera::SetRenderPriority( unsigned int uiRenderPriority )
 {
 	m_uiRenderPriority = uiRenderPriority; // TODO: potentially figure out a concise way to be able to change render priority on the fly

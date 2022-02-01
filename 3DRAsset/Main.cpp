@@ -1,14 +1,10 @@
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <unordered_map>
 #include "stb_image.h"
-#include "UTIL.h"
+#include "SharedGlobal.h"
 #include "TextReader.h"
 #include "SharedAsset.h"
 
@@ -29,9 +25,9 @@ bool CreateMaterial( const char *sRootPath, const char *sName, CTextInformation 
 		return false;
 	}
 
-	MaterialType_t tMaterialType = UTIL_MaterialTypeNameToEnum( sMaterial );
+	EMaterialType eMaterialType = UTIL_MaterialTypeNameToEnum( sMaterial );
 
-	if (tMaterialType == MATERIALTYPE_INVALID)
+	if (eMaterialType == EMaterialType::i_invalid)
 	{
 		if (g_bDebug)
 			std::cout << "ERROR: shader could not be identified.\n";
@@ -45,22 +41,30 @@ bool CreateMaterial( const char *sRootPath, const char *sName, CTextInformation 
 	delete[] sMaterialOutputPath;
 	delete[] sFullMaterialName;
 
-	UTIL_Write( fMaterialOutput, &tMaterialType, 1, MaterialType_t );
+	UTIL_Write( fMaterialOutput, &eMaterialType, 1, EMaterialType );
 
-	switch (tMaterialType)
+	// TODO: make certain parameters required for the file to successfully compile (i.e., sDiffuse for t_lit and t_unlit)
+
+	switch (eMaterialType)
 	{
-	case MATERIALTYPE_LIT:
+	case EMaterialType::t_lit:
 	{
 		const char *sDiffuse = "";
 		const char *sSpecular = "";
-		const char *sNormal = "";
 		float flShininess = 16.0f;
-		glm::vec2 vecTextureScale( 1.0f );
+		const char *sNormal = "";
+		const char *sCamera = "";
+		glm::vec2 vec2TextureScale( 1.0f );
+		bool bRecieveShadows = true;
+		bool bCastShadows = true;
 		pTextInformation->GetString( "diffuse", sDiffuse );
 		pTextInformation->GetString( "specular", sSpecular );
-		pTextInformation->GetString( "normal", sNormal );
 		pTextInformation->GetFloat( "shininess", flShininess );
-		pTextInformation->GetVec2( "scale", vecTextureScale );
+		pTextInformation->GetString( "normal", sNormal );
+		pTextInformation->GetString( "camera", sCamera );
+		pTextInformation->GetVec2( "scale", vec2TextureScale );
+		pTextInformation->GetBool( "recieveshadows", bRecieveShadows );
+		pTextInformation->GetBool( "castshadows", bCastShadows );
 
 		unsigned int uiSize;
 		uiSize = UTIL_strlen( sDiffuse );
@@ -69,28 +73,33 @@ bool CreateMaterial( const char *sRootPath, const char *sName, CTextInformation 
 		uiSize = UTIL_strlen( sSpecular );
 		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
 		UTIL_Write( fMaterialOutput, sSpecular, uiSize, char );
+		UTIL_Write( fMaterialOutput, &flShininess, 1, float );
 		uiSize = UTIL_strlen( sNormal );
 		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
 		UTIL_Write( fMaterialOutput, sNormal, uiSize, char );
-		UTIL_Write( fMaterialOutput, &flShininess, 1, float );
-		UTIL_Write( fMaterialOutput, &vecTextureScale, 1, glm::vec2 );
+		uiSize = UTIL_strlen( sCamera );
+		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fMaterialOutput, sCamera, uiSize, char );
+		UTIL_Write( fMaterialOutput, &vec2TextureScale, 1, glm::vec2 );
+		UTIL_Write( fMaterialOutput, &bRecieveShadows, 1, bool );
+		UTIL_Write( fMaterialOutput, &bCastShadows, 1, bool );
 		break;
 	}
-	case MATERIALTYPE_UNLIT:
+	case EMaterialType::t_unlit:
 	{
 		const char *sDiffuse = "";
-		glm::vec2 vecTextureScale( 1.0f );
+		glm::vec2 vec2TextureScale( 1.0f );
 		pTextInformation->GetString( "diffuse", sDiffuse );
-		pTextInformation->GetVec2( "scale", vecTextureScale );
+		pTextInformation->GetVec2( "scale", vec2TextureScale );
 
 		unsigned int uiSize;
 		uiSize = UTIL_strlen( sDiffuse );
 		UTIL_Write( fMaterialOutput, &uiSize, 1, unsigned int );
 		UTIL_Write( fMaterialOutput, sDiffuse, uiSize, char );
-		UTIL_Write( fMaterialOutput, &vecTextureScale, 1, glm::vec2 );
+		UTIL_Write( fMaterialOutput, &vec2TextureScale, 1, glm::vec2 );
 		break;
 	}
-	case MATERIALTYPE_SKYBOX:
+	case EMaterialType::t_skybox:
 	{
 		const char *sSkybox = "";
 		pTextInformation->GetString( "skybox", sSkybox );
@@ -597,11 +606,22 @@ bool CreateTexture( const char *sRootPath, const char *sName, CTextInformation *
 {
 	stbi_set_flip_vertically_on_load( true );
 
-	bool bCubemap = false;
-	if (!pTextInformation->GetBool( "cubemap", bCubemap ))
+	const char *sTextureType;
+	if (!pTextInformation->GetString( "texturetype", sTextureType ))
 	{
 		if (g_bDebug)
-			std::cout << "WARNING: cubemap not found.\n";
+			std::cout << "ERROR: texturetype not found.\n";
+
+		return false;
+	}
+
+	ETextureType eTextureType = UTIL_TextureTypeNameToEnum( sTextureType );
+	if (eTextureType == ETextureType::i_invalid)
+	{
+		if (g_bDebug)
+			std::cout << "ERROR: type could not be identified.\n";
+
+		return false;
 	}
 
 	bool bFilter = true;
@@ -613,7 +633,70 @@ bool CreateTexture( const char *sRootPath, const char *sName, CTextInformation *
 		return false;
 	}
 
-	if (bCubemap)
+	switch (eTextureType)
+	{
+	case ETextureType::t_2d:
+	{
+		const char *sWrap;
+		if (!pTextInformation->GetString( "wrap", sWrap ))
+		{
+			if (g_bDebug)
+				std::cout << "ERROR: wrap not found.\n";
+
+			return false;
+		}
+
+		ETextureWrap eTextureWrap = UTIL_TextureWrapNameToEnum( sWrap );
+		if (eTextureWrap == ETextureWrap::i_invalid)
+		{
+			if (g_bDebug)
+				std::cout << "ERROR: wrap could not be identified.\n";
+
+			return false;
+		}
+
+		glm::vec4 vec4BorderColor( 1.0f );
+		if (eTextureWrap == ETextureWrap::t_border)
+		{
+			if (!pTextInformation->GetVec4( "bordercolor", vec4BorderColor ))
+			{
+				if (g_bDebug)
+					std::cout << "ERROR: bordercolor not found.\n";
+
+				return false;
+			}
+		}
+
+		const char *sImage;
+		if (!pTextInformation->GetString( "image", sImage ))
+		{
+			if (g_bDebug)
+				std::cout << "ERROR: image not found.\n";
+
+			return false;
+		}
+
+		char *sFullTextureName = UTIL_stradd( sName, ".3tx" );
+		char *sTextureOutputPath = UTIL_stradd( sRootPath, sFullTextureName );
+		std::fstream fTextureOutput( sTextureOutputPath, std::ios::out | std::ios::binary );
+		delete[] sTextureOutputPath;
+		delete[] sFullTextureName;
+
+		UTIL_Write( fTextureOutput, &eTextureType, 1, ETextureType );
+		UTIL_Write( fTextureOutput, &bFilter, 1, bool );
+		UTIL_Write( fTextureOutput, &eTextureWrap, 1, ETextureWrap );
+		if (eTextureWrap == ETextureWrap::t_border)
+			UTIL_Write( fTextureOutput, &vec4BorderColor, 1, glm::vec4 );
+		unsigned int uiSize;
+		uiSize = UTIL_strlen( sImage );
+		UTIL_Write( fTextureOutput, &uiSize, 1, unsigned int );
+		UTIL_Write( fTextureOutput, sImage, uiSize, char );
+
+		fTextureOutput.close();
+		break;
+	}
+
+	case ETextureType::t_cubemap:
 	{
 		CTextItem *pImage = pTextInformation->GetTextItem( "image" );
 		if (!pImage)
@@ -702,7 +785,7 @@ bool CreateTexture( const char *sRootPath, const char *sName, CTextInformation *
 		delete[] sTextureOutputPath;
 		delete[] sFullTextureName;
 
-		UTIL_Write( fTextureOutput, &bCubemap, 1, bool );
+		UTIL_Write( fTextureOutput, &eTextureType, 1, ETextureType );
 		UTIL_Write( fTextureOutput, &bFilter, 1, bool );
 		unsigned int uiSize;
 		uiSize = UTIL_strlen( sRight );
@@ -725,65 +808,8 @@ bool CreateTexture( const char *sRootPath, const char *sName, CTextInformation *
 		UTIL_Write( fTextureOutput, sBack, uiSize, char );
 
 		fTextureOutput.close();
+		break;
 	}
-	else
-	{
-		const char *sWrap;
-		if (!pTextInformation->GetString( "wrap", sWrap ))
-		{
-			if (g_bDebug)
-				std::cout << "ERROR: wrap not found.\n";
-
-			return false;
-		}
-
-		TextureWrap_t tTextureWrap = UTIL_TextureWrapNameToEnum( sWrap );
-		if (tTextureWrap == TEXTUREWRAP_INVALID)
-		{
-			if (g_bDebug)
-				std::cout << "ERROR: wrap could not be identified.\n";
-
-			return false;
-		}
-
-		glm::vec4 vecBorderColor( 1.0f );
-		if (tTextureWrap == TEXTUREWRAP_BORDER)
-		{
-			if (!pTextInformation->GetVec4( "bordercolor", vecBorderColor ))
-			{
-				if (g_bDebug)
-					std::cout << "ERROR: bordercolor not found.\n";
-
-				return false;
-			}
-		}
-
-		const char *sImage;
-		if (!pTextInformation->GetString( "image", sImage ))
-		{
-			if (g_bDebug)
-				std::cout << "ERROR: image not found.\n";
-
-			return false;
-		}
-
-		char *sFullTextureName = UTIL_stradd( sName, ".3tx" );
-		char *sTextureOutputPath = UTIL_stradd( sRootPath, sFullTextureName );
-		std::fstream fTextureOutput( sTextureOutputPath, std::ios::out | std::ios::binary );
-		delete[] sTextureOutputPath;
-		delete[] sFullTextureName;
-
-		UTIL_Write( fTextureOutput, &bCubemap, 1, bool );
-		UTIL_Write( fTextureOutput, &bFilter, 1, bool );
-		UTIL_Write( fTextureOutput, &tTextureWrap, 1, TextureWrap_t );
-		if (tTextureWrap == TEXTUREWRAP_BORDER)
-			UTIL_Write( fTextureOutput, &vecBorderColor, 1, glm::vec4 );
-		unsigned int uiSize;
-		uiSize = UTIL_strlen( sImage );
-		UTIL_Write( fTextureOutput, &uiSize, 1, unsigned int );
-		UTIL_Write( fTextureOutput, sImage, uiSize, char );
-
-		fTextureOutput.close();
 	}
 
 	return true;

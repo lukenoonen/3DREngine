@@ -206,19 +206,19 @@ bool CConBool::GetValue( void )
 	return m_bValue;
 }
 
-CConVec2::CConVec2( const glm::vec2 &vecDefaultValue, const char *sName ) : BaseClass( sName )
+CConVec2::CConVec2( const glm::vec2 &vec2DefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec2Value = vec2DefaultValue;
 }
 
-CConVec2::CConVec2( const glm::vec2 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+CConVec2::CConVec2( const glm::vec2 &vec2DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec2Value = vec2DefaultValue;
 }
 
-CConVec2::CConVec2( const glm::vec2 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+CConVec2::CConVec2( const glm::vec2 &vec2DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec2Value = vec2DefaultValue;
 }
 
 bool CConVec2::Dispatch( CTextItem *pTextInformation )
@@ -226,12 +226,12 @@ bool CConVec2::Dispatch( CTextItem *pTextInformation )
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsVec2Format())
 	{
-		glm::vec2 vecPrevValue = m_vecValue;
-		m_vecValue = pTextTerm->GetVec2();
+		glm::vec2 vec2PrevValue = m_vec2Value;
+		m_vec2Value = pTextTerm->GetVec2();
 		if (BaseClass::Dispatch( pTextInformation ))
 			return true;
 
-		m_vecValue = vecPrevValue;
+		m_vec2Value = vec2PrevValue;
 	}
 
 	return false;
@@ -239,22 +239,22 @@ bool CConVec2::Dispatch( CTextItem *pTextInformation )
 
 const glm::vec2 &CConVec2::GetValue( void )
 {
-	return m_vecValue;
+	return m_vec2Value;
 }
 
-CConVec3::CConVec3( const glm::vec3 &vecDefaultValue, const char *sName ) : BaseClass( sName )
+CConVec3::CConVec3( const glm::vec3 &vec3DefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec3Value = vec3DefaultValue;
 }
 
-CConVec3::CConVec3( const glm::vec3 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+CConVec3::CConVec3( const glm::vec3 &vec3DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec3Value = vec3DefaultValue;
 }
 
-CConVec3::CConVec3( const glm::vec3 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+CConVec3::CConVec3( const glm::vec3 &vec3DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec3Value = vec3DefaultValue;
 }
 
 bool CConVec3::Dispatch( CTextItem *pTextInformation )
@@ -262,12 +262,12 @@ bool CConVec3::Dispatch( CTextItem *pTextInformation )
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsVec3Format())
 	{
-		glm::vec3 vecPrevValue = m_vecValue;
-		m_vecValue = pTextTerm->GetVec3();
+		glm::vec3 vec3PrevValue = m_vec3Value;
+		m_vec3Value = pTextTerm->GetVec3();
 		if (BaseClass::Dispatch( pTextInformation ))
 			return true;
 
-		m_vecValue = vecPrevValue;
+		m_vec3Value = vec3PrevValue;
 	}
 
 	return false;
@@ -275,22 +275,22 @@ bool CConVec3::Dispatch( CTextItem *pTextInformation )
 
 const glm::vec3 &CConVec3::GetValue( void )
 {
-	return m_vecValue;
+	return m_vec3Value;
 }
 
-CConVec4::CConVec4( const glm::vec4 &vecDefaultValue, const char *sName ) : BaseClass( sName )
+CConVec4::CConVec4( const glm::vec4 &vec4DefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec4Value = vec4DefaultValue;
 }
 
-CConVec4::CConVec4( const glm::vec4 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+CConVec4::CConVec4( const glm::vec4 &vec4DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec4Value = vec4DefaultValue;
 }
 
-CConVec4::CConVec4( const glm::vec4 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+CConVec4::CConVec4( const glm::vec4 &vec4DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec4Value = vec4DefaultValue;
 }
 
 bool CConVec4::Dispatch( CTextItem *pTextInformation )
@@ -298,12 +298,12 @@ bool CConVec4::Dispatch( CTextItem *pTextInformation )
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsVec4Format())
 	{
-		glm::vec4 vecPrevValue = m_vecValue;
-		m_vecValue = pTextTerm->GetVec4();
+		glm::vec4 vec4PrevValue = m_vec4Value;
+		m_vec4Value = pTextTerm->GetVec4();
 		if (BaseClass::Dispatch( pTextInformation ))
 			return true;
 
-		m_vecValue = vecPrevValue;
+		m_vec4Value = vec4PrevValue;
 	}
 
 	return false;
@@ -311,22 +311,22 @@ bool CConVec4::Dispatch( CTextItem *pTextInformation )
 
 const glm::vec4 &CConVec4::GetValue( void )
 {
-	return m_vecValue;
+	return m_vec4Value;
 }
 
-CConIVec2::CConIVec2( const glm::ivec2 &vecDefaultValue, const char *sName ) : BaseClass( sName )
+CConIVec2::CConIVec2( const glm::ivec2 &vec2DefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec2Value = vec2DefaultValue;
 }
 
-CConIVec2::CConIVec2( const glm::ivec2 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+CConIVec2::CConIVec2( const glm::ivec2 &vec2DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec2Value = vec2DefaultValue;
 }
 
-CConIVec2::CConIVec2( const glm::ivec2 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+CConIVec2::CConIVec2( const glm::ivec2 &vec2DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec2Value = vec2DefaultValue;
 }
 
 bool CConIVec2::Dispatch( CTextItem *pTextInformation )
@@ -334,12 +334,12 @@ bool CConIVec2::Dispatch( CTextItem *pTextInformation )
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsIVec2Format())
 	{
-		glm::ivec2 vecPrevValue = m_vecValue;
-		m_vecValue = pTextTerm->GetIVec2();
+		glm::ivec2 vec2PrevValue = m_vec2Value;
+		m_vec2Value = pTextTerm->GetIVec2();
 		if (BaseClass::Dispatch( pTextInformation ))
 			return true;
 
-		m_vecValue = vecPrevValue;
+		m_vec2Value = vec2PrevValue;
 	}
 
 	return false;
@@ -347,22 +347,22 @@ bool CConIVec2::Dispatch( CTextItem *pTextInformation )
 
 const glm::ivec2 &CConIVec2::GetValue( void )
 {
-	return m_vecValue;
+	return m_vec2Value;
 }
 
-CConIVec3::CConIVec3( const glm::ivec3 &vecDefaultValue, const char *sName ) : BaseClass( sName )
+CConIVec3::CConIVec3( const glm::ivec3 &vec3DefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec3Value = vec3DefaultValue;
 }
 
-CConIVec3::CConIVec3( const glm::ivec3 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+CConIVec3::CConIVec3( const glm::ivec3 &vec3DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec3Value = vec3DefaultValue;
 }
 
-CConIVec3::CConIVec3( const glm::ivec3 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+CConIVec3::CConIVec3( const glm::ivec3 &vec3DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec3Value = vec3DefaultValue;
 }
 
 bool CConIVec3::Dispatch( CTextItem *pTextInformation )
@@ -370,12 +370,12 @@ bool CConIVec3::Dispatch( CTextItem *pTextInformation )
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsIVec3Format())
 	{
-		glm::ivec3 vecPrevValue = m_vecValue;
-		m_vecValue = pTextTerm->GetIVec3();
+		glm::ivec3 vec3PrevValue = m_vec3Value;
+		m_vec3Value = pTextTerm->GetIVec3();
 		if (BaseClass::Dispatch( pTextInformation ))
 			return true;
 
-		m_vecValue = vecPrevValue;
+		m_vec3Value = vec3PrevValue;
 	}
 
 	return false;
@@ -383,22 +383,22 @@ bool CConIVec3::Dispatch( CTextItem *pTextInformation )
 
 const glm::ivec3 &CConIVec3::GetValue( void )
 {
-	return m_vecValue;
+	return m_vec3Value;
 }
 
-CConIVec4::CConIVec4( const glm::ivec4 &vecDefaultValue, const char *sName ) : BaseClass( sName )
+CConIVec4::CConIVec4( const glm::ivec4 &vec4DefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec4Value = vec4DefaultValue;
 }
 
-CConIVec4::CConIVec4( const glm::ivec4 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
+CConIVec4::CConIVec4( const glm::ivec4 &vec4DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec4Value = vec4DefaultValue;
 }
 
-CConIVec4::CConIVec4( const glm::ivec4 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
+CConIVec4::CConIVec4( const glm::ivec4 &vec4DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
 {
-	m_vecValue = vecDefaultValue;
+	m_vec4Value = vec4DefaultValue;
 }
 
 bool CConIVec4::Dispatch( CTextItem *pTextInformation )
@@ -406,12 +406,12 @@ bool CConIVec4::Dispatch( CTextItem *pTextInformation )
 	CTextTerm *pTextTerm = pTextInformation->GetTextTerm( 1 );
 	if (pTextTerm && pTextTerm->IsIVec4Format())
 	{
-		glm::ivec4 vecPrevValue = m_vecValue;
-		m_vecValue = pTextTerm->GetIVec4();
+		glm::ivec4 vec4PrevValue = m_vec4Value;
+		m_vec4Value = pTextTerm->GetIVec4();
 		if (BaseClass::Dispatch( pTextInformation ))
 			return true;
 
-		m_vecValue = vecPrevValue;
+		m_vec4Value = vec4PrevValue;
 	}
 
 	return false;
@@ -419,7 +419,7 @@ bool CConIVec4::Dispatch( CTextItem *pTextInformation )
 
 const glm::ivec4 &CConIVec4::GetValue( void )
 {
-	return m_vecValue;
+	return m_vec4Value;
 }
 
 CConString::CConString( const char *sDefaultValue, const char *sName ) : BaseClass( sName )

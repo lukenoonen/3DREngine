@@ -1,50 +1,50 @@
 #include "SharedAsset.h"
 #include "UTIL.h"
 
-TextureType_t UTIL_TextureTypeNameToEnum( const char *sTextureTypeName )
+ETextureType UTIL_TextureTypeNameToEnum( const char *sTextureTypeName )
 {
-	for (unsigned int i = 0; i < (unsigned int)TEXTURETYPE_COUNT; i++)
+	for (EBaseEnum i = 0; i < (EBaseEnum)ETextureType::i_count; i++)
 	{
 		if (UTIL_streq( g_sTextureTypeNames[i], sTextureTypeName ))
-			return (TextureType_t)i;
+			return (ETextureType)i;
 	}
 
-	return TEXTURETYPE_INVALID;
+	return ETextureType::i_invalid;
 }
 
-const char *UTIL_TextureTypeEnumToName( TextureType_t tTextureType )
+const char *UTIL_TextureTypeEnumToName( ETextureType eTextureType )
 {
-	return g_sTextureTypeNames[tTextureType];
+	return g_sTextureTypeNames[(EBaseEnum)eTextureType];
 }
 
-TextureWrap_t UTIL_TextureWrapNameToEnum( const char *sTextureWrapName )
+ETextureWrap UTIL_TextureWrapNameToEnum( const char *sTextureWrapName )
 {
-	for (unsigned int i = 0; i < (unsigned int)TEXTUREWRAP_COUNT; i++)
+	for (EBaseEnum i = 0; i < (EBaseEnum)ETextureWrap::i_count; i++)
 	{
 		if (UTIL_streq( g_sTextureWrapNames[i], sTextureWrapName ))
-			return (TextureWrap_t)i;
+			return (ETextureWrap)i;
 	}
 
-	return TEXTUREWRAP_INVALID;
+	return ETextureWrap::i_invalid;
 }
 
-const char *UTIL_TextureWrapEnumToName( TextureWrap_t tTextureWrap )
+const char *UTIL_TextureWrapEnumToName( ETextureWrap eTextureWrap )
 {
-	return g_sTextureWrapNames[tTextureWrap];
+	return g_sTextureWrapNames[(EBaseEnum)eTextureWrap];
 }
 
-MaterialType_t UTIL_MaterialTypeNameToEnum( const char *sMaterialTypeName )
+EMaterialType UTIL_MaterialTypeNameToEnum( const char *sMaterialTypeName )
 {
-	for (unsigned int i = 0; i < (unsigned int)MATERIALTYPE_INVALID; i++)
+	for (EBaseEnum i = 0; i < (EBaseEnum)EMaterialType::i_count; i++)
 	{
 		if (UTIL_streq( g_sMaterialTypeNames[i], sMaterialTypeName ))
-			return (MaterialType_t)i;
+			return (EMaterialType)i;
 	}
 
-	return MATERIALTYPE_INVALID;
+	return EMaterialType::i_invalid;
 }
 
-const char *UTIL_MaterialTypeEnumToName( MaterialType_t tMaterialType )
+const char *UTIL_MaterialTypeEnumToName( EMaterialType eMaterialType )
 {
-	return g_sMaterialTypeNames[tMaterialType];
+	return g_sMaterialTypeNames[(EBaseEnum)eMaterialType];
 }

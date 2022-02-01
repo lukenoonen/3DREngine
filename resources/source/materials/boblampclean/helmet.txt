@@ -3,5 +3,5 @@ material lit;
 name helmet;
 diffuse helmet.3tx;
 specular helmet_spec.3tx;
-normal helmet_norm.3tx;
 shininess 4.0;
+normal helmet_norm.3tx;

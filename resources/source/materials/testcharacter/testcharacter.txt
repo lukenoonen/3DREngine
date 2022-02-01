@@ -2,4 +2,3 @@ type material;
 material lit;
 name testcharacter;
 diffuse testcharacter.3tx;
-shininess 4.0;

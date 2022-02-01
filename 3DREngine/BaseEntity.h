@@ -26,13 +26,8 @@ public:
 	bool IsActive( void ) const;
 	void SetActive( bool bActive );
 
-	unsigned int GetEntityIndex( void ) const;
-	void SetEntityIndex( unsigned int uiEntityIndex );
-
 private:
 	bool m_bActive;
-
-	unsigned int m_uiEntityIndex;
 };
 
 #endif // BASEENTITY_H

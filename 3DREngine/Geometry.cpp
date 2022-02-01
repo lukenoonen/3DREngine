@@ -16,17 +16,17 @@ CGeometry::CGeometry( const std::vector<SVertex> &verVertices, const std::vector
 	glEnableVertexAttribArray( 0 );
 	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)0 );
 	glEnableVertexAttribArray( 1 );
-	glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)offsetof( SVertex, vecNormal ) );
+	glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)offsetof( SVertex, vec3Normal ) );
 	glEnableVertexAttribArray( 2 );
-	glVertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)offsetof( SVertex, vecTangent ) );
+	glVertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)offsetof( SVertex, vec3Tangent ) );
 	glEnableVertexAttribArray( 3 );
-	glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)offsetof( SVertex, vecBitangent ) );
+	glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)offsetof( SVertex, vec3Bitangent ) );
 	glEnableVertexAttribArray( 4 );
-	glVertexAttribPointer( 4, 2, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)offsetof( SVertex, vecTexCoords ) );
+	glVertexAttribPointer( 4, 2, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)offsetof( SVertex, vec2TexCoords ) );
 	glEnableVertexAttribArray( 5 );
-	glVertexAttribIPointer( 5, 4, GL_INT, sizeof( SVertex ), (void *)offsetof( SVertex, vecBoneIDs ) );
+	glVertexAttribIPointer( 5, 4, GL_INT, sizeof( SVertex ), (void *)offsetof( SVertex, vec4BoneIDs ) );
 	glEnableVertexAttribArray( 6 );
-	glVertexAttribPointer( 6, 4, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)offsetof( SVertex, vecWeights ) );
+	glVertexAttribPointer( 6, 4, GL_FLOAT, GL_FALSE, sizeof( SVertex ), (void *)offsetof( SVertex, vec4Weights ) );
 
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_uiEBO );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, m_uiIndices.size() * sizeof( unsigned int ), &m_uiIndices[0], GL_STATIC_DRAW );

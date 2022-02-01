@@ -1,7 +1,5 @@
 #include "CSMShadowCamera.h"
-#include "CommandManager.h"
 #include "BasePlayerCamera.h"
-#include "ShaderManager.h"
 #include "RenderManager.h"
 #include "EntityManager.h"
 #include "AssetManager.h"
@@ -20,13 +18,13 @@ CCSMShadowCamera::CCSMShadowCamera()
 
 void CCSMShadowCamera::Init( void )
 {
+	BaseClass::Init();
+
 	m_bUpdateCascade = false;
 	m_bUpdateRadius = false;
 	m_bUpdateTotal = false;
 	m_bUpdateNearFar = false;
 	m_bUpdateBlurScale = false;
-
-	BaseClass::Init();
 
 	CalculateCascade();
 	CalculateRadius();
@@ -80,18 +78,18 @@ void CCSMShadowCamera::PostThink( void )
 
 void CCSMShadowCamera::Render( void )
 {
-	glm::vec2 vecSize = glm::ivec2( GetSize().y );
+	glm::vec2 vec2Size = glm::ivec2( GetSize().y );
 
-	pRenderManager->SetViewportSize( vecSize );
+	pRenderManager->SetViewportSize( vec2Size );
 	pRenderManager->SetFrameBuffer( m_uiTextureFBO );
 
-	pRenderManager->SetRenderPass( RENDERPASS_SHADOW_CSM );
+	pRenderManager->SetRenderPass( ERenderPass::t_shadowcsm );
 
 	for (unsigned int i = 0; i < 4; i++)
 	{
-		pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 1, &m_matTotal[i] );
+		pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadow, 0, 0, 1, &m_matTotal[i] );
 
-		pRenderManager->SetViewportOffset( glm::ivec2( vecSize.x * i, 0 ) );
+		pRenderManager->SetViewportOffset( glm::ivec2( vec2Size.x * i, 0 ) );
 
 		pEntityManager->DrawUnlitEntities();
 	}
@@ -101,13 +99,17 @@ void CCSMShadowCamera::Render( void )
 
 void CCSMShadowCamera::ActivateLight( void )
 {
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadow, 0, 0, 4, m_matTotal );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadowcascadefade, 0, &m_vec4CascadeEndClipSpaceNear );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadowcascadefade, 1, &m_vec4CascadeEndClipSpaceFar );
+
 	BaseClass::ActivateLight();
+}
 
-	pRenderManager->SetShadowMapIndex( pAssetManager->BindTexture( m_uiTexture, GL_TEXTURE_2D ) );
+int CCSMShadowCamera::BindTexture( void )
+{
 
-	pShaderManager->SetUniformBufferObject( UBO_SHADOW, 0, 0, 4, m_matTotal );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWCASCADEFADE, 0, &m_vecCascadeEndClipSpaceNear );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWCASCADEFADE, 1, &m_vecCascadeEndClipSpaceFar );
+	return pAssetManager->BindTexture( m_uiTexture, GL_TEXTURE_2D );
 }
 
 void CCSMShadowCamera::SetBlendDistance( float flBlendDistance )
@@ -148,13 +150,13 @@ void CCSMShadowCamera::SetBlurRadius( float flBlurRadius )
 
 void CCSMShadowCamera::CreateTextureBuffers( void )
 {
-	const glm::ivec2 &vecSize = GetSize();
+	const glm::ivec2 &vec2Size = GetSize();
 
 	glGenFramebuffers( 1, &m_uiTextureFBO );
 	glGenTextures( 1, &m_uiTexture );
 
 	glBindTexture( GL_TEXTURE_2D, m_uiTexture );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, vecSize.x, vecSize.y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, vec2Size.x, vec2Size.y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -206,21 +208,21 @@ void CCSMShadowCamera::CalculateTotal( void )
 
 	float flShadowSize = (float)GetSize().y;
 
-	glm::mat4 matLightView = glm::lookAt( pPlayerCamera->GetPosition() - GetRotation() * g_vecFront, pPlayerCamera->GetPosition(), GetRotation() * g_vecUp );
+	glm::mat4 matLightView = glm::lookAt( pPlayerCamera->GetPosition() - GetRotation() * g_vec3Front, pPlayerCamera->GetPosition(), GetRotation() * g_vec3Up );
 
 	for (unsigned int i = 0; i < 4; i++)
 	{
-		glm::vec3 vecFrustumCenter = pPlayerCamera->GetPosition() + pPlayerCamera->GetRotation() * g_vecFront * ((m_flCascadeEnd[i + 1] + m_flCascadeEnd[i]) * 0.5f);
-		glm::vec3 maxOrtho = glm::vec3( matLightView * glm::vec4( vecFrustumCenter, 1.0f ) ) + glm::vec3( m_flRadius[i] );
-		glm::vec3 minOrtho = glm::vec3( matLightView * glm::vec4( vecFrustumCenter, 1.0f ) ) - glm::vec3( m_flRadius[i] );
+		glm::vec3 vec3FrustumCenter = pPlayerCamera->GetPosition() + pPlayerCamera->GetRotation() * g_vec3Front * ((m_flCascadeEnd[i + 1] + m_flCascadeEnd[i]) * 0.5f);
+		glm::vec3 maxOrtho = glm::vec3( matLightView * glm::vec4( vec3FrustumCenter, 1.0f ) ) + glm::vec3( m_flRadius[i] );
+		glm::vec3 minOrtho = glm::vec3( matLightView * glm::vec4( vec3FrustumCenter, 1.0f ) ) - glm::vec3( m_flRadius[i] );
 
 		glm::mat4 matLightOrtho = glm::ortho( minOrtho.x, maxOrtho.x, minOrtho.y, maxOrtho.y, minOrtho.z + m_flNearError, maxOrtho.z + m_flFarError );
-		glm::vec4 vecShadowOrigin = ((matLightOrtho * matLightView) * glm::vec4( 0.0f, 0.0f, 0.0f, 1.0f )) * flShadowSize * 0.5f;
-		glm::vec4 vecRoundOffset = glm::round( vecShadowOrigin ) - vecShadowOrigin;
-		vecRoundOffset = vecRoundOffset * 2.0f / flShadowSize;
-		vecRoundOffset.z = 0.0f;
-		vecRoundOffset.w = 0.0f;
-		matLightOrtho[3] += vecRoundOffset;
+		glm::vec4 vec4ShadowOrigin = ((matLightOrtho * matLightView) * glm::vec4( 0.0f, 0.0f, 0.0f, 1.0f )) * flShadowSize * 0.5f;
+		glm::vec4 vec4RoundOffset = glm::round( vec4ShadowOrigin ) - vec4ShadowOrigin;
+		vec4RoundOffset = vec4RoundOffset * 2.0f / flShadowSize;
+		vec4RoundOffset.z = 0.0f;
+		vec4RoundOffset.w = 0.0f;
+		matLightOrtho[3] += vec4RoundOffset;
 
 		m_matTotal[i] = matLightOrtho * matLightView;
 	}
@@ -237,7 +239,7 @@ void CCSMShadowCamera::CalculateNearFar( void )
 		float flTwoTimesFarTimesNear = 2.0f * flFar * flNear;
 		float flInverseFarMinusNear = 1.0f / (flFar - flNear);
 
-		m_vecCascadeEndClipSpaceNear[i] = (m_flCascadeEndNear[i] * flFarPlusNear - flTwoTimesFarTimesNear) * flInverseFarMinusNear;
-		m_vecCascadeEndClipSpaceFar[i] = (m_flCascadeEnd[i + 1] * flFarPlusNear - flTwoTimesFarTimesNear) * flInverseFarMinusNear;
+		m_vec4CascadeEndClipSpaceNear[i] = (m_flCascadeEndNear[i] * flFarPlusNear - flTwoTimesFarTimesNear) * flInverseFarMinusNear;
+		m_vec4CascadeEndClipSpaceFar[i] = (m_flCascadeEnd[i + 1] * flFarPlusNear - flTwoTimesFarTimesNear) * flInverseFarMinusNear;
 	}
 }

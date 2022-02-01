@@ -13,9 +13,9 @@ public:
 
 	void SetMSAALevel( unsigned int uiMSAALevel );
 
-protected:
 	unsigned int GetMSAALevel( void ) const;
-
+	
+protected:
 	unsigned int GetMSAAFBO( void ) const;
 
 	virtual void CreateMSAABuffers( void );

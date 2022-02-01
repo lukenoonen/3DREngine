@@ -1,13 +1,15 @@
 #ifndef SHAREDASSET_H
 #define SHAREDASSET_H
 
-enum TextureType_t : unsigned char
-{
-	TEXTURETYPE_2D = 0,
-	TEXTURETYPE_CUBEMAP,
+#include "SharedGlobal.h"
 
-	TEXTURETYPE_COUNT,
-	TEXTURETYPE_INVALID = TEXTURETYPE_COUNT,
+enum class ETextureType : EBaseEnum
+{
+	t_2d = 0,
+	t_cubemap,
+
+	i_count,
+	i_invalid = i_count,
 };
 
 static const char *g_sTextureTypeNames[] =
@@ -16,18 +18,18 @@ static const char *g_sTextureTypeNames[] =
 	"cubemap",
 };
 
-TextureType_t UTIL_TextureTypeNameToEnum( const char *sTextureTypeName );
-const char *UTIL_TextureTypeEnumToName( TextureType_t tTextureType );
+ETextureType UTIL_TextureTypeNameToEnum( const char *sTextureTypeName );
+const char *UTIL_TextureTypeEnumToName( ETextureType eTextureType );
 
-enum TextureWrap_t : unsigned char
+enum class ETextureWrap : unsigned char
 {
-	TEXTUREWRAP_REPEAT = 0,
-	TEXTUREWRAP_MIRRORED,
-	TEXTUREWRAP_EDGE,
-	TEXTUREWRAP_BORDER,
+	t_repeat = 0,
+	t_mirrored,
+	t_edge,
+	t_border,
 
-	TEXTUREWRAP_COUNT,
-	TEXTUREWRAP_INVALID = TEXTUREWRAP_COUNT,
+	i_count,
+	i_invalid = i_count,
 };
 
 static const char *g_sTextureWrapNames[] =
@@ -38,17 +40,17 @@ static const char *g_sTextureWrapNames[] =
 	"border",
 };
 
-TextureWrap_t UTIL_TextureWrapNameToEnum( const char *sTextureWrapName );
-const char *UTIL_TextureWrapEnumToName( TextureWrap_t tTextureWrap );
+ETextureWrap UTIL_TextureWrapNameToEnum( const char *sTextureWrapName );
+const char *UTIL_TextureWrapEnumToName( ETextureWrap eTextureWrap );
 
-enum MaterialType_t : unsigned char
+enum class EMaterialType : unsigned char
 {
-	MATERIALTYPE_LIT = 0,
-	MATERIALTYPE_UNLIT,
-	MATERIALTYPE_SKYBOX,
-	
-	MATERIALTYPE_COUNT,
-	MATERIALTYPE_INVALID = MATERIALTYPE_COUNT,
+	t_lit = 0,
+	t_unlit,
+	t_skybox,
+
+	i_count,
+	i_invalid = i_count,
 };
 
 static const char *g_sMaterialTypeNames[] =
@@ -58,7 +60,7 @@ static const char *g_sMaterialTypeNames[] =
 	"skybox",
 };
 
-MaterialType_t UTIL_MaterialTypeNameToEnum( const char *sMaterialTypeName );
-const char *UTIL_MaterialTypeEnumToName( MaterialType_t tMaterialType );
+EMaterialType UTIL_MaterialTypeNameToEnum( const char *sMaterialTypeName );
+const char *UTIL_MaterialTypeEnumToName( EMaterialType eMaterialType );
 
 #endif // SHAREDASSET_H

@@ -16,9 +16,9 @@ public:
 
 	virtual void ActivateLight( void );
 
-	void SetAmbient( const glm::vec3 &vecAmbient );
-	void SetDiffuse( const glm::vec3 &vecDiffuse );
-	void SetSpecular( const glm::vec3 &vecSpecular );
+	void SetAmbient( const glm::vec3 &vec3Ambient );
+	void SetDiffuse( const glm::vec3 &vec3Diffuse );
+	void SetSpecular( const glm::vec3 &vec3Specular );
 
 protected:
 	void SetShadowCamera( CBaseShadowCamera *pShadowCamera );
@@ -30,9 +30,9 @@ protected:
 private:
 	CBaseShadowCamera *m_pShadowCamera;
 
-	glm::vec3 m_vecAmbient;
-	glm::vec3 m_vecDiffuse;
-	glm::vec3 m_vecSpecular;
+	glm::vec3 m_vec3Ambient;
+	glm::vec3 m_vec3Diffuse;
+	glm::vec3 m_vec3Specular;
 };
 
 #endif // BASELIGHT_H

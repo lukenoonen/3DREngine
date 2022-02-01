@@ -1,35 +1,48 @@
 #include "LitMaterial.h"
 #include "RenderManager.h"
-#include "ShaderManager.h"
+#include "EntityManager.h"
 #include "AssetManager.h"
+#include "BaseCamera.h"
 
-CLitMaterial::CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, CTexture *pNormal, float flShininess, const glm::vec2 &vecTextureScale, const char *sPath ) : BaseClass( sPath )
+CLitMaterial::CLitMaterial( CTexture *pDiffuse, CTexture *pSpecular, float flShininess, CTexture *pNormal, CTexture *pCamera, const glm::vec2 &vec2TextureScale, bool bRecieveShadows, bool bCastShadows, const char *sPath ) : BaseClass( sPath )
 {
 	m_pDiffuse = pDiffuse;
+
 	m_pSpecular = pSpecular;
+	m_flShininess = flShininess;
+
 	m_pNormal = pNormal;
+
+	m_pCamera = pCamera;
+
+	m_vec2TextureScale = vec2TextureScale;
+
+	m_bRecieveShadows = bRecieveShadows;
 
 	m_pDiffuse->Activate();
 
 	if (m_pSpecular)
-	m_pSpecular->Activate();
+		m_pSpecular->Activate();
 
 	if (m_pNormal)
 		m_pNormal->Activate();
 
-	m_flShininess = flShininess;
+	if (m_pCamera)
+		m_pCamera->Activate();
 
-	m_vecTextureScale = vecTextureScale;
+	if (bCastShadows)
+	{
+		SetShaderType( ERenderPass::t_shadowdir, EShaderType::t_shadowdir );
+		SetShaderType( ERenderPass::t_shadowpoint, EShaderType::t_shadowpoint );
+		SetShaderType( ERenderPass::t_shadowspot, EShaderType::t_shadowspot );
+		SetShaderType( ERenderPass::t_shadowcsm, EShaderType::t_shadowcsm );
+	}
 
-	SetShaderType( RENDERPASS_SHADOW_DIR, SHADERTYPE_SHADOW_DIR );
-	SetShaderType( RENDERPASS_SHADOW_POINT, SHADERTYPE_SHADOW_POINT );
-	SetShaderType( RENDERPASS_SHADOW_SPOT, SHADERTYPE_SHADOW_SPOT );
-	SetShaderType( RENDERPASS_SHADOW_CSM, SHADERTYPE_SHADOW_CSM );
-	SetShaderType( RENDERPASS_DEPTH, SHADERTYPE_DEPTH );
-	SetShaderType( RENDERPASS_LIT_DIR, SHADERTYPE_LIT_DIR );
-	SetShaderType( RENDERPASS_LIT_POINT, SHADERTYPE_LIT_POINT );
-	SetShaderType( RENDERPASS_LIT_SPOT, SHADERTYPE_LIT_SPOT );
-	SetShaderType( RENDERPASS_LIT_CSM, SHADERTYPE_LIT_CSM );
+	SetShaderType( ERenderPass::t_depth, EShaderType::t_depth );
+	SetShaderType( ERenderPass::t_litdir, EShaderType::t_litdir );
+	SetShaderType( ERenderPass::t_litpoint, EShaderType::t_litpoint );
+	SetShaderType( ERenderPass::t_litspot, EShaderType::t_litspot );
+	SetShaderType( ERenderPass::t_litcsm, EShaderType::t_litcsm );
 }
 
 CLitMaterial::~CLitMaterial()
@@ -48,51 +61,75 @@ CLitMaterial::~CLitMaterial()
 		m_pNormal->Inactivate();
 		pAssetManager->CheckTexture( m_pNormal );
 	}
+
+	if (m_pCamera)
+	{
+		m_pCamera->Inactivate();
+		pAssetManager->CheckTexture( m_pCamera );
+	}
 }
 
 void CLitMaterial::Use( void )
 {
-	BaseClass::Use();
-
-	RenderPass_t tRenderPass = pRenderManager->GetRenderPass();
-	switch (tRenderPass)
+	switch (pRenderManager->GetRenderPass())
 	{
-	case RENDERPASS_LIT_DIR:
-	case RENDERPASS_LIT_POINT:
-	case RENDERPASS_LIT_SPOT:
-	case RENDERPASS_LIT_CSM:
+	case ERenderPass::t_litdir:
+	case ERenderPass::t_litpoint:
+	case ERenderPass::t_litspot:
+	case ERenderPass::t_litcsm:
 	{
-		pShaderManager->SetValue( "u_vecTextureScale", m_vecTextureScale );
+		bool bDisplaySpecular = m_pSpecular != NULL;
 
-		pShaderManager->SetValue( "u_sDiffuse", pAssetManager->BindTexture( m_pDiffuse->GetID(), GL_TEXTURE_2D ) );
+		bool bDisplayNormal = m_pNormal != NULL;
 
-		if (pShaderManager->GetShaderQuality() != SHADERQUALITY_LOW)
+		CBaseCamera *pTextureCamera = pEntityManager->GetTextureCamera();
+		bool bDisplayCamera = pTextureCamera != NULL && m_pCamera != NULL;
+
+		CBaseCamera *pShadowCamera = pEntityManager->GetShadowCamera();
+		bool bDisplayShadow = m_bRecieveShadows && pShadowCamera != NULL;
+		
+		pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_specular, bDisplaySpecular ? (EBaseEnum)EShaderPreprocessorSpecular::t_true : (EBaseEnum)EShaderPreprocessorSpecular::t_false );
+		pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_normal, bDisplayNormal ? (EBaseEnum)EShaderPreprocessorNormal::t_true : (EBaseEnum)EShaderPreprocessorNormal::t_false );
+		pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_camera, bDisplayCamera ? (EBaseEnum)EShaderPreprocessorCamera::t_true : (EBaseEnum)EShaderPreprocessorCamera::t_false );
+		pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_shadow, bDisplayShadow ? (EBaseEnum)EShaderPreprocessorShadow::t_true : (EBaseEnum)EShaderPreprocessorShadow::t_false );
+
+		BaseClass::Use();
+
+		pRenderManager->SetUniform( "u_sDiffuse", pAssetManager->BindTexture( m_pDiffuse->GetID(), GL_TEXTURE_2D ) );
+
+		if ((EShaderPreprocessorQuality)pRenderManager->GetShaderPreprocessor( EShaderPreprocessor::t_quality ) != EShaderPreprocessorQuality::t_low) // TODO: make normals not render on low quality in the shader
 		{
-			if (m_pSpecular)
+			if (bDisplaySpecular)
 			{
-				pShaderManager->SetValue( "u_bUseSpecular", true );
-				pShaderManager->SetValue( "u_sSpecular", pAssetManager->BindTexture( m_pSpecular->GetID(), GL_TEXTURE_2D ) );
+				pRenderManager->SetUniform( "u_sSpecular", pAssetManager->BindTexture( m_pSpecular->GetID(), GL_TEXTURE_2D ) );
+				pRenderManager->SetUniform( "u_flShininess", m_flShininess ); // TODO: check shaders to see if this is all aligned
 			}
-			else
-			{
-				pShaderManager->SetValue( "u_bUseSpecular", false );
-			}
-		}
-		if (m_pNormal)
-		{
-			pShaderManager->SetValue( "u_bUseNormal", true );
-			pShaderManager->SetValue( "u_sNormal", pAssetManager->BindTexture( m_pNormal->GetID(), GL_TEXTURE_2D ) );
-		}
-		else
-		{
-			pShaderManager->SetValue( "u_bUseNormal", false );
-		}
-		pShaderManager->SetValue( "u_flShininess", m_flShininess );
 
-		if (pShaderManager->GetShaderShadow() == SHADERSHADOW_TRUE)
-		{
-			pShaderManager->SetValue( "u_sShadowMap", pRenderManager->GetShadowMapIndex() );
+			if (bDisplayNormal)
+			{
+				pRenderManager->SetUniform( "u_sNormal", pAssetManager->BindTexture( m_pNormal->GetID(), GL_TEXTURE_2D ) );
+			}
 		}
+
+		if (bDisplayCamera)
+		{
+			pRenderManager->SetUniform( "u_sCamera", pAssetManager->BindTexture( m_pCamera->GetID(), GL_TEXTURE_2D ) ); // TODO: add these to shaders
+			pRenderManager->SetUniform( "u_sCameraTexture", pTextureCamera->BindTexture() );
+		}
+
+		pRenderManager->SetUniform( "u_vecTextureScale", m_vec2TextureScale );
+
+		if (bDisplayShadow)
+		{
+			pRenderManager->SetUniform( "u_sShadow", pShadowCamera->BindTexture() ); // TODO: make this u_sShadow instead of u_sShadowMap in the shaders
+		}
+
+		break;
+	}
+	default:
+	{
+		BaseClass::Use();
+		break;
 	}
 	}
 }

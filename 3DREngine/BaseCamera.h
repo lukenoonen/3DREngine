@@ -20,6 +20,8 @@ public:
 
 	virtual void Render( void );
 
+	virtual int BindTexture( void );
+
 	void SetRenderPriority( unsigned int uiRenderPriority );
 	unsigned int GetRenderPriority( void ) const;
 

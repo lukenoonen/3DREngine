@@ -2,14 +2,14 @@
 
 CBaseSizeCamera::CBaseSizeCamera()
 {
-	m_vecSize = g_vecOne * 1024.0f;
+	m_vec2Size = glm::ivec2( g_vec2One ) * 1024;
 }
 
-void CBaseSizeCamera::SetSize( const glm::ivec2 vecSize )
+void CBaseSizeCamera::SetSize( const glm::ivec2 vec2Size )
 {
-	if (m_vecSize != vecSize)
+	if (m_vec2Size != vec2Size)
 	{
-		m_vecSize = vecSize;
+		m_vec2Size = vec2Size;
 
 		SetUpdateTextureBuffers( true );
 		SetUpdateMSAABuffers( true );
@@ -18,5 +18,5 @@ void CBaseSizeCamera::SetSize( const glm::ivec2 vecSize )
 
 const glm::ivec2 &CBaseSizeCamera::GetSize( void ) const
 {
-	return m_vecSize;
+	return m_vec2Size;
 }

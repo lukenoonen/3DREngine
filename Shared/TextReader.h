@@ -1,8 +1,7 @@
 #ifndef TEXTREADER_H
 #define TEXTREADER_H
 
-#include <vector>
-#include <glm/glm.hpp>
+#include "SharedGlobal.h"
 
 class CTextReader;
 class CTextInformation;
@@ -38,12 +37,12 @@ public:
 	bool GetUnsignedInt( const char *sKey, unsigned int &uiOutput ) const;
 	bool GetBool( const char *sKey, bool &bOutput ) const;
 	bool GetFloat( const char *sKey, float &flOutput ) const;
-	bool GetVec2( const char *sKey, glm::vec2 &vecOutput ) const;
-	bool GetVec3( const char *sKey, glm::vec3 &vecOutput ) const;
-	bool GetVec4( const char *sKey, glm::vec4 &vecOutput ) const;
-	bool GetIVec2( const char *sKey, glm::ivec2 &vecOutput ) const;
-	bool GetIVec3( const char *sKey, glm::ivec3 &vecOutput ) const;
-	bool GetIVec4( const char *sKey, glm::ivec4 &vecOutput ) const;
+	bool GetVec2( const char *sKey, glm::vec2 &vec2Output ) const;
+	bool GetVec3( const char *sKey, glm::vec3 &vec3Output ) const;
+	bool GetVec4( const char *sKey, glm::vec4 &vec4Output ) const;
+	bool GetIVec2( const char *sKey, glm::ivec2 &vec2Output ) const;
+	bool GetIVec3( const char *sKey, glm::ivec3 &vec3Output ) const;
+	bool GetIVec4( const char *sKey, glm::ivec4 &vec4Output ) const;
 
 	bool IsSuccess( void ) const;
 

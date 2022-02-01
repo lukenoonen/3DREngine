@@ -4,15 +4,17 @@
 #include "Global.h"
 #include "BasePlayer.h"
 
-enum Movement_t : unsigned char
+enum class EMovement : EBaseEnum
 {
-	MOVEMENT_FORWARD = 0,
-	MOVEMENT_BACK,
-	MOVEMENT_LEFT,
-	MOVEMENT_RIGHT,
-	MOVEMENT_UP,
-	MOVEMENT_DOWN,
-	MOVEMENT_COUNT,
+	t_forward = 0,
+	t_back,
+	t_left,
+	t_right,
+	t_up,
+	t_down,
+
+	i_count,
+	i_invalid = i_count,
 };
 
 class CTestPlayer : public CBasePlayer
@@ -24,14 +26,14 @@ public:
 
 	virtual void PreThink( void );
 
-	void SetMovement( Movement_t tMovement, bool bMoving );
+	void SetMovement( EMovement eMovement, bool bMoving );
 
 private:
-	bool m_bMovement[MOVEMENT_COUNT];
+	bool m_bMovement[(EBaseEnum)EMovement::i_count];
 
-	glm::vec3 m_vecFront;
-	glm::vec3 m_vecUp;
-	glm::vec3 m_vecRight;
+	glm::vec3 m_vec3Front;
+	glm::vec3 m_vec3Up;
+	glm::vec3 m_vec3Right;
 };
 
 #endif // TESTPLAYER_H

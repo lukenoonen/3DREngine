@@ -1,6 +1,5 @@
 #include "DirLight.h"
 #include "RenderManager.h"
-#include "ShaderManager.h"
 
 CDirLight::CDirLight()
 {
@@ -16,7 +15,7 @@ void CDirLight::ActivateLight( void )
 {
 	BaseClass::ActivateLight();
 
-	pRenderManager->SetRenderPass( RENDERPASS_LIT_DIR );
+	pRenderManager->SetRenderPass( ERenderPass::t_litdir );
 
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTDIRECTION, 0, &(GetRotation() * g_vecFront) );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightdirection, 0, &(GetRotation() * g_vec3Front) );
 }

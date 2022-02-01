@@ -3,68 +3,69 @@
 
 #include "Global.h"
 
-enum KeyCodes_t : unsigned char
+enum class EKeyCodes : EBaseEnum
 {
-	KEYCODE_LEFTMOUSE = 0,
-	KEYCODE_RIGHTMOUSE,
-	KEYCODE_MIDDLEMOUSE,
-	KEYCODE_MOUSEWHEELUP,
-	KEYCODE_MOUSEWHEELDOWN,
-	KEYCODE_ESCAPE,
-	KEYCODE_DELETE,
-	KEYCODE_BACKSPACE,
-	KEYCODE_LSHIFT,
-	KEYCODE_RSHIFT,
-	KEYCODE_SPACE,
-	KEYCODE_ENTER,
-	KEYCODE_TAB,
-	KEYCODE_LCTL,
-	KEYCODE_RCTL,
-	KEYCODE_LALT,
-	KEYCODE_RALT,
-	KEYCODE_BACKQUOTE,
-	KEYCODE_RIGHT,
-	KEYCODE_LEFT,
-	KEYCODE_DOWN,
-	KEYCODE_UP,
-	KEYCODE_0,
-	KEYCODE_1,
-	KEYCODE_2,
-	KEYCODE_3,
-	KEYCODE_4,
-	KEYCODE_5,
-	KEYCODE_6,
-	KEYCODE_7,
-	KEYCODE_8,
-	KEYCODE_9,
-	KEYCODE_A,
-	KEYCODE_B,
-	KEYCODE_C,
-	KEYCODE_D,
-	KEYCODE_E,
-	KEYCODE_F,
-	KEYCODE_G,
-	KEYCODE_H,
-	KEYCODE_I,
-	KEYCODE_J,
-	KEYCODE_K,
-	KEYCODE_L,
-	KEYCODE_M,
-	KEYCODE_N,
-	KEYCODE_O,
-	KEYCODE_P,
-	KEYCODE_Q,
-	KEYCODE_R,
-	KEYCODE_S,
-	KEYCODE_T,
-	KEYCODE_U,
-	KEYCODE_V,
-	KEYCODE_W,
-	KEYCODE_X,
-	KEYCODE_Y,
-	KEYCODE_Z,
-	KEYCODE_COUNT,
-	KEYCODE_INVALID = KEYCODE_COUNT,
+	t_m0,
+	t_m1,
+	t_m2,
+	t_mwup,
+	t_mwdn,
+	t_esc,
+	t_del,
+	t_back,
+	t_lsft,
+	t_rsft,
+	t_spc,
+	t_entr,
+	t_tab,
+	t_lctl,
+	t_rctl,
+	t_lalt,
+	t_ralt,
+	t_bq,
+	t_rght,
+	t_left,
+	t_down,
+	t_up,
+	t_0,
+	t_1,
+	t_2,
+	t_3,
+	t_4,
+	t_5,
+	t_6,
+	t_7,
+	t_8,
+	t_9,
+	t_a,
+	t_b,
+	t_c,
+	t_d,
+	t_e,
+	t_f,
+	t_g,
+	t_h,
+	t_i,
+	t_j,
+	t_k,
+	t_l,
+	t_m,
+	t_n,
+	t_o,
+	t_p,
+	t_q,
+	t_r,
+	t_s,
+	t_t,
+	t_u,
+	t_v,
+	t_w,
+	t_x,
+	t_y,
+	t_z,
+
+	i_count,
+	i_invalid = i_count,
 };
 
 static const char *sKeycodeNames[] =
@@ -86,7 +87,7 @@ static const char *sKeycodeNames[] =
 	"rctl",
 	"lalt",
 	"ralt",
-	"`",
+	"bq",
 	"rght",
 	"left",
 	"down",
@@ -129,8 +130,8 @@ static const char *sKeycodeNames[] =
 	"z"
 };
 
-const char *UTIL_KeyCodeToStr( KeyCodes_t tKeyCode );
-KeyCodes_t UTIL_KeyStrToCode( const char *sKeyCode );
+const char *UTIL_KeyCodeToStr( EKeyCodes eKeyCode );
+EKeyCodes UTIL_KeyStrToCode( const char *sKeyCode );
 
 class CKeyBind
 {
@@ -162,16 +163,16 @@ public:
 	const glm::vec2 &GetMousePosition( void );
 	const glm::vec2 &GetMouseDelta( void );
 
-	void BindKey( KeyCodes_t tKeyCode, const char *sCommand );
-	void UnbindKey( KeyCodes_t tKeyCode );
+	void BindKey( EKeyCodes eKeyCode, const char *sCommand );
+	void UnbindKey( EKeyCodes eKeyCode );
 
-	void SetKey( KeyCodes_t tKeyCode, bool bDown );
+	void SetKey( EKeyCodes eKeyCode, bool bDown );
 
 private:
-	CKeyBind m_KeyBinds[KEYCODE_COUNT];
+	CKeyBind m_KeyBinds[(EBaseEnum)EKeyCodes::i_count];
 
-	glm::vec2 m_vecMousePosition;
-	glm::vec2 m_vecMouseDelta;
+	glm::vec2 m_vec2MousePosition;
+	glm::vec2 m_vec2MouseDelta;
 };
 
 #endif // INPUTMANAGER_H

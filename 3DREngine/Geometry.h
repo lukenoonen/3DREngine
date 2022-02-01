@@ -6,13 +6,13 @@
 
 struct SVertex
 {
-	glm::vec3 vecPosition;
-	glm::vec3 vecNormal;
-	glm::vec3 vecTangent;
-	glm::vec3 vecBitangent;
-	glm::vec2 vecTexCoords;
-	glm::ivec4 vecBoneIDs;
-	glm::vec4 vecWeights;
+	glm::vec3 vec3Position;
+	glm::vec3 vec3Normal;
+	glm::vec3 vec3Tangent;
+	glm::vec3 vec3Bitangent;
+	glm::vec2 vec2TexCoords;
+	glm::ivec4 vec4BoneIDs;
+	glm::vec4 vec4Weights;
 };
 
 class CGeometry : public CBaseAsset

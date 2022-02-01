@@ -11,13 +11,12 @@ public:
 
 	CBaseSizeCamera();
 
-	void SetSize( const glm::ivec2 vecSize );
+	void SetSize( const glm::ivec2 vec2Size );
 
-protected:
 	const glm::ivec2 &GetSize( void ) const;
 
 private:
-	glm::ivec2 m_vecSize;
+	glm::ivec2 m_vec2Size;
 };
 
 #endif // BASESIZECAMERA_H

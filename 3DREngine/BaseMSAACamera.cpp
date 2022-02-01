@@ -29,7 +29,7 @@ void CBaseMSAACamera::CreateMSAABuffers( void )
 {
 	if (m_uiMSAALevel != 0)
 	{
-		const glm::ivec2 &vecSize = GetSize();
+		const glm::ivec2 &vec2Size = GetSize();
 
 		glGenFramebuffers( 1, &m_uiMSAAFBO );
 		glGenTextures( 1, &m_uiMSAA );
@@ -39,9 +39,9 @@ void CBaseMSAACamera::CreateMSAABuffers( void )
 		glBindTexture( GL_TEXTURE_2D_MULTISAMPLE, m_uiMSAA );
 		glBindRenderbuffer( GL_RENDERBUFFER, m_uiMSAARBO );
 
-		glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, m_uiMSAALevel, GL_RGB8, vecSize.x, vecSize.y, GL_TRUE );
+		glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, m_uiMSAALevel, GL_RGB8, vec2Size.x, vec2Size.y, GL_TRUE );
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_uiMSAA, 0 );
-		glRenderbufferStorageMultisample( GL_RENDERBUFFER, m_uiMSAALevel, GL_DEPTH24_STENCIL8, vecSize.x, vecSize.y );
+		glRenderbufferStorageMultisample( GL_RENDERBUFFER, m_uiMSAALevel, GL_DEPTH24_STENCIL8, vec2Size.x, vec2Size.y );
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_uiMSAARBO );
 	}
 }

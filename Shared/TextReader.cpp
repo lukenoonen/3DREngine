@@ -166,7 +166,7 @@ bool CTextInformation::GetFloat( const char *sKey, float &flOutput ) const
 	return true;
 }
 
-bool CTextInformation::GetVec2( const char *sKey, glm::vec2 &vecOutput ) const
+bool CTextInformation::GetVec2( const char *sKey, glm::vec2 &vec2Output ) const
 {
 	CTextTerm *pTextTerm = GetTextTerm( sKey, 1 );
 	if (!pTextTerm)
@@ -175,11 +175,11 @@ bool CTextInformation::GetVec2( const char *sKey, glm::vec2 &vecOutput ) const
 	if (!pTextTerm->IsVec2Format())
 		return false;
 
-	vecOutput = pTextTerm->GetVec2();
+	vec2Output = pTextTerm->GetVec2();
 	return true;
 }
 
-bool CTextInformation::GetVec3( const char *sKey, glm::vec3 &vecOutput ) const
+bool CTextInformation::GetVec3( const char *sKey, glm::vec3 &vec3Output ) const
 {
 	CTextTerm *pTextTerm = GetTextTerm( sKey, 1 );
 	if (!pTextTerm)
@@ -188,11 +188,11 @@ bool CTextInformation::GetVec3( const char *sKey, glm::vec3 &vecOutput ) const
 	if (!pTextTerm->IsVec3Format())
 		return false;
 
-	vecOutput = pTextTerm->GetVec3();
+	vec3Output = pTextTerm->GetVec3();
 	return true;
 }
 
-bool CTextInformation::GetVec4( const char *sKey, glm::vec4 &vecOutput ) const
+bool CTextInformation::GetVec4( const char *sKey, glm::vec4 &vec4Output ) const
 {
 	CTextTerm *pTextTerm = GetTextTerm( sKey, 1 );
 	if (!pTextTerm)
@@ -201,11 +201,11 @@ bool CTextInformation::GetVec4( const char *sKey, glm::vec4 &vecOutput ) const
 	if (!pTextTerm->IsVec4Format())
 		return false;
 
-	vecOutput = pTextTerm->GetVec4();
+	vec4Output = pTextTerm->GetVec4();
 	return true;
 }
 
-bool CTextInformation::GetIVec2( const char *sKey, glm::ivec2 &vecOutput ) const
+bool CTextInformation::GetIVec2( const char *sKey, glm::ivec2 &vec2Output ) const
 {
 	CTextTerm *pTextTerm = GetTextTerm( sKey, 1 );
 	if (!pTextTerm)
@@ -214,11 +214,11 @@ bool CTextInformation::GetIVec2( const char *sKey, glm::ivec2 &vecOutput ) const
 	if (!pTextTerm->IsIVec2Format())
 		return false;
 
-	vecOutput = pTextTerm->GetIVec2();
+	vec2Output = pTextTerm->GetIVec2();
 	return true;
 }
 
-bool CTextInformation::GetIVec3( const char *sKey, glm::ivec3 &vecOutput ) const
+bool CTextInformation::GetIVec3( const char *sKey, glm::ivec3 &vec3Output ) const
 {
 	CTextTerm *pTextTerm = GetTextTerm( sKey, 1 );
 	if (!pTextTerm)
@@ -227,11 +227,11 @@ bool CTextInformation::GetIVec3( const char *sKey, glm::ivec3 &vecOutput ) const
 	if (!pTextTerm->IsIVec3Format())
 		return false;
 
-	vecOutput = pTextTerm->GetIVec3();
+	vec3Output = pTextTerm->GetIVec3();
 	return true;
 }
 
-bool CTextInformation::GetIVec4( const char *sKey, glm::ivec4 &vecOutput ) const
+bool CTextInformation::GetIVec4( const char *sKey, glm::ivec4 &vec4Output ) const
 {
 	CTextTerm *pTextTerm = GetTextTerm( sKey, 1 );
 	if (!pTextTerm)
@@ -240,7 +240,7 @@ bool CTextInformation::GetIVec4( const char *sKey, glm::ivec4 &vecOutput ) const
 	if (!pTextTerm->IsIVec4Format())
 		return false;
 
-	vecOutput = pTextTerm->GetIVec4();
+	vec4Output = pTextTerm->GetIVec4();
 	return true;
 }
 
@@ -370,7 +370,7 @@ unsigned int CTextTerm::GetUnsignedInt( void ) const
 
 bool CTextTerm::IsBoolFormat( void ) const
 {
-	return m_sString != NULL && UTIL_streq( "true", m_sString ) || UTIL_streq( "false", m_sString ) || ((m_sString[0] == '0' || m_sString[0] == '1') && m_sString[1] == '\0');
+	return m_sString != NULL && (UTIL_streq( "true", m_sString ) || UTIL_streq( "false", m_sString ) || ((m_sString[0] == '0' || m_sString[0] == '1') && m_sString[1] == '\0'));
 }
 
 bool CTextTerm::GetBool( void ) const
@@ -409,12 +409,12 @@ bool CTextTerm::IsVec2Format( void ) const
 
 glm::vec2 CTextTerm::GetVec2( void ) const
 {
-	glm::vec2 vecOutput;
+	glm::vec2 vec2Output;
 	const char *sSearch = m_sString;
 	const char *sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.x = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
-	vecOutput.y = UTIL_atof( sSearchEnd + 1 );
-	return vecOutput;
+	vec2Output.x = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec2Output.y = UTIL_atof( sSearchEnd + 1 );
+	return vec2Output;
 }
 
 bool CTextTerm::IsVec3Format( void ) const
@@ -440,15 +440,15 @@ bool CTextTerm::IsVec3Format( void ) const
 
 glm::vec3 CTextTerm::GetVec3( void ) const
 {
-	glm::vec3 vecOutput;
+	glm::vec3 vec3Output;
 	const char *sSearch = m_sString;
 	const char *sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.x = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec3Output.x = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
 	sSearch = sSearchEnd + 1;
 	sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.y = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
-	vecOutput.z = UTIL_atof( sSearchEnd + 1 );
-	return vecOutput;
+	vec3Output.y = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec3Output.z = UTIL_atof( sSearchEnd + 1 );
+	return vec3Output;
 }
 
 bool CTextTerm::IsVec4Format( void ) const
@@ -482,18 +482,18 @@ bool CTextTerm::IsVec4Format( void ) const
 
 glm::vec4 CTextTerm::GetVec4( void ) const
 {
-	glm::vec4 vecOutput;
+	glm::vec4 vec4Output;
 	const char *sSearch = m_sString;
 	const char *sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.x = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec4Output.x = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
 	sSearch = sSearchEnd + 1;
 	sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.y = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec4Output.y = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
 	sSearch = sSearchEnd + 1;
 	sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.z = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
-	vecOutput.w = UTIL_atof( sSearchEnd + 1 );
-	return vecOutput;
+	vec4Output.z = UTIL_atof( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec4Output.w = UTIL_atof( sSearchEnd + 1 );
+	return vec4Output;
 }
 
 bool CTextTerm::IsIVec2Format( void ) const
@@ -511,12 +511,12 @@ bool CTextTerm::IsIVec2Format( void ) const
 
 glm::ivec2 CTextTerm::GetIVec2( void ) const
 {
-	glm::ivec2 vecOutput;
+	glm::ivec2 vec2Output;
 	const char *sSearch = m_sString;
 	const char *sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.x = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
-	vecOutput.y = UTIL_atoi( sSearchEnd + 1 );
-	return vecOutput;
+	vec2Output.x = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec2Output.y = UTIL_atoi( sSearchEnd + 1 );
+	return vec2Output;
 }
 
 bool CTextTerm::IsIVec3Format( void ) const
@@ -542,15 +542,15 @@ bool CTextTerm::IsIVec3Format( void ) const
 
 glm::ivec3 CTextTerm::GetIVec3( void ) const
 {
-	glm::ivec3 vecOutput;
+	glm::ivec3 vec3Output;
 	const char *sSearch = m_sString;
 	const char *sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.x = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec3Output.x = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
 	sSearch = sSearchEnd + 1;
 	sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.y = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
-	vecOutput.z = UTIL_atoi( sSearchEnd + 1 );
-	return vecOutput;
+	vec3Output.y = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec3Output.z = UTIL_atoi( sSearchEnd + 1 );
+	return vec3Output;
 }
 
 bool CTextTerm::IsIVec4Format( void ) const
@@ -584,16 +584,16 @@ bool CTextTerm::IsIVec4Format( void ) const
 
 glm::ivec4 CTextTerm::GetIVec4( void ) const
 {
-	glm::ivec4 vecOutput;
+	glm::ivec4 vec4Output;
 	const char *sSearch = m_sString;
 	const char *sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.x = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec4Output.x = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
 	sSearch = sSearchEnd + 1;
 	sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.y = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec4Output.y = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
 	sSearch = sSearchEnd + 1;
 	sSearchEnd = UTIL_strchr( sSearch, ' ' );
-	vecOutput.z = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
-	vecOutput.w = UTIL_atoi( sSearchEnd + 1 );
-	return vecOutput;
+	vec4Output.z = UTIL_atoi( sSearch, (unsigned int)(sSearchEnd - sSearch) );
+	vec4Output.w = UTIL_atoi( sSearchEnd + 1 );
+	return vec4Output;
 }

@@ -136,11 +136,20 @@
     <Filter Include="Source Files\Entities\Player">
       <UniqueIdentifier>{1b73af2a-a657-4046-a1df-d8b214af30c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Entities\Cameras\Copy">
+      <UniqueIdentifier>{5375951c-46c4-41ae-b80e-7f7ef9118324}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities\Cameras\Copy">
+      <UniqueIdentifier>{bdf7e059-10a5-4fdd-b76e-76007d17e8c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities\Cameras\Copy\Reflection">
+      <UniqueIdentifier>{92726d5a-f391-4442-bf5e-0fbc5d08aa81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities\Cameras\Copy\Reflection">
+      <UniqueIdentifier>{f31a2298-3de8-4b59-84fd-d05867c4897f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ShaderManager.cpp">
-      <Filter>Source Files\Managers</Filter>
-    </ClCompile>
     <ClCompile Include="GlobalManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
@@ -297,9 +306,6 @@
     <ClCompile Include="PerspectivePlayerCamera.cpp">
       <Filter>Source Files\Entities\Cameras\Uniform\Player</Filter>
     </ClCompile>
-    <ClCompile Include="ReflectionCamera.cpp">
-      <Filter>Source Files\Entities\Cameras\Uniform\Reflection</Filter>
-    </ClCompile>
     <ClCompile Include="BaseVariableSizeCamera.cpp">
       <Filter>Source Files\Entities\Cameras\Variable</Filter>
     </ClCompile>
@@ -315,11 +321,20 @@
     <ClCompile Include="BaseSprite.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="BaseCopySizeCamera.cpp">
+      <Filter>Source Files\Entities\Cameras\Copy</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseCopyMSAACamera.cpp">
+      <Filter>Source Files\Entities\Cameras\Copy</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseReflectionCamera.cpp">
+      <Filter>Source Files\Entities\Cameras\Copy\Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanarReflectionCamera.cpp">
+      <Filter>Source Files\Entities\Cameras\Copy\Reflection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
     <ClInclude Include="GlobalManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
@@ -392,13 +407,7 @@
     <ClInclude Include="Shader.h">
       <Filter>Header Files\Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="PreGlobal.h">
-      <Filter>Header Files\Global</Filter>
-    </ClInclude>
     <ClInclude Include="Global.h">
-      <Filter>Header Files\Global</Filter>
-    </ClInclude>
-    <ClInclude Include="Math.h">
       <Filter>Header Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="BaseAsset.h">
@@ -490,6 +499,18 @@
     </ClInclude>
     <ClInclude Include="BaseSprite.h">
       <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCopySizeCamera.h">
+      <Filter>Header Files\Entities\Cameras\Copy</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCopyMSAACamera.h">
+      <Filter>Header Files\Entities\Cameras\Copy</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseReflectionCamera.h">
+      <Filter>Header Files\Entities\Cameras\Copy\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanarReflectionCamera.h">
+      <Filter>Header Files\Entities\Cameras\Copy\Reflection</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

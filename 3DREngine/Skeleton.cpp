@@ -84,40 +84,45 @@ void CSkeleton::UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, cons
 		flAdjustedAnimationTransitionFactors.push_back( flAdjustedAnimationTransitionFactor );
 	}
 
-	ReadNodeHierarchy( matBoneTransforms, pAnimations, flAnimationTimes, flAdjustedAnimationTransitionFactors, m_pSkeletonNode, glm::mat4( 1.0f ) );
+	ReadNodeHierarchy( matBoneTransforms, pAnimations, flAnimationTimes, flAdjustedAnimationTransitionFactors, m_pSkeletonNode, g_matIdentity );
 }
 
 void CSkeleton::ReadNodeHierarchy( std::vector<glm::mat4> &matBoneTransforms, const std::vector<CAnimation *> &pAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors, CSkeletonNode *pSkeletonNode, const glm::mat4 &matParentTransform )
 {
 	glm::mat4 matGlobalTransformation = matParentTransform;
 
-	glm::vec3 vecPosition = g_vecZero;
+	glm::vec3 vec3Position = g_vec3Zero;
 	glm::quat qRotation = glm::quat( 1.0f, 0.0f, 0.0f, 0.0f );
+	glm::vec3 vec3Scale = g_vec3One;
 
 	CAnimationChannel *pAnimationChannel = pAnimations[0]->GetAnimationChannel( pSkeletonNode->GetIndex() );
 	if (pAnimationChannel)
 	{
-		pAnimationChannel->CalcInterpolatedPosition( vecPosition, flAnimationTimes[0] );
+		pAnimationChannel->CalcInterpolatedPosition( vec3Position, flAnimationTimes[0] );
 		pAnimationChannel->CalcInterpolatedRotation( qRotation, flAnimationTimes[0] );
+		pAnimationChannel->CalcInterpolatedScale( vec3Scale, flAnimationTimes[0] );
 	}
 
 	for (unsigned int i = 0; i < (unsigned int)flAnimationTransitionFactors.size(); i++)
 	{
-		glm::vec3 vecPositionTransition = g_vecZero;
+		glm::vec3 vec3PositionTransition = g_vec3Zero;
 		glm::quat qRotationTransition = glm::quat( 1.0f, 0.0f, 0.0f, 0.0f );
+		glm::vec3 vec3ScaleTransition = g_vec3One;
 
 		CAnimationChannel *pAnimationChannelTransition = pAnimations[i + 1]->GetAnimationChannel( pSkeletonNode->GetIndex() );
 		if (pAnimationChannelTransition)
 		{
-			pAnimationChannelTransition->CalcInterpolatedPosition( vecPositionTransition, flAnimationTimes[i + 1] );
+			pAnimationChannelTransition->CalcInterpolatedPosition( vec3PositionTransition, flAnimationTimes[i + 1] );
 			pAnimationChannelTransition->CalcInterpolatedRotation( qRotationTransition, flAnimationTimes[i + 1] );
+			pAnimationChannelTransition->CalcInterpolatedScale( vec3ScaleTransition, flAnimationTimes[i + 1] );
 		}
 
-		vecPosition = (1.0f - flAnimationTransitionFactors[i]) * vecPosition + flAnimationTransitionFactors[i] * vecPositionTransition;
+		vec3Position = (1.0f - flAnimationTransitionFactors[i]) * vec3Position + flAnimationTransitionFactors[i] * vec3PositionTransition;
 		qRotation = glm::normalize( glm::slerp( qRotation, qRotationTransition, flAnimationTransitionFactors[i] ) );
+		vec3Scale = (1.0f - flAnimationTransitionFactors[i]) * vec3Scale + flAnimationTransitionFactors[i] * vec3ScaleTransition;
 	}
 
-	matGlobalTransformation = matGlobalTransformation * glm::translate( glm::mat4( 1.0f ), vecPosition ) * glm::toMat4( qRotation ); // TODO: figure out how to implement scale stuff (or at least figure out how its inneffective)
+	matGlobalTransformation = matGlobalTransformation * glm::translate( g_matIdentity, vec3Position ) * glm::toMat4( qRotation ) * glm::scale( g_matIdentity, vec3Scale );
 
 	CSkeletonBone *pSkeletonBone = pSkeletonNode->GetSkeletonBone();
 	if (pSkeletonBone)

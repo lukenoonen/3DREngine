@@ -19,7 +19,11 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)UTIL.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedDefines.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedEnums.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedMath.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SharedAsset.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedGlobal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TextReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UTIL.h" />
   </ItemGroup>

@@ -8,11 +8,11 @@ bool CC_Bind( CTextItem *pCommand )
 	if (pCommand->GetTextTermCount() < 3)
 		return false;
 
-	KeyCodes_t tKeyCode = UTIL_KeyStrToCode( pCommand->GetTextTerm( 1 )->GetString() );
-	if (tKeyCode == KEYCODE_INVALID)
+	EKeyCodes eKeyCode = UTIL_KeyStrToCode( pCommand->GetTextTerm( 1 )->GetString() );
+	if (eKeyCode == EKeyCodes::i_invalid)
 		return false;
 
-	pInputManager->BindKey( tKeyCode, pCommand->GetTextTerm( 2 )->GetString() );
+	pInputManager->BindKey( eKeyCode, pCommand->GetTextTerm( 2 )->GetString() );
 
 	return true;
 }
@@ -23,11 +23,11 @@ bool CC_Unbind( CTextItem *pCommand )
 	if (pCommand->GetTextTermCount() < 2)
 		return false;
 
-	KeyCodes_t tKeyCodes = UTIL_KeyStrToCode( pCommand->GetTextTerm( 1 )->GetString() );
-	if (tKeyCodes == KEYCODE_INVALID)
+	EKeyCodes eKeyCode = UTIL_KeyStrToCode( pCommand->GetTextTerm( 1 )->GetString() );
+	if (eKeyCode == EKeyCodes::i_invalid)
 		return false;
 
-	pInputManager->UnbindKey( tKeyCodes );
+	pInputManager->UnbindKey( eKeyCode );
 
 	return true;
 }
@@ -41,163 +41,163 @@ void CB_KeyboardInput( GLFWwindow *pWindow, int iKey, int iScancode, int iAction
 	switch (iKey)
 	{
 	case GLFW_KEY_ESCAPE:
-		pInputManager->SetKey( KEYCODE_ESCAPE, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_esc, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_DELETE:
-		pInputManager->SetKey( KEYCODE_DELETE, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_del, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_BACKSPACE:
-		pInputManager->SetKey( KEYCODE_BACKSPACE, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_back, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_LEFT_SHIFT:
-		pInputManager->SetKey( KEYCODE_LSHIFT, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_lsft, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_RIGHT_SHIFT:
-		pInputManager->SetKey( KEYCODE_RSHIFT, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_rsft, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_SPACE:
-		pInputManager->SetKey( KEYCODE_SPACE, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_spc, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_ENTER:
-		pInputManager->SetKey( KEYCODE_ENTER, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_entr, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_TAB:
-		pInputManager->SetKey( KEYCODE_TAB, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_tab, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_LEFT_CONTROL:
-		pInputManager->SetKey( KEYCODE_LCTL, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_lctl, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_RIGHT_CONTROL:
-		pInputManager->SetKey( KEYCODE_RCTL, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_rctl, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_LEFT_ALT:
-		pInputManager->SetKey( KEYCODE_LALT, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_lalt, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_RIGHT_ALT:
-		pInputManager->SetKey( KEYCODE_RALT, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_ralt, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_GRAVE_ACCENT:
-		pInputManager->SetKey( KEYCODE_BACKQUOTE, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_bq, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_RIGHT:
-		pInputManager->SetKey( KEYCODE_RIGHT, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_rght, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_LEFT:
-		pInputManager->SetKey( KEYCODE_LEFT, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_left, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_DOWN:
-		pInputManager->SetKey( KEYCODE_DOWN, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_down, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_UP:
-		pInputManager->SetKey( KEYCODE_UP, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_up, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_0:
-		pInputManager->SetKey( KEYCODE_0, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_0, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_1:
-		pInputManager->SetKey( KEYCODE_1, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_1, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_2:
-		pInputManager->SetKey( KEYCODE_2, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_2, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_3:
-		pInputManager->SetKey( KEYCODE_3, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_3, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_4:
-		pInputManager->SetKey( KEYCODE_4, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_4, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_5:
-		pInputManager->SetKey( KEYCODE_5, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_5, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_6:
-		pInputManager->SetKey( KEYCODE_6, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_6, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_7:
-		pInputManager->SetKey( KEYCODE_7, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_7, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_8:
-		pInputManager->SetKey( KEYCODE_8, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_8, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_9:
-		pInputManager->SetKey( KEYCODE_9, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_9, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_A:
-		pInputManager->SetKey( KEYCODE_A, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_a, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_B:
-		pInputManager->SetKey( KEYCODE_B, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_b, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_C:
-		pInputManager->SetKey( KEYCODE_C, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_c, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_D:
-		pInputManager->SetKey( KEYCODE_D, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_d, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_E:
-		pInputManager->SetKey( KEYCODE_E, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_e, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_F:
-		pInputManager->SetKey( KEYCODE_F, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_f, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_G:
-		pInputManager->SetKey( KEYCODE_G, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_g, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_H:
-		pInputManager->SetKey( KEYCODE_H, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_h, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_I:
-		pInputManager->SetKey( KEYCODE_I, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_i, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_J:
-		pInputManager->SetKey( KEYCODE_J, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_j, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_K:
-		pInputManager->SetKey( KEYCODE_K, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_k, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_L:
-		pInputManager->SetKey( KEYCODE_L, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_l, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_M:
-		pInputManager->SetKey( KEYCODE_M, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_m, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_N:
-		pInputManager->SetKey( KEYCODE_N, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_n, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_O:
-		pInputManager->SetKey( KEYCODE_O, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_o, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_P:
-		pInputManager->SetKey( KEYCODE_P, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_p, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_Q:
-		pInputManager->SetKey( KEYCODE_Q, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_q, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_R:
-		pInputManager->SetKey( KEYCODE_R, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_r, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_S:
-		pInputManager->SetKey( KEYCODE_S, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_s, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_T:
-		pInputManager->SetKey( KEYCODE_T, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_t, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_U:
-		pInputManager->SetKey( KEYCODE_U, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_u, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_V:
-		pInputManager->SetKey( KEYCODE_V, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_v, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_W:
-		pInputManager->SetKey( KEYCODE_W, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_w, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_X:
-		pInputManager->SetKey( KEYCODE_X, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_x, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_Y:
-		pInputManager->SetKey( KEYCODE_Y, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_y, iAction == GLFW_PRESS );
 		break;
 	case GLFW_KEY_Z:
-		pInputManager->SetKey( KEYCODE_Z, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_z, iAction == GLFW_PRESS );
 		break;
 	}
 }
@@ -207,13 +207,13 @@ void CB_MouseButton( GLFWwindow *pWindow, int iButton, int iAction, int iMods )
 	switch (iButton)
 	{
 	case GLFW_MOUSE_BUTTON_LEFT:
-		pInputManager->SetKey( KEYCODE_LEFTMOUSE, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_m0, iAction == GLFW_PRESS );
 		break;
 	case GLFW_MOUSE_BUTTON_RIGHT:
-		pInputManager->SetKey( KEYCODE_RIGHTMOUSE, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_m1, iAction == GLFW_PRESS );
 		break;
 	case GLFW_MOUSE_BUTTON_MIDDLE:
-		pInputManager->SetKey( KEYCODE_MIDDLEMOUSE, iAction == GLFW_PRESS );
+		pInputManager->SetKey( EKeyCodes::t_m2, iAction == GLFW_PRESS );
 		break;
 	}
 }
@@ -223,9 +223,9 @@ void CB_Scroll( GLFWwindow *pWindow, double dXOffset, double dYOffset )
 	if (dYOffset != 0.0f)
 	{
 		if (dYOffset > 0.0f)
-			pInputManager->SetKey( KEYCODE_MOUSEWHEELUP, true );
+			pInputManager->SetKey( EKeyCodes::t_mwup, true );
 		else
-			pInputManager->SetKey( KEYCODE_MOUSEWHEELDOWN, true );
+			pInputManager->SetKey( EKeyCodes::t_mwdn, true );
 	}
 }
 
@@ -234,20 +234,20 @@ void CB_CloseWindow( GLFWwindow *pWindow )
 	pGlobalValues->MarkForQuit();
 }
 
-const char *UTIL_KeyCodeToStr( KeyCodes_t tKeyCode )
+const char *UTIL_KeyCodeToStr( EKeyCodes eKeyCode )
 {
-	return sKeycodeNames[tKeyCode];
+	return sKeycodeNames[(EBaseEnum)eKeyCode];
 }
 
-KeyCodes_t UTIL_KeyStrToCode( const char *sKeyCode )
+EKeyCodes UTIL_KeyStrToCode( const char *sKeyCode )
 {
-	for (int i = 0; i < KEYCODE_COUNT; i++)
+	for (EBaseEnum i = 0; i < (EBaseEnum)EKeyCodes::i_count; i++)
 	{
 		if (UTIL_strncmp( sKeyCode, sKeycodeNames[i] ) == 0)
-			return (KeyCodes_t)i;
+			return (EKeyCodes)i;
 	}
 
-	return KEYCODE_INVALID;
+	return EKeyCodes::i_invalid;
 }
 
 CKeyBind::CKeyBind()
@@ -305,8 +305,8 @@ CInputManager::CInputManager()
 	glfwSetWindowCloseCallback( pWindow, CB_CloseWindow );
 	glfwSetCursorPos( pWindow, 0, 0 );
 
-	m_vecMousePosition = g_vec2Zero;
-	m_vecMouseDelta = g_vec2Zero;
+	m_vec2MousePosition = g_vec2Zero;
+	m_vec2MouseDelta = g_vec2Zero;
 }
 
 void CInputManager::OnLoop( void )
@@ -316,38 +316,38 @@ void CInputManager::OnLoop( void )
 	GLFWwindow *pWindow = pRenderManager->GetWindow();
 	double dXPos, dYPos;
 	glfwGetCursorPos( pWindow, &dXPos, &dYPos );
-	m_vecMouseDelta = glm::vec2( (float)dXPos, (float)dYPos );
-	if (m_vecMouseDelta != g_vec2Zero)
+	m_vec2MouseDelta = glm::vec2( (float)dXPos, (float)dYPos );
+	if (m_vec2MouseDelta != g_vec2Zero)
 	{
-		m_vecMousePosition += m_vecMouseDelta;
+		m_vec2MousePosition += m_vec2MouseDelta;
 		glfwSetCursorPos( pWindow, 0.0, 0.0 );
 	}
 }
 
 const glm::vec2 &CInputManager::GetMousePosition( void )
 {
-	return m_vecMousePosition;
+	return m_vec2MousePosition;
 }
 
 const glm::vec2 &CInputManager::GetMouseDelta( void )
 {
-	return m_vecMouseDelta;
+	return m_vec2MouseDelta;
 }
 
-void CInputManager::BindKey( KeyCodes_t tKeyCode, const char *sCommand )
+void CInputManager::BindKey( EKeyCodes eKeyCode, const char *sCommand )
 {
-	m_KeyBinds[tKeyCode].Bind( sCommand );
+	m_KeyBinds[(EBaseEnum)eKeyCode].Bind( sCommand );
 }
 
-void CInputManager::UnbindKey( KeyCodes_t tKeyCode )
+void CInputManager::UnbindKey( EKeyCodes eKeyCode )
 {
-	m_KeyBinds[tKeyCode].Unbind();
+	m_KeyBinds[(EBaseEnum)eKeyCode].Unbind();
 }
 
-void CInputManager::SetKey( KeyCodes_t tKeyCode, bool bDown )
+void CInputManager::SetKey( EKeyCodes eKeyCode, bool bDown )
 {
 	if (bDown)
-		m_KeyBinds[tKeyCode].DownDispatch();
+		m_KeyBinds[(EBaseEnum)eKeyCode].DownDispatch();
 	else
-		m_KeyBinds[tKeyCode].UpDispatch();
+		m_KeyBinds[(EBaseEnum)eKeyCode].UpDispatch();
 }

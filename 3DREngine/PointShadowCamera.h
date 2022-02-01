@@ -19,6 +19,8 @@ public:
 
 	virtual void ActivateLight( void );
 
+	virtual int BindTexture( void );
+
 	void SetNear( float flNear );
 
 	void SetFar( float flFar );

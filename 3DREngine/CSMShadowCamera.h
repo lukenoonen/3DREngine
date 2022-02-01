@@ -19,6 +19,8 @@ public:
 
 	virtual void ActivateLight( void );
 
+	virtual int BindTexture( void );
+
 	void SetBlendDistance( float flBlendDistance );
 
 	void SetDistanceFactor( float flDistanceFactor );
@@ -53,8 +55,8 @@ private:
 	float m_flCascadeEnd[5];
 	float m_flCascadeEndNear[4];
 	float m_flRadius[4];
-	glm::vec4 m_vecCascadeEndClipSpaceNear;
-	glm::vec4 m_vecCascadeEndClipSpaceFar;
+	glm::vec4 m_vec4CascadeEndClipSpaceNear;
+	glm::vec4 m_vec4CascadeEndClipSpaceFar;
 
 	bool m_bUpdateCascade;
 	bool m_bUpdateRadius;

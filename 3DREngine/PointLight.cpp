@@ -1,6 +1,5 @@
 #include "PointLight.h"
 #include "RenderManager.h"
-#include "ShaderManager.h"
 
 CPointLight::CPointLight()
 {
@@ -15,13 +14,13 @@ void CPointLight::ActivateLight( void )
 {
 	BaseClass::ActivateLight();
 
-	pRenderManager->SetRenderPass( RENDERPASS_LIT_POINT );
+	pRenderManager->SetRenderPass( ERenderPass::t_litpoint );
 
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOSITION, 0, &GetPosition() );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOINT, 0, &m_flConstant );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOINT, 1, &m_flLinear );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTPOINT, 2, &m_flQuadratic );
-	pShaderManager->SetUniformBufferObject( UBO_LIGHTMAXDISTANCE, 0, &m_flMaxRadius );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightposition, 0, &GetPosition() );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightpoint, 0, &m_flConstant );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightpoint, 1, &m_flLinear );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightpoint, 2, &m_flQuadratic );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightmaxdistance, 0, &m_flMaxRadius );
 }
 
 void CPointLight::SetShadowCamera( CPointShadowCamera *pPointShadowCamera )

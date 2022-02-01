@@ -1,5 +1,5 @@
 #include "BaseShadowCamera.h"
-#include "AssetManager.h"
+#include "RenderManager.h"
 
 CBaseShadowCamera::CBaseShadowCamera()
 {
@@ -11,10 +11,10 @@ CBaseShadowCamera::CBaseShadowCamera()
 
 void CBaseShadowCamera::ActivateLight( void )
 {
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWFADE, 0, &m_flFadeNear );
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWFADE, 1, &m_flFadeFar );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadowfade, 0, &m_flFadeNear );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadowfade, 1, &m_flFadeFar );
 
-	pShaderManager->SetUniformBufferObject( UBO_SHADOWBLUR, 0, &m_flBlurScale );
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadowblur, 0, &m_flBlurScale );
 }
 
 void CBaseShadowCamera::SetFadeNear( float flFadeNear )

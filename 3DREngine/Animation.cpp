@@ -1,22 +1,22 @@
 #include "Animation.h"
 
-CAnimationChannel::CAnimationChannel( const std::vector<float> &flPositionTimes, const std::vector<glm::vec3> &vecPositions, const std::vector<float> &flRotationTimes, const std::vector<glm::quat> &qRotations, const std::vector<float> &flScaleTimes, const std::vector<glm::vec3> &vecScales )
+CAnimationChannel::CAnimationChannel( const std::vector<float> &flPositionTimes, const std::vector<glm::vec3> &vec3Positions, const std::vector<float> &flRotationTimes, const std::vector<glm::quat> &qRotations, const std::vector<float> &flScaleTimes, const std::vector<glm::vec3> &vec3Scales )
 {
 	m_flPositionTimes = flPositionTimes;
-	m_vecPositions = vecPositions;
+	m_vec3Positions = vec3Positions;
 
 	m_flRotationTimes = flRotationTimes;
 	m_qRotations = qRotations;
 
 	m_flScaleTimes = flScaleTimes;
-	m_vecScales = vecScales;
+	m_vec3Scales = vec3Scales;
 }
 
-void CAnimationChannel::CalcInterpolatedPosition( glm::vec3 &vecOut, float flAnimationTime )
+void CAnimationChannel::CalcInterpolatedPosition( glm::vec3 &vec3Out, float flAnimationTime )
 {
-	if (m_vecPositions.size() == 1)
+	if (m_vec3Positions.size() == 1)
 	{
-		vecOut = m_vecPositions[0];
+		vec3Out = m_vec3Positions[0];
 		return;
 	}
 
@@ -34,10 +34,10 @@ void CAnimationChannel::CalcInterpolatedPosition( glm::vec3 &vecOut, float flAni
 
 	float flFactor = (flAnimationTime - m_flPositionTimes[uiPositionIndex]) / (m_flPositionTimes[uiNextPositionIndex] - m_flPositionTimes[uiPositionIndex]);
 
-	const glm::vec3 &vecStart = m_vecPositions[uiPositionIndex];
-	const glm::vec3 &vecEnd = m_vecPositions[uiNextPositionIndex];
+	const glm::vec3 &vec3Start = m_vec3Positions[uiPositionIndex];
+	const glm::vec3 &vec3End = m_vec3Positions[uiNextPositionIndex];
 
-	vecOut = vecStart + flFactor * (vecEnd - vecStart);
+	vec3Out = vec3Start + flFactor * (vec3End - vec3Start);
 }
 
 void CAnimationChannel::CalcInterpolatedRotation( glm::quat &qOut, float flAnimationTime )
@@ -68,11 +68,11 @@ void CAnimationChannel::CalcInterpolatedRotation( glm::quat &qOut, float flAnima
 	qOut = glm::normalize( glm::slerp( qStart, qEnd, flFactor ) );
 }
 
-void CAnimationChannel::CalcInterpolatedScale( glm::vec3 &vecOut, float flAnimationTime )
+void CAnimationChannel::CalcInterpolatedScale( glm::vec3 &vec3Out, float flAnimationTime )
 {
-	if (m_vecScales.size() == 1)
+	if (m_vec3Scales.size() == 1)
 	{
-		vecOut = m_vecScales[0];
+		vec3Out = m_vec3Scales[0];
 		return;
 	}
 
@@ -90,10 +90,10 @@ void CAnimationChannel::CalcInterpolatedScale( glm::vec3 &vecOut, float flAnimat
 
 	float flFactor = (flAnimationTime - m_flScaleTimes[uiScaleIndex]) / (m_flScaleTimes[uiNextScaleIndex] - m_flScaleTimes[uiScaleIndex]);
 
-	const glm::vec3 &vecStart = m_vecScales[uiScaleIndex];
-	const glm::vec3 &vecEnd = m_vecScales[uiNextScaleIndex];
+	const glm::vec3 &vec3Start = m_vec3Scales[uiScaleIndex];
+	const glm::vec3 &vec3End = m_vec3Scales[uiNextScaleIndex];
 
-	vecOut = vecStart + flFactor * (vecEnd - vecStart);
+	vec3Out = vec3Start + flFactor * (vec3End - vec3Start);
 }
 
 CAnimation::CAnimation( float flTime, const std::vector<CAnimationChannel *> &pAnimationChannels, const char *sPath ) : BaseClass( sPath )

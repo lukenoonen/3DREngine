@@ -10,14 +10,14 @@ class CUnlitMaterial : public CMaterial
 public:
 	DECLARE_CLASS( CUnlitMaterial, CMaterial );
 
-	CUnlitMaterial( CTexture *pDiffuse, const glm::vec2 &vecTextureScale, const char *sPath );
+	CUnlitMaterial( CTexture *pDiffuse, const glm::vec2 &vec2TextureScale, const char *sPath );
 	virtual ~CUnlitMaterial();
 
 	virtual void Use( void );
 
 private:
 	CTexture *m_pDiffuse;
-	glm::vec2 m_vecTextureScale;
+	glm::vec2 m_vec2TextureScale;
 };
 
 #endif // UNLITMATERIAL_H

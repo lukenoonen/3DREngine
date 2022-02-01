@@ -1,10 +1,4 @@
 #include "BasePlayer.h"
-#include "EntityManager.h"
-#include "InputManager.h"
-#include "GlobalManager.h"
-#include "RenderManager.h"
-#include "ShaderManager.h"
-#include "CommandManager.h"
 
 CBasePlayer::CBasePlayer()
 {
@@ -18,16 +12,7 @@ bool CBasePlayer::IsPlayer( void ) const
 
 void CBasePlayer::SetCamera( CBasePlayerCamera *pCamera )
 {
-	if (m_pCamera != pCamera)
-	{
-		if (m_pCamera)
-			m_pCamera->SetPlayerCamera( false );
-
-		m_pCamera = pCamera;
-
-		if (m_pCamera)
-			m_pCamera->SetPlayerCamera( true );
-	}
+	m_pCamera = pCamera;
 }
 
 CBasePlayerCamera *CBasePlayer::GetCamera( void ) const

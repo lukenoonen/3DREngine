@@ -1,5 +1,5 @@
 #include "SkyboxMaterial.h"
-#include "ShaderManager.h"
+#include "RenderManager.h"
 #include "AssetManager.h"
 
 CSkyboxMaterial::CSkyboxMaterial( CTexture *pSkybox, const char *sPath ) : BaseClass( sPath )
@@ -8,7 +8,7 @@ CSkyboxMaterial::CSkyboxMaterial( CTexture *pSkybox, const char *sPath ) : BaseC
 
 	m_pSkybox->Activate();
 
-	SetShaderType( RENDERPASS_UNLIT, SHADERTYPE_SKYBOX );
+	SetShaderType( ERenderPass::t_unlit, EShaderType::t_skybox );
 }
 
 CSkyboxMaterial::~CSkyboxMaterial()
@@ -22,5 +22,5 @@ void CSkyboxMaterial::Use( void )
 {
 	BaseClass::Use();
 
-	pShaderManager->SetValue( "u_sSkybox", pAssetManager->BindTexture( m_pSkybox->GetID(), GL_TEXTURE_CUBE_MAP ) );
+	pRenderManager->SetUniform( "u_sSkybox", pAssetManager->BindTexture( m_pSkybox->GetID(), GL_TEXTURE_CUBE_MAP ) );
 }

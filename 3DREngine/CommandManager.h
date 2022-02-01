@@ -90,9 +90,9 @@ class CConVec2 : public CBaseConCommand
 public:
 	DECLARE_CLASS( CConVec2, CBaseConCommand );
 
-	CConVec2( const glm::vec2 &vecDefaultValue, const char *sName );
-	CConVec2( const glm::vec2 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
-	CConVec2( const glm::vec2 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
+	CConVec2( const glm::vec2 &vec2DefaultValue, const char *sName );
+	CConVec2( const glm::vec2 &vec2DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
+	CConVec2( const glm::vec2 &vec2DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
 
 	virtual bool Dispatch( CTextItem *pTextInformation );
 
@@ -100,7 +100,7 @@ public:
 
 private:
 
-	glm::vec2 m_vecValue;
+	glm::vec2 m_vec2Value;
 };
 
 class CConVec3 : public CBaseConCommand
@@ -108,9 +108,9 @@ class CConVec3 : public CBaseConCommand
 public:
 	DECLARE_CLASS( CConVec3, CBaseConCommand );
 
-	CConVec3( const glm::vec3 &vecDefaultValue, const char *sName );
-	CConVec3( const glm::vec3 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
-	CConVec3( const glm::vec3 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
+	CConVec3( const glm::vec3 &vec3DefaultValue, const char *sName );
+	CConVec3( const glm::vec3 &vec3DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
+	CConVec3( const glm::vec3 &vec3DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
 
 	virtual bool Dispatch( CTextItem *pTextInformation );
 
@@ -118,7 +118,7 @@ public:
 
 private:
 
-	glm::vec3 m_vecValue;
+	glm::vec3 m_vec3Value;
 };
 
 class CConVec4 : public CBaseConCommand
@@ -126,9 +126,9 @@ class CConVec4 : public CBaseConCommand
 public:
 	DECLARE_CLASS( CConVec4, CBaseConCommand );
 
-	CConVec4( const glm::vec4 &vecDefaultValue, const char *sName );
-	CConVec4( const glm::vec4 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
-	CConVec4( const glm::vec4 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
+	CConVec4( const glm::vec4 &vec4DefaultValue, const char *sName );
+	CConVec4( const glm::vec4 &vec4DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
+	CConVec4( const glm::vec4 &vec4DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
 
 	virtual bool Dispatch( CTextItem *pTextInformation );
 
@@ -136,7 +136,7 @@ public:
 
 private:
 
-	glm::vec4 m_vecValue;
+	glm::vec4 m_vec4Value;
 };
 
 class CConIVec2 : public CBaseConCommand
@@ -144,9 +144,9 @@ class CConIVec2 : public CBaseConCommand
 public:
 	DECLARE_CLASS( CConIVec2, CBaseConCommand );
 	
-	CConIVec2( const glm::ivec2 &vecDefaultValue, const char *sName );
-	CConIVec2( const glm::ivec2 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
-	CConIVec2( const glm::ivec2 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
+	CConIVec2( const glm::ivec2 &vec2DefaultValue, const char *sName );
+	CConIVec2( const glm::ivec2 &vec2DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
+	CConIVec2( const glm::ivec2 &vec2DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
 
 	virtual bool Dispatch( CTextItem *pTextInformation );
 
@@ -154,7 +154,7 @@ public:
 
 private:
 
-	glm::ivec2 m_vecValue;
+	glm::ivec2 m_vec2Value;
 };
 
 class CConIVec3 : public CBaseConCommand
@@ -162,9 +162,9 @@ class CConIVec3 : public CBaseConCommand
 public:
 	DECLARE_CLASS( CConIVec3, CBaseConCommand );
 
-	CConIVec3( const glm::ivec3 &vecDefaultValue, const char *sName );
-	CConIVec3( const glm::ivec3 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
-	CConIVec3( const glm::ivec3 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
+	CConIVec3( const glm::ivec3 &vec3DefaultValue, const char *sName );
+	CConIVec3( const glm::ivec3 &vec3DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
+	CConIVec3( const glm::ivec3 &vec3DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
 
 	virtual bool Dispatch( CTextItem *pTextInformation );
 
@@ -172,7 +172,7 @@ public:
 
 private:
 
-	glm::ivec3 m_vecValue;
+	glm::ivec3 m_vec3Value;
 };
 
 class CConIVec4 : public CBaseConCommand
@@ -180,9 +180,9 @@ class CConIVec4 : public CBaseConCommand
 public:
 	DECLARE_CLASS( CConIVec4, CBaseConCommand );
 
-	CConIVec4( const glm::ivec4 &vecDefaultValue, const char *sName );
-	CConIVec4( const glm::ivec4 &vecDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
-	CConIVec4( const glm::ivec4 &vecDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
+	CConIVec4( const glm::ivec4 &vec4DefaultValue, const char *sName );
+	CConIVec4( const glm::ivec4 &vec4DefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback );
+	CConIVec4( const glm::ivec4 &vec4DefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid );
 
 	virtual bool Dispatch( CTextItem *pTextInformation );
 
@@ -190,7 +190,7 @@ public:
 
 private:
 
-	glm::vec4 m_vecValue;
+	glm::vec4 m_vec4Value;
 };
 
 class CConString : public CBaseConCommand
