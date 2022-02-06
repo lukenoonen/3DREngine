@@ -6,6 +6,7 @@
 #subshader NORMAL
 #subshader CAMERA
 #subshader SHADOW
+#subshader REFLECTION
 
 #if QUALITY_LOW
 #define SHADOW_SAMPLES 4
@@ -33,6 +34,10 @@ in float v_flShadowMapFactor[4];
 in vec2 v_vecShadowMapCoords[4];
 in float v_flShadowMapDepth[4];
 #endif // SHADOW_TRUE
+#if REFLECTION_TRUE
+in float v_flReflectionMapFactor;
+in vec2 v_vecReflectionMapCoords;
+#endif // REFLECTION_TRUE
 
 #include "lightBuffer.sh"
 #include "lightPositionBuffer.sh"
@@ -69,7 +74,11 @@ void main()
 {
 #if CAMERA_TRUE
 	vec3 vecCameraSample = texture(u_sCamera, v_vecTexCoords).xyz;
+#if REFLECTION_TRUE
+	vec3 vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz * (1.0f - vecCameraSample.r) + texture(u_sCameraTexture, (v_vecReflectionMapCoords / v_flReflectionMapFactor) * 0.5f + 0.5f).xyz * vecCameraSample.r;
+#else // REFLECTION_TRUE
 	vec3 vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz * (1.0f - vecCameraSample.r) + texture(u_sCameraTexture, v_vecTexCoords).xyz * vecCameraSample.r;
+#endif // REFLECTION_TRUE
 #else // CAMERA_TRUE
 	vec3 vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz;
 #endif // CAMERA_TRUE

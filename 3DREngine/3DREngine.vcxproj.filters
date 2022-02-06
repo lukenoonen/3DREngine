@@ -148,6 +148,18 @@
     <Filter Include="Source Files\Entities\Cameras\Copy\Reflection">
       <UniqueIdentifier>{f31a2298-3de8-4b59-84fd-d05867c4897f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Entities\Props">
+      <UniqueIdentifier>{dce64d18-5de1-49a6-8844-36b40aec3551}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities\Props">
+      <UniqueIdentifier>{5777dca9-37a2-4648-9f3c-332b0e5b4221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities\Skybox">
+      <UniqueIdentifier>{52476c8c-fd3e-4ee4-8d5a-43f1f9ba5800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities\Skybox">
+      <UniqueIdentifier>{9008abd8-0f18-4dc5-b8fb-4f164def80c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GlobalManager.cpp">
@@ -170,9 +182,6 @@
     </ClCompile>
     <ClCompile Include="FileManager.cpp">
       <Filter>Source Files\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="Skybox.cpp">
-      <Filter>Source Files\Entities</Filter>
     </ClCompile>
     <ClCompile Include="BaseAnimated.cpp">
       <Filter>Source Files\Entities</Filter>
@@ -252,12 +261,6 @@
     <ClCompile Include="Skeleton.cpp">
       <Filter>Source Files\Assets\Skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="AnimatedProp.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticProp.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="BaseCamera.cpp">
       <Filter>Source Files\Entities\Cameras</Filter>
     </ClCompile>
@@ -333,6 +336,15 @@
     <ClCompile Include="PlanarReflectionCamera.cpp">
       <Filter>Source Files\Entities\Cameras\Copy\Reflection</Filter>
     </ClCompile>
+    <ClCompile Include="StaticProp.cpp">
+      <Filter>Source Files\Entities\Props</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedProp.cpp">
+      <Filter>Source Files\Entities\Props</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files\Entities\Skybox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlobalManager.h">
@@ -355,9 +367,6 @@
     </ClInclude>
     <ClInclude Include="FileManager.h">
       <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="Skybox.h">
-      <Filter>Header Files\Entities</Filter>
     </ClInclude>
     <ClInclude Include="BaseAnimated.h">
       <Filter>Header Files\Entities</Filter>
@@ -430,12 +439,6 @@
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header Files\Assets\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticProp.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimatedProp.h">
-      <Filter>Header Files\Entities</Filter>
     </ClInclude>
     <ClInclude Include="BaseUniformMSAACamera.h">
       <Filter>Header Files\Entities\Cameras\Uniform</Filter>
@@ -511,6 +514,15 @@
     </ClInclude>
     <ClInclude Include="PlanarReflectionCamera.h">
       <Filter>Header Files\Entities\Cameras\Copy\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedProp.h">
+      <Filter>Header Files\Entities\Props</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticProp.h">
+      <Filter>Header Files\Entities\Props</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files\Entities\Skybox</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

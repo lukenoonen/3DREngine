@@ -26,6 +26,7 @@ protected:
 private:
 	glm::vec4 m_vec4Plane;
 
+	glm::mat4 m_matReflection;
 	glm::mat4 m_matProjection;
 	glm::mat4 m_matView;
 	glm::mat4 m_matTotal;

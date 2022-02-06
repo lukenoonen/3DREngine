@@ -70,6 +70,36 @@ static const char *g_sShaderAnimateDefines[] =
 	"#define ANIMATE_TRUE 0\n",
 };
 
+enum class EShaderPreprocessorClip : EBaseEnum
+{
+	t_false = 0,
+	t_true,
+
+	i_count,
+	i_invalid = i_count,
+};
+
+static const char *g_sShaderClipDefines[] =
+{
+	"#define CLIP_FALSE 0\n",
+	"#define CLIP_TRUE 0\n",
+};
+
+enum class EShaderPreprocessorReflection : EBaseEnum
+{
+	t_false = 0,
+	t_true,
+
+	i_count,
+	i_invalid = i_count,
+};
+
+static const char *g_sShaderReflectionDefines[] =
+{
+	"#define REFLECTION_FALSE 0\n",
+	"#define REFLECTION_TRUE 0\n",
+};
+
 enum class EShaderPreprocessorSpecular : EBaseEnum
 {
 	t_false = 0,
@@ -134,6 +164,8 @@ enum class EShaderPreprocessor : EBaseEnum
 {
 	t_quality = 0,
 	t_animate,
+	t_clip,
+	t_reflection,
 
 	t_specular,
 	t_normal,
@@ -148,6 +180,8 @@ static const char *g_sShaderPreprocessorNames[] =
 {
 	"QUALITY",
 	"ANIMATE",
+	"CLIP",
+	"REFLECTION",
 
 	"SPECULAR",
 	"NORMAL",
@@ -159,6 +193,8 @@ static const char **g_pShaderPreprocessorDefines[] =
 {
 	g_sShaderQualityDefines,
 	g_sShaderAnimateDefines,
+	g_sShaderClipDefines,
+	g_sShaderReflectionDefines,
 
 	g_sShaderSpecularDefines,
 	g_sShaderNormalDefines,
@@ -170,6 +206,8 @@ static const EBaseEnum g_eShaderPreprocessorCount[] =
 {
 	(EBaseEnum)EShaderPreprocessorQuality::i_count,
 	(EBaseEnum)EShaderPreprocessorAnimate::i_count,
+	(EBaseEnum)EShaderPreprocessorClip::i_count,
+	(EBaseEnum)EShaderPreprocessorReflection::i_count,
 
 	(EBaseEnum)EShaderPreprocessorSpecular ::i_count,
 	(EBaseEnum)EShaderPreprocessorNormal::i_count,
@@ -229,6 +267,21 @@ static unsigned int g_uiUBOBonesParamOffsets[] =
 static unsigned int g_uiUBOBonesParamSizes[] =
 {
 	sizeof( SBonesBuffer().matBones[0] ),
+};
+
+struct SClipBuffer
+{
+	glm::vec4 vec4ClipPlane;
+};
+
+static unsigned int g_uiUBOClipParamOffsets[] =
+{
+	offsetof( SClipBuffer, vec4ClipPlane ),
+};
+
+static unsigned int g_uiUBOClipParamSizes[] =
+{
+	sizeof( SClipBuffer().vec4ClipPlane ),
 };
 
 struct SLightBuffer
@@ -340,17 +393,17 @@ static unsigned int g_uiUBOLightMaxDistanceParamSizes[] =
 
 struct SShadowBuffer
 {
-	glm::mat4 matLightSpaceMatrix[6];
+	glm::mat4 matShadowMatrix[6];
 };
 
 static unsigned int g_uiUBOShadowParamOffsets[] =
 {
-	offsetof( SShadowBuffer, matLightSpaceMatrix ),
+	offsetof( SShadowBuffer, matShadowMatrix ),
 };
 
 static unsigned int g_uiUBOShadowParamSizes[] =
 {
-	sizeof( SShadowBuffer().matLightSpaceMatrix[0] ),
+	sizeof( SShadowBuffer().matShadowMatrix[0] ),
 };
 
 struct SShadowBlurBuffer
@@ -404,11 +457,27 @@ static unsigned int g_uiUBOShadowCascadeFadeParamSizes[] =
 	sizeof( SShadowCascadeFadeBuffer().vec4ShadowCascadeFadeFar ),
 };
 
+struct SReflectionBuffer
+{
+	glm::mat4 matReflectionMatrix;
+};
+
+static unsigned int g_uiUBOReflectionParamOffsets[] =
+{
+	offsetof( SReflectionBuffer, matReflectionMatrix ),
+};
+
+static unsigned int g_uiUBOReflectionParamSizes[] =
+{
+	sizeof( SReflectionBuffer().matReflectionMatrix ),
+};
+
 static unsigned int g_uiUBOSizes[] =
 {
 	sizeof( SViewBuffer ),
 	sizeof( SModelBuffer ),
 	sizeof( SBonesBuffer ),
+	sizeof( SClipBuffer ),
 	sizeof( SLightBuffer ),
 	sizeof( SLightPositionBuffer ),
 	sizeof( SLightDirectionBuffer ),
@@ -419,6 +488,7 @@ static unsigned int g_uiUBOSizes[] =
 	sizeof( SShadowBlurBuffer ),
 	sizeof( SShadowFadeBuffer ),
 	sizeof( SShadowCascadeFadeBuffer ),
+	sizeof( SReflectionBuffer ),
 };
 
 static unsigned int *g_pUBOParamOffsets[] =
@@ -426,6 +496,7 @@ static unsigned int *g_pUBOParamOffsets[] =
 	g_uiUBOViewParamOffsets,
 	g_uiUBOModelParamOffsets,
 	g_uiUBOBonesParamOffsets,
+	g_uiUBOClipParamOffsets,
 	g_uiUBOLightParamOffsets,
 	g_uiUBOLightPositionParamOffsets,
 	g_uiUBOLightDirectionParamOffsets,
@@ -436,6 +507,7 @@ static unsigned int *g_pUBOParamOffsets[] =
 	g_uiUBOShadowBlurParamOffsets,
 	g_uiUBOShadowFadeParamOffsets,
 	g_uiUBOShadowCascadeFadeParamOffsets,
+	g_uiUBOReflectionParamOffsets,
 };
 
 static unsigned int *g_pUBOParamSizes[] =
@@ -443,6 +515,7 @@ static unsigned int *g_pUBOParamSizes[] =
 	g_uiUBOViewParamSizes,
 	g_uiUBOModelParamSizes,
 	g_uiUBOBonesParamSizes,
+	g_uiUBOClipParamSizes,
 	g_uiUBOLightParamSizes,
 	g_uiUBOLightPositionParamSizes,
 	g_uiUBOLightDirectionParamSizes,
@@ -453,6 +526,7 @@ static unsigned int *g_pUBOParamSizes[] =
 	g_uiUBOShadowBlurParamSizes,
 	g_uiUBOShadowFadeParamSizes,
 	g_uiUBOShadowCascadeFadeParamSizes,
+	g_uiUBOReflectionParamSizes,
 };
 
 enum class EUniformBufferObjects : EBaseEnum
@@ -460,6 +534,7 @@ enum class EUniformBufferObjects : EBaseEnum
 	t_view = 0,
 	t_model,
 	t_bones,
+	t_clip,
 	t_light,
 	t_lightposition,
 	t_lightdirection,
@@ -470,6 +545,7 @@ enum class EUniformBufferObjects : EBaseEnum
 	t_shadowblur,
 	t_shadowfade,
 	t_shadowcascadefade,
+	t_reflection,
 
 	i_count,
 	i_invalid = i_count,
@@ -480,6 +556,7 @@ static const char *g_sUniformBufferObjects[] =
 	"viewBuffer",
 	"modelBuffer",
 	"bonesBuffer",
+	"clipBuffer",
 	"lightBuffer",
 	"lightPositionBuffer",
 	"lightDirectionBuffer",
@@ -490,6 +567,7 @@ static const char *g_sUniformBufferObjects[] =
 	"shadowBlurBuffer",
 	"shadowFadeBuffer",
 	"shadowCascadeFadeBuffer",
+	"reflectionBuffer",
 };
 
 class CSubShader

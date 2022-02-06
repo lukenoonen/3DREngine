@@ -67,7 +67,8 @@ void CreateLevel( void )
 		CPlanarReflectionCamera *pNewPerspectiveWorldCamera;
 
 		pNewPerspectiveWorldCamera = new CPlanarReflectionCamera();
-		pNewPerspectiveWorldCamera->SetPosition( glm::vec3( 0.0f, -1.0f, 1.0f ) );
+		pNewPerspectiveWorldCamera->SetPosition( glm::vec3( 0.0f, 10.0f, 1.0f ) );
+		pNewPerspectiveWorldCamera->SetRotation( glm::radians( glm::vec3( 0.0f, 0.0f, 180.0f ) ) );
 		pNewPerspectiveWorldCamera->SetTargetCamera( pNewPlayer->GetCamera() );
 		pEntityManager->AddEntity( pNewPerspectiveWorldCamera );
 	}
@@ -81,29 +82,29 @@ void CreateLevel( void )
 		pNewStaticProp->SetModel( "plane_brick.3md" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
-		/*pNewStaticProp = new CStaticProp();
+		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 0.0f, 20.0f, -2.0f ) );
-		pNewStaticProp->SetScale( glm::vec3( 50.0f, 2.0f, 50.0f ) );
+		pNewStaticProp->SetScale( glm::vec3( 25.0f, 2.0f, 25.0f ) );
 		pNewStaticProp->SetModel( "cube_brick.3md" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
 		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 20.0f, 0.0f, -2.0f ) );
-		pNewStaticProp->SetScale( glm::vec3( 2.0f, 50.0f, 50.0f ) );
+		pNewStaticProp->SetScale( glm::vec3( 2.0f, 25.0f, 25.0f ) );
 		pNewStaticProp->SetModel( "cube_brick.3md" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
 		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 0.0f, -20.0f, -2.0f ) );
-		pNewStaticProp->SetScale( glm::vec3( 50.0f, 2.0f, 50.0f ) );
+		pNewStaticProp->SetScale( glm::vec3( 25.0f, 2.0f, 25.0f ) );
 		pNewStaticProp->SetModel( "cube_brick.3md" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
 		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( -20.0f, 0.0f, -2.0f ) );
-		pNewStaticProp->SetScale( glm::vec3( 2.0f, 50.0f, 50.0f ) );
+		pNewStaticProp->SetScale( glm::vec3( 2.0f, 25.0f, 25.0f ) );
 		pNewStaticProp->SetModel( "cube_brick.3md" );
-		pEntityManager->AddEntity( pNewStaticProp );*/
+		pEntityManager->AddEntity( pNewStaticProp );
 	}
 
 	{
@@ -193,7 +194,8 @@ void CreateLevel( void )
 		CBaseSprite *pNewSprite;
 		
 		pNewSprite = new CBaseSprite();
-		pNewSprite->SetPosition( glm::vec3( 0.0f, 0.25f, 1.0f ) );
+		pNewSprite->SetPosition( glm::vec3( 0.0f, 10.0f, 1.0f ) );
+		pNewSprite->SetScale( glm::vec3( 32.0f, 32.0f, 1.0f ) );
 		pNewSprite->SetMaterial( "cameratest.3mt" );
 		pEntityManager->AddEntity( pNewSprite );
 	}

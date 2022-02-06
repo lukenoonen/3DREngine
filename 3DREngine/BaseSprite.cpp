@@ -27,7 +27,7 @@ void CBaseSprite::PostThink( void )
 {
 	CBaseCamera *pCamera = pEntityManager->GetPlayer()->GetCamera();
 
-	SetRotation( glm::quat( glm::eulerAngles( pCamera->GetRotation() ) * glm::vec3( 1.0f, 1.0f, 1.0f ) ) * glm::quat( glm::radians( glm::vec3( 90.0f, 0.0f, 0.0f ) ) ) );
+	SetRotation( glm::quat( glm::eulerAngles( pCamera->GetRotation() ) * glm::vec3( 0.0f, 0.0f, 0.0f ) ) * glm::quat( glm::radians( glm::vec3( 90.0f, 0.0f, 0.0f ) ) ) );
 
 	BaseClass::PostThink();
 }
