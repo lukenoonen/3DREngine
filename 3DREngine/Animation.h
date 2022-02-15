@@ -4,26 +4,16 @@
 #include "Global.h"
 #include "BaseAsset.h"
 
-class CAnimationChannel
+struct SAnimationChannel
 {
-public:
-	DECLARE_CLASS_NOBASE( CAnimationChannel );
+	std::vector<float> flPositionTimes;
+	std::vector<glm::vec3> vec3Positions;
 
-	CAnimationChannel( const std::vector<float> &flPositionTimes, const std::vector<glm::vec3> &vec3Positions, const std::vector<float> &flRotationTimes, const std::vector<glm::quat> &qRotations, const std::vector<float> &flScaleTimes, const std::vector<glm::vec3> &vec3Scales );
+	std::vector<float> flRotationTimes;
+	std::vector<glm::quat> qRotations;
 
-	void CalcInterpolatedPosition( glm::vec3 &vec3Out, float flAnimationTime );
-	void CalcInterpolatedRotation( glm::quat &qOut, float flAnimationTime );
-	void CalcInterpolatedScale( glm::vec3 &vec3Out, float flAnimationTime );
-
-private:
-	std::vector<float> m_flPositionTimes;
-	std::vector<glm::vec3> m_vec3Positions;
-
-	std::vector<float> m_flRotationTimes;
-	std::vector<glm::quat> m_qRotations;
-
-	std::vector<float> m_flScaleTimes;
-	std::vector<glm::vec3> m_vec3Scales;
+	std::vector<float> flScaleTimes;
+	std::vector<glm::vec3> vec3Scales;
 };
 
 class CAnimation : public CBaseAsset
@@ -31,15 +21,18 @@ class CAnimation : public CBaseAsset
 public:
 	DECLARE_CLASS( CAnimation, CBaseAsset );
 
-	CAnimation( float flTime, const std::vector<CAnimationChannel *> &pAnimationChannels, const char *sPath );
+	CAnimation( float flTime, const std::vector<SAnimationChannel *> &pAnimationChannels, const char *sPath );
 	virtual ~CAnimation();
 
+	virtual EAssetType GetAssetType( void ) const;
+
 	float GetTime( void ) const;
-	CAnimationChannel *GetAnimationChannel( unsigned int uiIndex ) const;
+
+	void GetTransform( glm::vec3 &vec3Position, glm::quat &qRotation, glm::vec3 &vec3Scale, unsigned int uiIndex, float flAnimationTime );
 
 private:
 	float m_flTime;
-	std::vector<CAnimationChannel *> m_pAnimationChannels;
+	std::vector<SAnimationChannel *> m_pAnimationChannels;
 };
 
 #endif // ANIMATION_H

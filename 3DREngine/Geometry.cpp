@@ -39,6 +39,11 @@ CGeometry::~CGeometry()
 	glDeleteBuffers( 1, &m_uiEBO );
 }
 
+EAssetType CGeometry::GetAssetType( void ) const
+{
+	return EAssetType::t_geometry;
+}
+
 void CGeometry::Draw( void )
 {
 	glBindVertexArray( m_uiVAO );

@@ -12,6 +12,8 @@ public:
 	CTexture( unsigned int uiID, const char *sPath );
 	virtual ~CTexture();
 
+	virtual EAssetType GetAssetType( void ) const;
+
 	unsigned int GetID( void ) const;
 
 private:

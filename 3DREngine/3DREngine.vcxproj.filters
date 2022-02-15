@@ -36,12 +36,6 @@
     <Filter Include="Header Files\Assets\Geometry">
       <UniqueIdentifier>{69d3626d-d3e2-4575-9804-1e7004992a2f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Assets\Mesh">
-      <UniqueIdentifier>{c293c4b2-f22c-40e5-8ac5-f13a7b578a23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Assets\Model">
-      <UniqueIdentifier>{bf128016-d714-41a3-8d86-5b51d5ac1102}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Assets\Skeleton">
       <UniqueIdentifier>{70fdbe81-91b2-4e1a-86c9-68aaf8f73bfe}</UniqueIdentifier>
     </Filter>
@@ -67,17 +61,11 @@
     <Filter Include="Source Files\Assets\Texture">
       <UniqueIdentifier>{beef33a3-81af-48b3-818d-7856d71f9f81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Assets\Model">
-      <UniqueIdentifier>{f11df96c-988b-42ed-b7ba-f976c93e7e8c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Assets\Material">
       <UniqueIdentifier>{219b0e4a-6601-4dc2-a3e4-1573a4da2c13}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Assets\Animation">
       <UniqueIdentifier>{ccc352f4-7111-479f-bdf6-62e187002ff1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Assets\Mesh">
-      <UniqueIdentifier>{936ec458-8315-4218-a722-2d278903c7c2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Assets\Geometry">
       <UniqueIdentifier>{45e4da8e-be70-41ea-82ef-681c4362912f}</UniqueIdentifier>
@@ -249,12 +237,6 @@
     <ClCompile Include="BaseAsset.cpp">
       <Filter>Source Files\Assets</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files\Assets\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files\Assets\Model</Filter>
-    </ClCompile>
     <ClCompile Include="Geometry.cpp">
       <Filter>Source Files\Assets\Geometry</Filter>
     </ClCompile>
@@ -345,6 +327,9 @@
     <ClCompile Include="Skybox.cpp">
       <Filter>Source Files\Entities\Skybox</Filter>
     </ClCompile>
+    <ClCompile Include="BaseAssetController.cpp">
+      <Filter>Source Files\Assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlobalManager.h">
@@ -427,12 +412,6 @@
     </ClInclude>
     <ClInclude Include="Geometry.h">
       <Filter>Header Files\Assets\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files\Assets\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files\Assets\Model</Filter>
     </ClInclude>
     <ClInclude Include="Skeleton.h">
       <Filter>Header Files\Assets\Skeleton</Filter>
@@ -523,6 +502,9 @@
     </ClInclude>
     <ClInclude Include="Skybox.h">
       <Filter>Header Files\Entities\Skybox</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseAssetController.h">
+      <Filter>Header Files\Assets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

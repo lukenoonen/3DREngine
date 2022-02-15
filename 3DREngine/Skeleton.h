@@ -5,46 +5,24 @@
 #include "BaseAsset.h"
 #include "Animation.h"
 
-class CSkeletonBone
+struct SSkeletonBone
 {
-public:
-	DECLARE_CLASS_NOBASE( CSkeletonBone );
-
-	CSkeletonBone( unsigned int uiIndex, const glm::mat4 &matOffset );
-
-	unsigned int GetIndex( void ) const;
-
-	const glm::mat4 &GetOffset( void ) const;
-
-private:
-	unsigned int m_uiIndex;
-
-	glm::mat4 m_matOffset;
+	unsigned int uiIndex;
+	glm::mat4 matOffset;
 };
 
-class CSkeletonNode
+struct SSkeletonNode
 {
-public:
-	DECLARE_CLASS_NOBASE( CSkeletonNode );
+	~SSkeletonNode()
+	{
+		delete pSkeletonBone;
+		for (unsigned int i = 0; i < (unsigned int)pChildren.size(); i++)
+			delete pChildren[i];
+	}
 
-	CSkeletonNode( unsigned int uiIndex, CSkeletonBone *pSkeletonBone );
-	~CSkeletonNode();
-
-	unsigned int GetIndex( void ) const;
-
-	CSkeletonBone *GetSkeletonBone( void ) const;
-
-	void SetChildren( const std::vector<CSkeletonNode *> &pChildren );
-
-	unsigned int GetChildrenCount( void ) const;
-	CSkeletonNode *GetChild( unsigned int uiIndex ) const;
-
-private:
-	unsigned int m_uiIndex;
-
-	CSkeletonBone *m_pSkeletonBone;
-
-	std::vector<CSkeletonNode *> m_pChildren;
+	unsigned int uiIndex;
+	SSkeletonBone *pSkeletonBone;
+	std::vector<SSkeletonNode *> pChildren;
 };
 
 class CSkeleton : public CBaseAsset
@@ -52,17 +30,19 @@ class CSkeleton : public CBaseAsset
 public:
 	DECLARE_CLASS( CSkeleton, CBaseAsset );
 
-	CSkeleton( CSkeletonNode *pSkeletonNode, unsigned int uiSkeletonBonesCount, const char *sPath );
+	CSkeleton( SSkeletonNode *pSkeletonNode, unsigned int uiSkeletonBonesCount, const char *sPath );
 	virtual ~CSkeleton();
+
+	virtual EAssetType GetAssetType( void ) const;
 
 	void SetUpBoneTransforms( std::vector<glm::mat4> &matBoneTransforms );
 	void UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, const std::vector<CAnimation *> &pAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors );
 	
 private:
-	void ReadNodeHierarchy( std::vector<glm::mat4> &matBoneTransforms, const std::vector<CAnimation *> &pAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors, CSkeletonNode *pSkeletonNode, const glm::mat4 &matParentTransform );
+	void ReadNodeHierarchy( std::vector<glm::mat4> &matBoneTransforms, const std::vector<CAnimation *> &pAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors, SSkeletonNode *pSkeletonNode, const glm::mat4 &matParentTransform );
 	
 private:
-	CSkeletonNode *m_pSkeletonNode;
+	SSkeletonNode *m_pSkeletonNode;
 	unsigned int m_uiSkeletonBonesCount;
 };
 

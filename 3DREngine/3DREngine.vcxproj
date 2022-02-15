@@ -24,6 +24,7 @@
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BaseAnimated.cpp" />
     <ClCompile Include="BaseAsset.cpp" />
+    <ClCompile Include="BaseAssetController.cpp" />
     <ClCompile Include="BaseCamera.cpp" />
     <ClCompile Include="BaseCopyMSAACamera.cpp" />
     <ClCompile Include="BaseCopySizeCamera.cpp" />
@@ -61,8 +62,6 @@
     <ClCompile Include="LitMaterial.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
     <ClCompile Include="PerspectivePlayerCamera.cpp" />
     <ClCompile Include="PerspectiveWorldCamera.cpp" />
     <ClCompile Include="BasePlayer.cpp" />
@@ -87,6 +86,7 @@
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="BaseAnimated.h" />
     <ClInclude Include="BaseAsset.h" />
+    <ClInclude Include="BaseAssetController.h" />
     <ClInclude Include="BaseCamera.h" />
     <ClInclude Include="BaseCopyMSAACamera.h" />
     <ClInclude Include="BaseCopySizeCamera.h" />
@@ -122,8 +122,6 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LitMaterial.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
     <ClInclude Include="PerspectivePlayerCamera.h" />
     <ClInclude Include="PerspectiveWorldCamera.h" />
     <ClInclude Include="BasePlayer.h" />

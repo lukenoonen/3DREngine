@@ -16,266 +16,149 @@ CAssetManager::CAssetManager()
 	m_uiTextureIndex = 0;
 }
 
-CAnimation *CAssetManager::GetAnimation( const char *sPath )
+CBaseAsset *CAssetManager::GetAsset( const char *sPath )
 {
-	for (unsigned int i = 0; i < (unsigned int)m_pAnimations.size(); i++)
-	{
-		CAnimation *pAnimation = m_pAnimations[i];
-		if (UTIL_streq( pAnimation->GetPath(), sPath ))
-			return pAnimation;
-	}
-
-	CAnimation *pAnimation = CreateAnimation( sPath );
-	if (!pAnimation)
+	const char *sExtension = UTIL_extn( sPath );
+	if (!sExtension)
 		return NULL;
 
-	m_pAnimations.push_back( pAnimation );
-	return pAnimation;
-}
-
-CGeometry *CAssetManager::GetGeometry( const char *sPath )
-{
-	for (unsigned int i = 0; i < (unsigned int)m_pGeometries.size(); i++)
-	{
-		CGeometry *pGeometry = m_pGeometries[i];
-		if (UTIL_streq( pGeometry->GetPath(), sPath ))
-			return pGeometry;
-	}
-
-	CGeometry *pGeometry = CreateGeometry( sPath );
-	if (!pGeometry)
+	EAssetType eAssetType = UTIL_AssetTypeExtensionToEnum( sExtension );
+	if (eAssetType == EAssetType::i_invalid)
 		return NULL;
 
-	m_pGeometries.push_back( pGeometry );
-	return pGeometry;
-}
+	std::vector<CBaseAsset *> &pAssets = m_pAssets[(EBaseEnum)eAssetType];
 
-CMaterial *CAssetManager::GetMaterial( const char *sPath )
-{
-	for (unsigned int i = 0; i < (unsigned int)m_pMaterials.size(); i++)
+	for (unsigned int i = 0; i < (unsigned int)pAssets.size(); i++)
 	{
-		CMaterial *pMaterial = m_pMaterials[i];
-		if (UTIL_streq( pMaterial->GetPath(), sPath ))
-			return pMaterial;
-	}
-
-	CMaterial *pMaterial = CreateMaterial( sPath );
-	if (!pMaterial)
-		return NULL;
-
-	m_pMaterials.push_back( pMaterial );
-	return pMaterial;
-}
-
-CMesh *CAssetManager::GetMesh( const char *sPath )
-{
-	for (unsigned int i = 0; i < (unsigned int)m_pMeshes.size(); i++)
-	{
-		CMesh *pMesh = m_pMeshes[i];
-		if (UTIL_streq( pMesh->GetPath(), sPath ))
-			return pMesh;
-	}
-
-	CMesh *pMesh = CreateMesh( sPath );
-	if (!pMesh)
-		return NULL;
-
-	m_pMeshes.push_back( pMesh );
-	return pMesh;
-}
-
-CModel *CAssetManager::GetModel( const char *sPath )
-{
-	for (unsigned int i = 0; i < (unsigned int)m_pModels.size(); i++)
-	{
-		CModel *pModel = m_pModels[i];
-		if (UTIL_streq( pModel->GetPath(), sPath ))
-			return pModel;
-	}
-
-	CModel *pModel = CreateModel( sPath );
-	if (!pModel)
-		return NULL;
-
-	m_pModels.push_back( pModel );
-	return pModel;
-}
-
-CTexture *CAssetManager::GetTexture( const char *sPath )
-{
-	for (unsigned int i = 0; i < (unsigned int)m_pTextures.size(); i++)
-	{
-		CTexture *pTexture = m_pTextures[i];
-		if (UTIL_streq( pTexture->GetPath(), sPath ))
-			return pTexture;
-	}
-
-	CTexture *pTexture = CreateTexture( sPath );
-	if (!pTexture)
-		return NULL;
-
-	m_pTextures.push_back( pTexture );
-	return pTexture;
-}
-
-CSkeleton *CAssetManager::GetSkeleton( const char *sPath )
-{
-	for (unsigned int i = 0; i < (unsigned int)m_pSkeletons.size(); i++)
-	{
-		CSkeleton *pSkeleton = m_pSkeletons[i];
-		if (UTIL_streq( pSkeleton->GetPath(), sPath ))
-			return pSkeleton;
-	}
-
-	CSkeleton *pSkeleton = CreateSkeleton( sPath );
-	if (!pSkeleton)
-		return NULL;
-
-	m_pSkeletons.push_back( pSkeleton );
-	return pSkeleton;
-}
-
-void CAssetManager::CheckAnimation( CAnimation *pAnimation )
-{
-	if (!pAnimation->IsActive())
-	{
-		for (unsigned int i = 0; i < (unsigned int)m_pAnimations.size(); i++)
+		CBaseAsset *pAsset = pAssets[i];
+		if (UTIL_streq( pAsset->GetPath(), sPath ))
 		{
-			if (m_pAnimations[i] == pAnimation)
+			pFileManager->CloseFile();
+			return pAsset;
+		}
+	}
+
+	if (!pFileManager->OpenFile( sPath ))
+		return NULL;
+
+	CBaseAsset *pAsset = NULL;
+
+	switch (eAssetType)
+	{
+	case EAssetType::t_animation:
+	{
+		pAsset = CreateAnimation( sPath );
+		break;
+	}
+	case EAssetType::t_geometry:
+	{
+		pAsset = CreateGeometry( sPath );
+		break;
+	}
+	// case EAssetType::t_material:
+	// {
+	// 	pAsset = CreateMaterial( sPath );
+	// 	break;
+	// }
+	case EAssetType::t_skeleton:
+	{
+		pAsset = CreateSkeleton( sPath );
+		break;
+	}
+	case EAssetType::t_texture:
+	{
+		pAsset = CreateTexture( sPath );
+		break;
+	}
+	}
+
+	pFileManager->CloseFile();
+
+	if (!pAsset)
+		return NULL;
+
+	pAssets.push_back( pAsset );
+	return pAsset;
+}
+
+void CAssetManager::CheckAsset( CBaseAsset *pAsset )
+{
+	if (!pAsset->IsActive())
+	{
+		std::vector<CBaseAsset *> &pAssets = m_pAssets[(EBaseEnum)pAsset->GetAssetType()];
+		for (unsigned int i = 0; i < (unsigned int)pAssets.size(); i++)
+		{
+			if (pAssets[i] == pAsset)
 			{
-				delete m_pAnimations[i];
-				m_pAnimations.erase( m_pAnimations.begin() + i );
+				delete pAssets[i];
+				pAssets.erase( pAssets.begin() + i );
 				break;
 			}
 		}
 	}
 }
 
-void CAssetManager::CheckGeometry( CGeometry *pGeometry )
+int CAssetManager::BindTexture( unsigned int uiTextureID, unsigned int uiTextureType )
 {
-	if (!pGeometry->IsActive())
+	std::unordered_map<unsigned int, int>::const_iterator itTextureIDSearch = m_mapTextureIDToIndex.find( uiTextureID );
+	if (itTextureIDSearch == m_mapTextureIDToIndex.end())
 	{
-		for (unsigned int i = 0; i < (unsigned int)m_pGeometries.size(); i++)
+		unsigned int uiPrevTextureIndex = m_uiTextureIndex;
+		m_uiTextureIndex = (m_uiTextureIndex + 1) % m_uiMaxTextures;
+
+		std::unordered_map<int, unsigned int>::const_iterator itIndexSearch = m_mapIndexToTextureID.find( uiPrevTextureIndex );
+		if (itIndexSearch != m_mapIndexToTextureID.end())
 		{
-			if (m_pGeometries[i] == pGeometry)
-			{
-				delete m_pGeometries[i];
-				m_pGeometries.erase( m_pGeometries.begin() + i );
-				break;
-			}
+			m_mapTextureIDToIndex.erase( itIndexSearch->second );
+			m_mapIndexToTextureID.erase( itIndexSearch );
 		}
+
+		m_mapTextureIDToIndex.emplace( uiTextureID, uiPrevTextureIndex );
+		m_mapIndexToTextureID.emplace( uiPrevTextureIndex, uiTextureID );
+
+		glActiveTexture( GL_TEXTURE0 + uiPrevTextureIndex );
+		glBindTexture( uiTextureType, uiTextureID );
+		glActiveTexture( GL_TEXTURE0 + m_uiMaxTextures );
+
+		return uiPrevTextureIndex;
+	}
+
+	return itTextureIDSearch->second;
+}
+
+void CAssetManager::UnbindTexture( unsigned int uiTextureID )
+{
+	std::unordered_map<unsigned int, int>::const_iterator itTextureIDSearch = m_mapTextureIDToIndex.find( uiTextureID );
+	if (itTextureIDSearch != m_mapTextureIDToIndex.end())
+	{
+		m_mapTextureIDToIndex.erase( itTextureIDSearch );
+		m_mapIndexToTextureID.erase( itTextureIDSearch->second );
 	}
 }
 
-void CAssetManager::CheckMaterial( CMaterial *pMaterial )
+void CAssetManager::UnbindAllTextures( void )
 {
-	if (!pMaterial->IsActive())
-	{
-		for (unsigned int i = 0; i < (unsigned int)m_pMaterials.size(); i++)
-		{
-			if (m_pMaterials[i] == pMaterial)
-			{
-				delete m_pMaterials[i];
-				m_pMaterials.erase( m_pMaterials.begin() + i );
-				break;
-			}
-		}
-	}
-}
-
-void CAssetManager::CheckMesh( CMesh *pMesh )
-{
-	if (!pMesh->IsActive())
-	{
-		for (unsigned int i = 0; i < (unsigned int)m_pMeshes.size(); i++)
-		{
-			if (m_pMeshes[i] == pMesh)
-			{
-				delete m_pMeshes[i];
-				m_pMeshes.erase( m_pMeshes.begin() + i );
-				break;
-			}
-		}
-	}
-}
-
-void CAssetManager::CheckModel( CModel *pModel )
-{
-	if (!pModel->IsActive())
-	{
-		for (unsigned int i = 0; i < (unsigned int)m_pModels.size(); i++)
-		{
-			if (m_pModels[i] == pModel)
-			{
-				delete m_pModels[i];
-				m_pModels.erase( m_pModels.begin() + i );
-				break;
-			}
-		}
-	}
-}
-
-void CAssetManager::CheckTexture( CTexture *pTexture )
-{
-	if (!pTexture->IsActive())
-	{
-		for (unsigned int i = 0; i < (unsigned int)m_pTextures.size(); i++)
-		{
-			if (m_pTextures[i] == pTexture)
-			{
-				delete m_pTextures[i];
-				m_pTextures.erase( m_pTextures.begin() + i );
-				break;
-			}
-		}
-	}
-}
-
-void CAssetManager::CheckSkeleton( CSkeleton *pSkeleton )
-{
-	if (!pSkeleton->IsActive())
-	{
-		for (unsigned int i = 0; i < (unsigned int)m_pSkeletons.size(); i++)
-		{
-			if (m_pSkeletons[i] == pSkeleton)
-			{
-				delete m_pSkeletons[i];
-				m_pSkeletons.erase( m_pSkeletons.begin() + i );
-				break;
-			}
-		}
-	}
+	m_mapTextureIDToIndex.clear();
+	m_mapIndexToTextureID.clear();
+	m_uiTextureIndex = 0;
 }
 
 CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 {
 	float flTime;
-	std::vector<CAnimationChannel *> pAnimationChannels;
-
-	if (!pFileManager->OpenFile( sPath ))
-		return NULL;
+	std::vector<SAnimationChannel *> pAnimationChannels;
 
 	if (!pFileManager->Read( flTime ))
-	{
-		pFileManager->CloseFile();
 		return NULL;
-	}
 
 	unsigned int uiAnimationChannelSlots;
 	if (!pFileManager->Read( uiAnimationChannelSlots ))
-	{
-		pFileManager->CloseFile();
 		return NULL;
-	}
-
 	pAnimationChannels.resize( uiAnimationChannelSlots, NULL );
 
 	unsigned int uiAnimationChannelCount;
 	if (!pFileManager->Read( uiAnimationChannelCount ))
-	{
-		pFileManager->CloseFile();
 		return NULL;
-	}
 
 	for (unsigned int i = 0; i < uiAnimationChannelCount; i++)
 	{
@@ -288,16 +171,11 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 					delete pAnimationChannels[j];
 			}
 
-			pFileManager->CloseFile();
 			return NULL;
 		}
 
-		std::vector<float> flPositionTimes;
-		std::vector<glm::vec3> vec3Positions;
-		std::vector<float> flRotationTimes;
-		std::vector<glm::quat> qRotations;
-		std::vector<float> flScaleTimes;
-		std::vector<glm::vec3> vec3Scales;
+		pAnimationChannels[uiAnimationChannelSlot] = new SAnimationChannel;
+		SAnimationChannel *pAnimationChannel = pAnimationChannels[uiAnimationChannelSlot];
 
 		unsigned int uiPositionsCount;
 		if (!pFileManager->Read( uiPositionsCount ))
@@ -308,16 +186,15 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 					delete pAnimationChannels[j];
 			}
 
-			pFileManager->CloseFile();
 			return NULL;
 		}
 
-		flPositionTimes.resize( uiPositionsCount );
-		vec3Positions.resize( uiPositionsCount );
+		pAnimationChannel->flPositionTimes.resize( uiPositionsCount );
+		pAnimationChannel->vec3Positions.resize( uiPositionsCount );
 
 		for (unsigned int j = 0; j < uiPositionsCount; j++)
 		{
-			if (!pFileManager->Read( flPositionTimes[j] ) || !pFileManager->Read( vec3Positions[j] ))
+			if (!pFileManager->Read( pAnimationChannel->flPositionTimes[j] ) || !pFileManager->Read( pAnimationChannel->vec3Positions[j] ))
 			{
 				for (unsigned int k = 0; k < uiAnimationChannelSlots; k++)
 				{
@@ -325,7 +202,6 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 						delete pAnimationChannels[k];
 				}
 
-				pFileManager->CloseFile();
 				return NULL;
 			}
 		}
@@ -339,16 +215,15 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 					delete pAnimationChannels[j];
 			}
 
-			pFileManager->CloseFile();
 			return NULL;
 		}
 
-		flRotationTimes.resize( uiRotationsCount );
-		qRotations.resize( uiRotationsCount );
+		pAnimationChannel->flRotationTimes.resize( uiRotationsCount );
+		pAnimationChannel->qRotations.resize( uiRotationsCount );
 
 		for (unsigned int j = 0; j < uiRotationsCount; j++)
 		{
-			if (!pFileManager->Read( flRotationTimes[j] ) || !pFileManager->Read( qRotations[j].w ) || !pFileManager->Read( qRotations[j].x ) || !pFileManager->Read( qRotations[j].y ) || !pFileManager->Read( qRotations[j].z ))
+			if (!pFileManager->Read( pAnimationChannel->flRotationTimes[j] ) || !pFileManager->Read( pAnimationChannel->qRotations[j].w ) || !pFileManager->Read( pAnimationChannel->qRotations[j].x ) || !pFileManager->Read( pAnimationChannel->qRotations[j].y ) || !pFileManager->Read( pAnimationChannel->qRotations[j].z ))
 			{
 				for (unsigned int k = 0; k < uiAnimationChannelSlots; k++)
 				{
@@ -356,7 +231,6 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 						delete pAnimationChannels[k];
 				}
 
-				pFileManager->CloseFile();
 				return NULL;
 			}
 		}
@@ -370,16 +244,15 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 					delete pAnimationChannels[j];
 			}
 
-			pFileManager->CloseFile();
 			return NULL;
 		}
 
-		flScaleTimes.resize( uiScalesCount );
-		vec3Scales.resize( uiScalesCount );
+		pAnimationChannel->flScaleTimes.resize( uiScalesCount );
+		pAnimationChannel->vec3Scales.resize( uiScalesCount );
 
 		for (unsigned int j = 0; j < uiScalesCount; j++)
 		{
-			if (!pFileManager->Read( flScaleTimes[j] ) || !pFileManager->Read( vec3Scales[j] ))
+			if (!pFileManager->Read( pAnimationChannel->flScaleTimes[j] ) || !pFileManager->Read( pAnimationChannel->vec3Scales[j] ))
 			{
 				for (unsigned int k = 0; k < uiAnimationChannelSlots; k++)
 				{
@@ -387,15 +260,10 @@ CAnimation *CAssetManager::CreateAnimation( const char *sPath )
 						delete pAnimationChannels[k];
 				}
 
-				pFileManager->CloseFile();
 				return NULL;
 			}
 		}
-
-		pAnimationChannels[uiAnimationChannelSlot] = new CAnimationChannel( flPositionTimes, vec3Positions, flRotationTimes, qRotations, flScaleTimes, vec3Scales );
 	}
-
-	pFileManager->CloseFile();
 
 	return new CAnimation( flTime, pAnimationChannels, sPath );
 }
@@ -405,15 +273,9 @@ CGeometry *CAssetManager::CreateGeometry( const char *sPath )
 	std::vector<SVertex> verVertices;
 	std::vector<unsigned int> uiIndices;
 
-	if (!pFileManager->OpenFile( sPath ))
-		return NULL;
-
 	unsigned int uiVertexCount;
 	if (!pFileManager->Read( uiVertexCount ))
-	{
-		pFileManager->CloseFile();
 		return NULL;
-	}
 
 	verVertices.resize( uiVertexCount );
 
@@ -422,55 +284,39 @@ CGeometry *CAssetManager::CreateGeometry( const char *sPath )
 		SVertex &verVertex = verVertices[i];
 		unsigned int uiNumAffectingBones;
 		if (!pFileManager->Read( verVertex.vec3Position ) || !pFileManager->Read( verVertex.vec3Normal ) || !pFileManager->Read( verVertex.vec3Tangent ) || !pFileManager->Read( verVertex.vec3Bitangent ) || !pFileManager->Read( verVertex.vec2TexCoords ) || !pFileManager->Read( uiNumAffectingBones ))
-		{
-			pFileManager->CloseFile();
 			return NULL;
-		}
 
 		for (unsigned int j = 0; j < uiNumAffectingBones; j++)
 		{
 			if (!pFileManager->Read( verVertex.vec4BoneIDs[j] ) || !pFileManager->Read( verVertex.vec4Weights[j] ))
-			{
-				pFileManager->CloseFile();
 				return NULL;
-			}
 		}
 	}
 
 	unsigned int uiFacesCount;
 	if (!pFileManager->Read( uiFacesCount ))
-	{
-		pFileManager->CloseFile();
 		return NULL;
-	}
 
 	for (unsigned int i = 0; i < uiFacesCount; i++)
 	{
 		unsigned int uiIndicesCount;
 		if (!pFileManager->Read( uiIndicesCount ))
-		{
-			pFileManager->CloseFile();
 			return NULL;
-		}
 
 		for (unsigned int j = 0; j < uiIndicesCount; j++)
 		{
 			unsigned int uiIndex;
 			if (!pFileManager->Read( uiIndex ))
-			{
-				pFileManager->CloseFile();
 				return NULL;
-			}
+
 			uiIndices.push_back( uiIndex );
 		}
 	}
 
-	pFileManager->CloseFile();
-
 	return new CGeometry( verVertices, uiIndices, sPath );
 }
 
-CMaterial *CAssetManager::CreateMaterial( const char *sPath )
+/*CMaterial *CAssetManager::CreateMaterial(const char *sPath)
 {
 	if (!pFileManager->OpenFile( sPath ))
 		return NULL;
@@ -662,199 +508,16 @@ CMaterial *CAssetManager::CreateMaterial( const char *sPath )
 
 	pFileManager->CloseFile();
 	return pNewMaterial;
-}
-
-CMesh *CAssetManager::CreateMesh( const char *sPath )
-{
-	CGeometry *pGeometry;
-	CMaterial *pMaterial;
-
-	if (!pFileManager->OpenFile( sPath ))
-		return NULL;
-
-	char *sGeometryPath;
-	if (!pFileManager->Read( sGeometryPath ))
-	{
-		pFileManager->CloseFile();
-		return NULL;
-	}
-
-	pGeometry = GetGeometry( sGeometryPath );
-	delete[] sGeometryPath;
-	if (!pGeometry)
-	{
-		pFileManager->CloseFile();
-		return NULL;
-	}
-
-	char *sMaterialPath;
-	if (!pFileManager->Read( sMaterialPath ))
-	{
-		CheckGeometry( pGeometry );
-		pFileManager->CloseFile();
-		return NULL;
-	}
-
-	pMaterial = GetMaterial( sMaterialPath );
-	delete[] sMaterialPath;
-	if (!pMaterial)
-	{
-		CheckGeometry( pGeometry );
-		pFileManager->CloseFile();
-		return NULL;
-	}
-
-	pFileManager->CloseFile();
-
-	return new CMesh( pGeometry, pMaterial, sPath );
-}
-
-CModel *CAssetManager::CreateModel( const char *sPath )
-{
-	std::vector<CMesh *> pMeshes;
-	std::vector<CAnimation *> pAnimations;
-	CSkeleton *pSkeleton = NULL;
-
-	if (!pFileManager->OpenFile( sPath ))
-		return NULL;
-
-	unsigned int uiMeshCount;
-	if (!pFileManager->Read( uiMeshCount ))
-	{
-		pFileManager->CloseFile();
-		return NULL;
-	}
-
-	pMeshes.resize( uiMeshCount );
-
-	for (unsigned int i = 0; i < uiMeshCount; i++)
-	{
-		char *sMeshPath;
-		if (!pFileManager->Read( sMeshPath ))
-		{
-			for (unsigned int j = 0; j < i; j++)
-				CheckMesh( pMeshes[j] );
-
-			pFileManager->CloseFile();
-			return NULL;
-		}
-
-		pMeshes[i] = GetMesh( sMeshPath );
-		delete[] sMeshPath;
-
-		if (!pMeshes[i])
-		{
-			for (unsigned int j = 0; j < i; j++)
-				CheckMesh( pMeshes[j] );
-
-			pFileManager->CloseFile();
-			return NULL;
-		}
-	}
-
-	bool bIsAnimated;
-	if (!pFileManager->Read( bIsAnimated ))
-	{
-		for (unsigned int j = 0; j < uiMeshCount; j++)
-			CheckMesh( pMeshes[j] );
-
-		pFileManager->CloseFile();
-		return NULL;
-	}
-
-	if (bIsAnimated)
-	{
-		unsigned int uiAnimationCount;
-		if (!pFileManager->Read( uiAnimationCount ))
-		{
-			for (unsigned int j = 0; j < uiMeshCount; j++)
-				CheckMesh( pMeshes[j] );
-
-			pFileManager->CloseFile();
-			return NULL;
-		}
-
-		pAnimations.resize( uiAnimationCount );
-
-		for (unsigned int i = 0; i < uiAnimationCount; i++)
-		{
-			char *sAnimationPath;
-			if (!pFileManager->Read( sAnimationPath ))
-			{
-				for (unsigned int j = 0; j < uiMeshCount; j++)
-					CheckMesh( pMeshes[j] );
-
-				for (unsigned int j = 0; j < i; j++)
-					CheckAnimation( pAnimations[j] );
-
-				pFileManager->CloseFile();
-				return NULL;
-			}
-
-			pAnimations[i] = GetAnimation( sAnimationPath );
-			delete[] sAnimationPath;
-
-			if (!pAnimations[i])
-			{
-				for (unsigned int j = 0; j < uiMeshCount; j++)
-					CheckMesh( pMeshes[j] );
-
-				for (unsigned int j = 0; j < i; j++)
-					CheckAnimation( pAnimations[j] );
-
-				pFileManager->CloseFile();
-				return NULL;
-			}
-		}
-
-		char *sSkeletonPath;
-		if (!pFileManager->Read( sSkeletonPath ))
-		{
-			for (unsigned int i = 0; i < uiMeshCount; i++)
-				CheckMesh( pMeshes[i] );
-
-			for (unsigned int i = 0; i < uiAnimationCount; i++)
-				CheckAnimation( pAnimations[i] );
-
-			pFileManager->CloseFile();
-			return NULL;
-		}
-
-		pSkeleton = GetSkeleton( sSkeletonPath );
-		delete[] sSkeletonPath;
-
-		if (!pSkeleton)
-		{
-			for (unsigned int i = 0; i < uiMeshCount; i++)
-				CheckMesh( pMeshes[i] );
-
-			for (unsigned int i = 0; i < uiAnimationCount; i++)
-				CheckAnimation( pAnimations[i] );
-
-			pFileManager->CloseFile();
-			return NULL;
-		}
-	}
-
-	pFileManager->CloseFile();
-
-	return new CModel( pMeshes, pAnimations, pSkeleton, sPath );
-}
+}*/
 
 CTexture *CAssetManager::CreateTexture( const char *sPath )
 {
-	if (!pFileManager->OpenFile( sPath ))
-		return NULL;
-
 	ETextureType eTextureType;
 	bool bFilter;
 	GLint tFilter;
 
 	if (!pFileManager->Read( eTextureType ) || !pFileManager->Read( bFilter ))
-	{
-		pFileManager->CloseFile();
 		return NULL;
-	}
 
 	tFilter = bFilter ? GL_LINEAR : GL_NEAREST;
 
@@ -874,15 +537,11 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 		unsigned char *pData;
 
 		if (!pFileManager->Read( eTextureWrap ) || (eTextureWrap == ETextureWrap::t_border && !pFileManager->Read( vec4BorderColor )) || !pFileManager->Read( sImagePath ))
-		{
-			pFileManager->CloseFile();
 			return NULL;
-		}
 
 		if (!pFileManager->OpenFile( sImagePath ))
 		{
 			delete[] sImagePath;
-			pFileManager->CloseFile();
 			return NULL;
 		}
 
@@ -890,7 +549,6 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 
 		if (!pFileManager->Read( uiWidth ) || !pFileManager->Read( uiHeight ) || !pFileManager->Read( uiChannels ) || !pFileManager->Read( pData, uiWidth * uiHeight * uiChannels ))
 		{
-			pFileManager->CloseFile();
 			pFileManager->CloseFile();
 			return NULL;
 		}
@@ -919,7 +577,6 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 			break;
 		default:
 			delete[] pData;
-			pFileManager->CloseFile();
 			return NULL;
 		}
 
@@ -940,7 +597,6 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 			break;
 		default:
 			delete[] pData;
-			pFileManager->CloseFile();
 			return NULL;
 		}
 
@@ -973,7 +629,6 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 				for (unsigned int j = 0; j < i; j++)
 					delete[] pData[j];
 
-				pFileManager->CloseFile();
 				return NULL;
 			}
 
@@ -983,7 +638,6 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 				for (unsigned int j = 0; j < i; j++)
 					delete[] pData[j];
 
-				pFileManager->CloseFile();
 				return NULL;
 			}
 
@@ -994,7 +648,6 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 				for (unsigned int j = 0; j < i; j++)
 					delete[] pData[j];
 
-				pFileManager->CloseFile();
 				pFileManager->CloseFile();
 				return NULL;
 			}
@@ -1028,7 +681,6 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 				for (unsigned int i = 0; i < 6; i++)
 					delete[] pData[i];
 
-				pFileManager->CloseFile();
 				return NULL;
 			}
 		}
@@ -1051,46 +703,38 @@ CTexture *CAssetManager::CreateTexture( const char *sPath )
 	}
 	case ETextureType::i_invalid:
 	{
-		pFileManager->CloseFile();
 		return NULL;
 	}
 	}
-
-	pFileManager->CloseFile();
 
 	return new CTexture( uiTextureID, sPath );
 }
 
 CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 {
-	std::vector<CSkeletonBone *> pSkeletonBones;
-	std::vector<CSkeletonNode *> pSkeletonNodes;
-
-	if (!pFileManager->OpenFile( sPath ))
-		return NULL;
+	std::vector<SSkeletonBone *> pSkeletonBones;
+	std::vector<SSkeletonNode *> pSkeletonNodes;
 
 	unsigned int uiSkeletonBonesCount;
 	if (!pFileManager->Read( uiSkeletonBonesCount ))
-	{
-		pFileManager->CloseFile();
 		return NULL;
-	}
 
 	pSkeletonBones.resize( uiSkeletonBonesCount );
 
 	for (unsigned int i = 0; i < uiSkeletonBonesCount; i++)
 	{
-		glm::mat4 matOffset;
-		if (!pFileManager->Read( matOffset ))
+		pSkeletonBones[i] = new SSkeletonBone;
+		SSkeletonBone *pSkeletonBone = pSkeletonBones[i];
+
+		pSkeletonBone->uiIndex = i;
+
+		if (!pFileManager->Read( pSkeletonBone->matOffset ))
 		{
-			for (unsigned int j = 0; j < i; j++)
+			for (unsigned int j = 0; j <= i; j++)
 				delete pSkeletonBones[j];
 
-			pFileManager->CloseFile();
 			return NULL;
 		}
-
-		pSkeletonBones[i] = new CSkeletonBone( i, matOffset );
 	}
 
 	unsigned int uiSkeletonNodesCount;
@@ -1099,7 +743,6 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 		for (unsigned int i = 0; i < uiSkeletonBonesCount; i++)
 			delete pSkeletonBones[i];
 
-		pFileManager->CloseFile();
 		return NULL;
 	}
 
@@ -1107,7 +750,12 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 
 	for (unsigned int i = 0; i < uiSkeletonNodesCount; i++)
 	{
-		CSkeletonBone *pSkeletonBone = NULL;
+		pSkeletonNodes[i] = new SSkeletonNode;
+		SSkeletonNode *pSkeletonNode = pSkeletonNodes[i];
+
+		pSkeletonNode->uiIndex = i;
+		pSkeletonNode->pSkeletonBone = NULL;
+
 		bool bHasSkeletonBone;
 		if (!pFileManager->Read( bHasSkeletonBone ))
 		{
@@ -1120,7 +768,6 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 			for (unsigned int j = 0; j < i; j++)
 				delete pSkeletonNodes[j];
 
-			pFileManager->CloseFile();
 			return NULL;
 		}
 
@@ -1138,12 +785,11 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 				for (unsigned int j = 0; j < i; j++)
 					delete pSkeletonNodes[j];
 
-				pFileManager->CloseFile();
 				return NULL;
 			}
 
-			pSkeletonBone = pSkeletonBones[uiSkeletonBoneIndex];
-			if (!pSkeletonBone)
+			pSkeletonNode->pSkeletonBone = pSkeletonBones[uiSkeletonBoneIndex];
+			if (!pSkeletonNode->pSkeletonBone)
 			{
 				for (unsigned int j = 0; j < uiSkeletonBonesCount; j++)
 				{
@@ -1154,7 +800,6 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 				for (unsigned int j = 0; j < i; j++)
 					delete pSkeletonNodes[j];
 
-				pFileManager->CloseFile();
 				return NULL;
 			}
 			else
@@ -1162,8 +807,6 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 				pSkeletonBones[uiSkeletonBoneIndex] = NULL;
 			}
 		}
-
-		pSkeletonNodes[i] = new CSkeletonNode( i, pSkeletonBone );
 	}
 
 	for (unsigned int i = 0; i < uiSkeletonBonesCount; i++)
@@ -1172,7 +815,7 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 			delete pSkeletonBones[i];
 	}
 
-	std::vector<std::vector<CSkeletonNode *>> pChildren;
+	std::vector<std::vector<SSkeletonNode *>> pChildren;
 	pChildren.resize( uiSkeletonNodesCount );
 
 	for (unsigned int i = 0; i < uiSkeletonNodesCount; i++)
@@ -1183,7 +826,6 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 			for (unsigned int j = 0; j < uiSkeletonNodesCount; j++)
 				delete pSkeletonNodes[j];
 
-			pFileManager->CloseFile();
 			return NULL;
 		}
 
@@ -1197,7 +839,6 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 				for (unsigned int k = 0; k < uiSkeletonNodesCount; k++)
 					delete pSkeletonNodes[k];
 
-				pFileManager->CloseFile();
 				return NULL;
 			}
 
@@ -1206,54 +847,7 @@ CSkeleton *CAssetManager::CreateSkeleton( const char *sPath )
 	}
 
 	for (unsigned int i = 0; i < uiSkeletonNodesCount; i++)
-		pSkeletonNodes[i]->SetChildren( pChildren[i] );
-
-	pFileManager->CloseFile();
+		pSkeletonNodes[i]->pChildren = pChildren[i];
 
 	return new CSkeleton( pSkeletonNodes[0], uiSkeletonBonesCount, sPath );
-}
-
-int CAssetManager::BindTexture( unsigned int uiTextureID, unsigned int uiTextureType )
-{
-	std::unordered_map<unsigned int, int>::const_iterator itTextureIDSearch = m_mapTextureIDToIndex.find( uiTextureID );
-	if (itTextureIDSearch == m_mapTextureIDToIndex.end())
-	{
-		unsigned int uiPrevTextureIndex = m_uiTextureIndex;
-		m_uiTextureIndex = (m_uiTextureIndex + 1) % m_uiMaxTextures;
-
-		std::unordered_map<int, unsigned int>::const_iterator itIndexSearch = m_mapIndexToTextureID.find( uiPrevTextureIndex );
-		if (itIndexSearch != m_mapIndexToTextureID.end())
-		{
-			m_mapTextureIDToIndex.erase( itIndexSearch->second );
-			m_mapIndexToTextureID.erase( itIndexSearch );
-		}
-
-		m_mapTextureIDToIndex.emplace( uiTextureID, uiPrevTextureIndex );
-		m_mapIndexToTextureID.emplace( uiPrevTextureIndex, uiTextureID );
-
-		glActiveTexture( GL_TEXTURE0 + uiPrevTextureIndex );
-		glBindTexture( uiTextureType, uiTextureID );
-		glActiveTexture( GL_TEXTURE0 + m_uiMaxTextures );
-
-		return uiPrevTextureIndex;
-	}
-
-	return itTextureIDSearch->second;
-}
-
-void CAssetManager::UnbindTexture( unsigned int uiTextureID )
-{
-	std::unordered_map<unsigned int, int>::const_iterator itTextureIDSearch = m_mapTextureIDToIndex.find( uiTextureID );
-	if (itTextureIDSearch != m_mapTextureIDToIndex.end())
-	{
-		m_mapTextureIDToIndex.erase( itTextureIDSearch );
-		m_mapIndexToTextureID.erase( itTextureIDSearch->second );
-	}
-}
-
-void CAssetManager::UnbindAllTextures( void )
-{
-	m_mapTextureIDToIndex.clear();
-	m_mapIndexToTextureID.clear();
-	m_uiTextureIndex = 0;
 }

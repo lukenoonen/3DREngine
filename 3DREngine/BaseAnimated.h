@@ -13,11 +13,14 @@ public:
 
 	CBaseAnimated();
 
+	virtual void Exit( void );
+
 	virtual void PostThink( void );
 	virtual void PreDraw( void );
 	virtual void PostDraw( void );
 
-	virtual void SetModel( CModel *pModel );
+	void SetSkeleton( const char *sPath );
+	void AddAnimation( const char *sPath );
 
 	void SetAnimate( bool bAnimate );
 	void SetUpdateAnimation( bool bUpdateAnimation );
@@ -30,6 +33,9 @@ public:
 private:
 	bool m_bAnimate;
 	bool m_bUpdateAnimation;
+
+	CSkeleton *m_pSkeleton;
+	std::vector<CAnimation *> m_pAnimationList;
 
 	std::vector<CAnimation *> m_pAnimations;
 	std::vector<float> m_flAnimationTimes;

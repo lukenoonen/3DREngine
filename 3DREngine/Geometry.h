@@ -23,6 +23,8 @@ public:
 	CGeometry( const std::vector<SVertex> &verVertices, const std::vector<unsigned int> &uiIndices, const char *sPath );
 	virtual ~CGeometry();
 
+	virtual EAssetType GetAssetType( void ) const;
+
 	void Draw( void );
 
 private:

@@ -12,9 +12,6 @@ public:
 	CAnimatedProp();
 
 	virtual void Init( void );
-	virtual void Exit( void );
-
-	void SetModel( const char *sModelPath );
 };
 
 #endif // ANIMATEDPROP_H

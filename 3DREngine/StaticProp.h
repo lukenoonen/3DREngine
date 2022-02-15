@@ -10,10 +10,6 @@ public:
 	DECLARE_CLASS( CStaticProp, CBaseModeled );
 
 	CStaticProp();
-
-	virtual void Exit( void );
-
-	void SetModel( const char *sModelPath );
 };
 
 #endif // STATICPROP_H

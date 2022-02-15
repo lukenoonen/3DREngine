@@ -47,9 +47,6 @@ CConCommand cc_reloadtest( "reloadtest", CC_ReloadTest );
 void CreateLevel( void )
 {
 	{
-	}
-
-	{
 		CSkybox *pNewSkybox;
 
 		pNewSkybox = new CSkybox();
@@ -79,31 +76,36 @@ void CreateLevel( void )
 		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 0.0f, 0.0f, -2.0f ) );
 		pNewStaticProp->SetScale( g_vec3One * 500.0f );
-		pNewStaticProp->SetModel( "plane_brick.3md" );
+		pNewStaticProp->AddGeometry( "plane.3gm" );
+		pNewStaticProp->AddMaterial( "brick.3mt" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
 		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 0.0f, 20.0f, -2.0f ) );
 		pNewStaticProp->SetScale( glm::vec3( 25.0f, 2.0f, 25.0f ) );
-		pNewStaticProp->SetModel( "cube_brick.3md" );
+		pNewStaticProp->AddGeometry( "cube.3gm" );
+		pNewStaticProp->AddMaterial( "brick.3mt" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
 		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 20.0f, 0.0f, -2.0f ) );
 		pNewStaticProp->SetScale( glm::vec3( 2.0f, 25.0f, 25.0f ) );
-		pNewStaticProp->SetModel( "cube_brick.3md" );
+		pNewStaticProp->AddGeometry( "cube.3gm" );
+		pNewStaticProp->AddMaterial( "brick.3mt" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
 		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( 0.0f, -20.0f, -2.0f ) );
 		pNewStaticProp->SetScale( glm::vec3( 25.0f, 2.0f, 25.0f ) );
-		pNewStaticProp->SetModel( "cube_brick.3md" );
+		pNewStaticProp->AddGeometry( "cube.3gm" );
+		pNewStaticProp->AddMaterial( "brick.3mt" );
 		pEntityManager->AddEntity( pNewStaticProp );
 
 		pNewStaticProp = new CStaticProp();
 		pNewStaticProp->SetPosition( glm::vec3( -20.0f, 0.0f, -2.0f ) );
 		pNewStaticProp->SetScale( glm::vec3( 2.0f, 25.0f, 25.0f ) );
-		pNewStaticProp->SetModel( "cube_brick.3md" );
+		pNewStaticProp->AddGeometry( "cube.3gm" );
+		pNewStaticProp->AddMaterial( "brick.3mt" );
 		pEntityManager->AddEntity( pNewStaticProp );
 	}
 
@@ -113,7 +115,20 @@ void CreateLevel( void )
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 4.0f, 0.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		g_pAnimatedPropTest = pNewAnimatedProp;
@@ -121,72 +136,210 @@ void CreateLevel( void )
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 4.0f, 5.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 4.0f, 10.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -4.0f, 0.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -4.0f, 5.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -4.0f, 10.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 8.0f, 0.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 8.0f, 5.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( 8.0f, 10.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -8.0f, 0.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -8.0f, 5.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 
 		pNewAnimatedProp = new CAnimatedProp();
 		pNewAnimatedProp->SetPosition( glm::vec3( -8.0f, 10.0f, -2.0f ) );
 		pNewAnimatedProp->SetScale( glm::vec3( g_vec3One * 0.1f ) );
-		pNewAnimatedProp->SetModel( "boblampclean.3md" );
-		pEntityManager->AddEntity( pNewAnimatedProp );
-
-		pNewAnimatedProp = new CAnimatedProp();
-		pNewAnimatedProp->SetPosition( glm::vec3( 0.0f, 3.0f, 4.0f ) );
-		pNewAnimatedProp->SetModel( "testcharacter.3md" );
+		pNewAnimatedProp->AddGeometry( "boblampclean0.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean1.3gm" );
+		pNewAnimatedProp->AddMaterial( "face.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean2.3gm" );
+		pNewAnimatedProp->AddMaterial( "helmet.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean3.3gm" );
+		pNewAnimatedProp->AddMaterial( "grill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean4.3gm" );
+		pNewAnimatedProp->AddMaterial( "rgrill.3mt" );
+		pNewAnimatedProp->AddGeometry( "boblampclean5.3gm" );
+		pNewAnimatedProp->AddMaterial( "body.3mt" );
+		pNewAnimatedProp->SetSkeleton( "boblampclean.3sk" );
+		pNewAnimatedProp->AddAnimation( "boblampclean.3an" );
 		pEntityManager->AddEntity( pNewAnimatedProp );
 	}
 

@@ -13,6 +13,11 @@ CTexture::~CTexture()
 	glDeleteTextures( 1, &m_uiID );
 }
 
+EAssetType CTexture::GetAssetType( void ) const
+{
+	return EAssetType::t_texture;
+}
+
 unsigned int CTexture::GetID( void ) const
 {
 	return m_uiID;

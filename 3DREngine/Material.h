@@ -12,9 +12,11 @@ public:
 
 	CMaterial( const char *sPath );
 
-	virtual bool ShouldDraw( void ) const;
+	virtual EAssetType GetAssetType( void ) const;
 
 	virtual void Use( void );
+
+	bool ShouldDraw( void ) const;
 
 	EShaderType GetShaderType( void ) const;
 	void SetShaderType( ERenderPass eRenderPass, EShaderType eShaderType );

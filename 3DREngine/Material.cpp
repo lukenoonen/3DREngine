@@ -8,14 +8,19 @@ CMaterial::CMaterial( const char *sPath ) : BaseClass( sPath )
 		m_tShaderTypes[i] = EShaderType::i_invalid;
 }
 
-bool CMaterial::ShouldDraw( void ) const
+EAssetType CMaterial::GetAssetType( void ) const
 {
-	return GetShaderType() != EShaderType::i_invalid;
+	return EAssetType::t_material;
 }
 
 void CMaterial::Use( void )
 {
 	pRenderManager->UseShader( GetShaderType() );
+}
+
+bool CMaterial::ShouldDraw( void ) const
+{
+	return GetShaderType() != EShaderType::i_invalid;
 }
 
 EShaderType CMaterial::GetShaderType( void ) const

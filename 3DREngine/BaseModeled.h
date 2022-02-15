@@ -3,7 +3,8 @@
 
 #include "Global.h"
 #include "BaseWorld.h"
-#include "Model.h"
+#include "Geometry.h"
+#include "Material.h"
 
 class CBaseModeled : public CBaseWorld
 {
@@ -12,17 +13,21 @@ public:
 
 	CBaseModeled();
 
+	virtual void Exit( void );
+
 	virtual void PreDraw( void );
 	virtual void Draw( void );
 
-	virtual void SetModel( CModel *pModel );
-
-	CModel *GetModel( void ) const;
-
 	virtual bool ShouldDraw( void ) const;
 
+	void AddGeometry( const char *sPath );
+	void AddMaterial( const char *sPath );
+
 private:
-	CModel *m_pModel;
+	std::vector<CGeometry *> m_pGeometry;
+	std::vector<CMaterial *> m_pMaterials;
+
+	bool m_bShouldDraw[(EBaseEnum)ERenderPass::i_count];
 };
 
 #endif // BASEMODELED_H
