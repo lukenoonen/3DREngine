@@ -1,0 +1,5 @@
+type texture;
+name brick;
+wrap repeat;
+filter true;
+image brick.3im;

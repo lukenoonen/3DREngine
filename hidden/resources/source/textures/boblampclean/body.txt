@@ -1,0 +1,5 @@
+type texture;
+name body;
+wrap repeat;
+filter true;
+image body.3im;

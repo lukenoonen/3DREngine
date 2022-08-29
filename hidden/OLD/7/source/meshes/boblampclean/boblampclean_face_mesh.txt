@@ -1,0 +1,4 @@
+type mesh;
+name boblampclean_face;
+geometry boblampclean1.3gm;
+material face.3mt;

@@ -1,0 +1,4 @@
+type geometry;
+name testcharacter;
+model testcharacter.dae;
+flipuv true;

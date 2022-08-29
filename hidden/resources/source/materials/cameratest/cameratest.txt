@@ -1,0 +1,5 @@
+type material;
+material lit;
+name cameratest;
+diffuse white.3tx;
+camera white.3tx;

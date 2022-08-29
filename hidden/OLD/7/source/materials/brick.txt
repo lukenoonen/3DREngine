@@ -1,0 +1,11 @@
+lit
+diffuse brick.jpg
+specular brick_spec.jpg
+normal brick_norm.jpg
+shininess 32.0
+scale 10.0 10.0
+depth 1
+unlit 0
+lit 1
+shadow 1
+hud 0

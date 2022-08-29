@@ -1,0 +1,5 @@
+type texture;
+name grill_norm;
+wrap repeat;
+filter true;
+image grill_norm.3im;

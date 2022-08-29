@@ -1,0 +1,5 @@
+type texture;
+name rgrill_norm;
+wrap repeat;
+filter true;
+image rgrill_norm.3im;

@@ -1,0 +1,4 @@
+type material;
+material skybox;
+name skybox;
+skybox skybox.3tx;

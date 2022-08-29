@@ -1,0 +1,5 @@
+type texture;
+name helmet_norm;
+wrap repeat;
+filter true;
+image helmet_norm.3im;

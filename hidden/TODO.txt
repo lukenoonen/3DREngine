@@ -1,0 +1,25 @@
+Generally:
+	1. Address "TODO"s when solution is availible
+	2. Clean up code, utilize new functionalities
+In order:
+	-1. EHANDLES!!!
+		1. Store entity index
+		2. Store unique entity ID
+		3. Return pointer if entity at entity index has same unique entity ID
+			- THINK OF CASES WHICH COULD BREAK THIS SYSTEM, PLAN AHEAD!
+	0. Implement initialization better first before anything else
+	1. Implement entity assets by any means nessecary, don't mind if it's not cleaned up at all, it's all just temporary.
+		a. Prioritize customization of assets, especially the use of reflective surfaces
+	2. CLEAN THE FUCK OUT OF THE CODE:
+		a. const
+		b. virtual functions
+		c. class initialization (move away from getters/setters and move towards whatever hl2 does)
+		d. eliminate ANY AND ALL MEMORY LEAKS -- obvious
+		e. restructure any improper class structures
+		f. In general, prepare for next in list
+	3. Implement console command to create entities by name with optional named arguments
+	4. Work on adapting above to map loading feature
+	5. Work on adapting above to save/loading feature
+	6. Work on understanding and giving further control over the animation system (for ragdolls later)
+	7. Implement physics engine
+		-http://www.newtondynamics.com/wiki/index.php/Main_Page

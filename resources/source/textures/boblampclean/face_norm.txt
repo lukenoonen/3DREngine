@@ -1,0 +1,5 @@
+type texture;
+name face_norm;
+wrap repeat;
+filter true;
+image face_norm.3im;

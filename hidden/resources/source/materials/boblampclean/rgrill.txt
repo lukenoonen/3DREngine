@@ -1,0 +1,7 @@
+type material;
+material lit;
+name rgrill;
+diffuse rgrill.3tx;
+specular rgrill_spec.3tx;
+shininess 4.0;
+normal rgrill_norm.3tx;

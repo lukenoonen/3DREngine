@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{2c862fba-0c11-4a51-bad1-f04bc5dd7209}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)SharedAsset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TextReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)UTIL.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedDefines.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedEnums.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedMath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedAsset.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedGlobal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TextReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UTIL.h" />
+  </ItemGroup>
+</Project>
