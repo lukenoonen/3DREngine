@@ -1,4 +1,0 @@
-type mesh;
-name boblampclean_body1;
-geometry boblampclean5.3gm;
-material body.3mt;

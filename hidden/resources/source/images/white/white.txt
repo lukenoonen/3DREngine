@@ -1,3 +1,0 @@
-type image;
-name white;
-image white.png;

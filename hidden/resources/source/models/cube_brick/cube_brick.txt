@@ -1,3 +1,0 @@
-type model;
-name cube_brick;
-meshes	{ index 0; name cube_brick.3ms; };

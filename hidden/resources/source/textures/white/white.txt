@@ -1,6 +1,0 @@
-type texture;
-name white;
-texturetype 2d;
-wrap repeat;
-filter true;
-image white.3im;

@@ -1,4 +1,0 @@
-type mesh;
-name plane_brick;
-geometry plane.3gm;
-material brick.3mt;

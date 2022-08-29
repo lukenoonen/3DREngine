@@ -1,4 +1,0 @@
-type mesh;
-name boblampclean_rgrill;
-geometry boblampclean3.3gm;
-material rgrill.3mt;

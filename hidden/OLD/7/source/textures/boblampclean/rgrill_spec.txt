@@ -1,5 +1,0 @@
-type texture;
-name rgrill_spec;
-wrap repeat;
-filter true;
-image rgrill_spec.3im;

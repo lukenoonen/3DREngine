@@ -1,7 +1,0 @@
-type material;
-material lit;
-name face;
-diffuse face.3tx;
-specular face_spec.3tx;
-shininess 4.0;
-normal face_norm.3tx;
