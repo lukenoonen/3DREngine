@@ -4,7 +4,7 @@
 #include "Global.h"
 #include "BaseAsset.h"
 #include "Skeleton.h"
-#include "Animation.h"
+#include "Animation.h" 
 
 class CRigging : public CBaseAsset
 {
