@@ -115,16 +115,18 @@ CConCommand cc_mdown( "-down", CC_MDown );
 CConFloat cf_pl_speed( 10.0f, "pl_speed" );
 CConVec2 cv2_pl_mousesens( g_vec2One * 0.08f, "pl_mousesens" );
 
+DEFINE_LINKED_CLASS( CTestPlayer, player_test )
+
 CTestPlayer::CTestPlayer()
 {
-	CPerspectivePlayerCamera *pCamera = new CPerspectivePlayerCamera();
+	/*CPerspectivePlayerCamera *pCamera = new CPerspectivePlayerCamera();
 	pCamera->SetName( "PerspectivePlayerCamera" );
 	SetCamera( pCamera );
 	pCamera->SetParent( this );
 	pCamera->SetPosition( GetPosition() );
 	pCamera->SetRotation( GetRotation() );
 	pCamera->SetScale( GetScale() );
-	pEntityManager->AddEntity( pCamera );
+	pEntityManager->AddEntity( pCamera );*/
 
 	for (EBaseEnum i = 0; i < (EBaseEnum)EMovement::i_count; i++)
 		m_bMovement[i] = false;
@@ -132,6 +134,20 @@ CTestPlayer::CTestPlayer()
 	m_vec3Front = GetRotation() * g_vec3Front;
 	m_vec3Right = GetRotation() * g_vec3Right;
 	m_vec3Up = GetRotation() * g_vec3Up;
+}
+
+bool CTestPlayer::Init( void )
+{
+	if (!BaseClass::Init())
+		return false;
+
+	CBasePlayerCamera *pCamera = GetCamera();
+	pCamera->SetParent( this );
+	pCamera->SetPosition( GetPosition() );
+	pCamera->SetRotation( GetRotation() );
+	pCamera->SetScale( GetScale() );
+
+	return true;
 }
 
 void CTestPlayer::PreThink( void )

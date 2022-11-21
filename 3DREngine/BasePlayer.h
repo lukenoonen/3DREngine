@@ -11,7 +11,11 @@ class CBasePlayer : public CBaseTransform
 public:
 	DECLARE_CLASS( CBasePlayer, CBaseTransform )
 
+	DECLARE_DATADESC()
+
 	CBasePlayer();
+
+	virtual bool Init( void );
 
 	virtual bool IsPlayer( void ) const;
 
@@ -20,7 +24,7 @@ public:
 
 private:
 
-	CBasePlayerCamera *m_pCamera;
+	CHandle<CBasePlayerCamera> m_hCamera;
 };
 
 #endif // PLAYER_H

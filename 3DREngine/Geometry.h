@@ -3,26 +3,23 @@
 
 #include "Global.h"
 #include "BaseAsset.h"
+#include "GeometryResource.h"
 
 class CGeometry : public CBaseAsset
 {
 public:
 	DECLARE_CLASS( CGeometry, CBaseAsset )
 
+	DECLARE_DATADESC()
+
+	DECLARE_LINKED_CLASS()
+
 	CGeometry();
 
-	virtual bool Init( void );
-	virtual bool Exit( void );
-
-	void Draw( void ); // TODO: clarify language between "draw", "render", etc
+	void Draw( void ) const;
 
 private:
-	std::vector<SVertex> m_verVertices;
-	std::vector<unsigned int> m_uiIndices;
-
-	GLuint m_glVAO;
-	GLuint m_glVBO;
-	GLuint m_glEBO;
+	CGeometryResource *m_pGeometryResource;
 };
 
 #endif // GEOMETRY_H

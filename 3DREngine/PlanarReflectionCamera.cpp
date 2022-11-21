@@ -2,6 +2,8 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 
+DEFINE_LINKED_CLASS( CPlanarReflectionCamera, camera_reflection_planar )
+
 CPlanarReflectionCamera::CPlanarReflectionCamera()
 {
 

@@ -1,5 +1,6 @@
 #include "Global.h"
-#include "AssetManager.h"
+#include "FileManager.h"
+#include "ResourceManager.h"
 #include "RenderManager.h"
 #include "CommandManager.h"
 #include "EntityManager.h"
@@ -8,7 +9,8 @@
 
 void CreateGlobals( void )
 {
-	pAssetManager = new CAssetManager();
+	pFileManager = new CFileManager();
+	pResourceManager = new CResourceManager();
 	pRenderManager = new CRenderManager();
 	pCommandManager = new CCommandManager();
 	pEntityManager = new CEntityManager();
@@ -23,10 +25,12 @@ void DestroyGlobals( void )
 	delete pEntityManager;
 	delete pCommandManager;
 	delete pRenderManager;
-	delete pAssetManager;
+	delete pResourceManager;
+	delete pFileManager;
 }
 
-CAssetManager *pAssetManager;
+CFileManager *pFileManager;
+CResourceManager *pResourceManager;
 CRenderManager *pRenderManager;
 CCommandManager *pCommandManager;
 CEntityManager *pEntityManager;

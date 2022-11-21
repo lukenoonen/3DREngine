@@ -3,7 +3,6 @@
 
 #include "Global.h"
 #include "BaseTransform.h"
-#include "Handle.h"
 #include "BaseShadowCamera.h"
 
 class CBaseLight : public CBaseTransform
@@ -17,6 +16,8 @@ public:
 
 	virtual bool IsLight( void ) const;
 
+	virtual void PostThink( void );
+
 	virtual void ActivateLight( void );
 
 	void SetAmbient( const glm::vec3 &vec3Ambient );
@@ -24,9 +25,11 @@ public:
 	void SetSpecular( const glm::vec3 &vec3Specular );
 
 protected:
-	virtual void CalculateMaxRadius( void ); // TODO: remove this
+	virtual void CalculateMaxRadius( void );
 
 	float GetMaxDiffuse( void ) const;
+
+	CBaseShadowCamera *GetShadowCamera( void ) const;
 
 private:
 	CHandle<CBaseShadowCamera> m_hShadowCamera;

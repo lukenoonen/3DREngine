@@ -3,6 +3,19 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 
+DEFINE_DATADESC( CCSMShadowCamera )
+
+	DEFINE_FIELD( DataField, float, m_flBlendDistance, "blenddistance", 0 )
+	DEFINE_FIELD( DataField, float, m_flDistanceFactor, "distancefactor", 0 )
+	DEFINE_FIELD( DataField, float, m_flInitialDistance, "initialdistance", 0 )
+	DEFINE_FIELD( DataField, float, m_flNearError, "nearerror", 0 )
+	DEFINE_FIELD( DataField, float, m_flFarError, "farerror", 0 )
+	DEFINE_FIELD( DataField, float, m_flBlurRadius, "blurradius", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CCSMShadowCamera, camera_shadow_csm )
+
 CCSMShadowCamera::CCSMShadowCamera()
 {
 	m_flBlendDistance = 6.0f;

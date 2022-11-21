@@ -3,6 +3,8 @@
 
 #include "Global.h"
 #include "DataDesc.h"
+#include "Handle.h"
+#include "EntityFactory.h"
 
 class CBaseEntity
 {
@@ -15,7 +17,6 @@ public:
 	virtual ~CBaseEntity();
 
 	virtual bool Init( void );
-	virtual bool Exit( void );
 	
 	virtual void PreThink( void );
 	virtual void Think( void );

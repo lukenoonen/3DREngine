@@ -9,6 +9,8 @@ class CBaseSizeCamera : public CBaseCamera
 public:
 	DECLARE_CLASS( CBaseSizeCamera, CBaseCamera )
 
+	DECLARE_DATADESC()
+
 	CBaseSizeCamera();
 
 	void SetSize( const glm::ivec2 vec2Size );

@@ -2,6 +2,16 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 
+DEFINE_DATADESC( COrthoWorldCamera )
+
+	DEFINE_FIELD( DataField, float, m_flHeight, "height", 0 )
+	DEFINE_FIELD( DataField, float, m_flNear, "near", 0 )
+	DEFINE_FIELD( DataField, float, m_flFar, "far", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( COrthoWorldCamera, camera_world_ortho )
+
 COrthoWorldCamera::COrthoWorldCamera()
 {
 	m_flHeight = 16.0f;

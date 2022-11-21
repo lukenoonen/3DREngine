@@ -9,6 +9,8 @@ class CPlanarReflectionCamera : public CBaseReflectionCamera
 public:
 	DECLARE_CLASS( CPlanarReflectionCamera, CBaseReflectionCamera )
 
+	DECLARE_LINKED_CLASS()
+
 	CPlanarReflectionCamera();
 
 	virtual bool Init( void );

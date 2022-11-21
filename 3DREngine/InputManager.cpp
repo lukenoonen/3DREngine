@@ -3,7 +3,7 @@
 #include "TimeManager.h"
 #include "CommandManager.h"
 
-bool CC_Bind( CTextLine *pCommand )
+bool CC_Bind( const CTextLine *pCommand )
 {
 	const char *sKeyCode;
 	if (!pCommand->GetValue( sKeyCode, 1 ))
@@ -23,7 +23,7 @@ bool CC_Bind( CTextLine *pCommand )
 }
 CConCommand cc_bind( "bind", CC_Bind );
 
-bool CC_Unbind( CTextLine *pCommand )
+bool CC_Unbind( const CTextLine *pCommand )
 {
 	const char *sKeyCode;
 	if (!pCommand->GetValue( sKeyCode, 1 ))
@@ -249,7 +249,7 @@ EKeyCodes UTIL_KeyStrToCode( const char *sKeyCode )
 {
 	for (EBaseEnum i = 0; i < (EBaseEnum)EKeyCodes::i_count; i++)
 	{
-		if (UTIL_StringEquals( sKeyCode, sKeycodeNames[i] ))
+		if (UTIL_streq( sKeyCode, sKeycodeNames[i] ))
 			return (EKeyCodes)i;
 	}
 
@@ -272,7 +272,7 @@ void CKeyBind::Bind( const char *sCommand )
 	if (m_sCommand)
 		delete[] m_sCommand;
 
-	m_sCommand = UTIL_StringEdit( sCommand );
+	m_sCommand = UTIL_strdup( sCommand );
 }
 
 void CKeyBind::Unbind( void )

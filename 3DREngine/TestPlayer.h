@@ -22,7 +22,11 @@ class CTestPlayer : public CBasePlayer
 public:
 	DECLARE_CLASS( CTestPlayer, CBasePlayer )
 
+	DECLARE_LINKED_CLASS()
+
 	CTestPlayer();
+
+	virtual bool Init( void );
 
 	virtual void PreThink( void );
 

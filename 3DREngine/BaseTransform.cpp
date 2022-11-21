@@ -3,27 +3,34 @@
 
 DEFINE_DATADESC( CBaseTransform )
 
-	DEFINE_FIELD( FL_MAP | FL_SAVED, glm::vec3, m_vec3Position, "position" )
-	DEFINE_FIELD( FL_MAP | FL_SAVED, glm::quat, m_qRotation, "rotation" )
-	DEFINE_FIELD( FL_MAP | FL_SAVED, glm::vec3, m_vec3Scale, "scale" )
-	DEFINE_FIELD( FL_MAP | FL_SAVED, CHandle<CBaseTransform>, m_hParent, "parent" )
-	DEFINE_FIELD( FL_MAP | FL_SAVED, std::vector<CHandle<CBaseTransform>>, m_hChildren, "children" )
+	DEFINE_FIELD( DataField, glm::vec3, m_vec3Position, "position", FL_REQUIRED )
+	DEFINE_FIELD( DataField, glm::quat, m_qRotation, "rotation", FL_REQUIRED )
+	DEFINE_FIELD( DataField, glm::vec3, m_vec3Scale, "scale", FL_REQUIRED )
+	DEFINE_FIELD( LinkedDataField, CHandle<CBaseTransform>, m_hParent, "parent", 0 )
+	DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseTransform>, m_hChildren, "children", 0 )
 
 END_DATADESC()
 
 CBaseTransform::CBaseTransform()
 {
-	m_vec3Position = g_vec3Zero;
-	m_qRotation = glm::quat( g_vec3Zero );
-	m_vec3Scale = g_vec3One;
-
-	m_hParent = NULL;
-
 	AddFlags( FL_PARENTPOSITION | FL_PARENTROTATION | FL_PARENTSCALE );
 	
 	m_ulLastFramePositionUpdated = 0;
 	m_ulLastFrameRotationUpdated = 0;
 	m_ulLastFrameScaleUpdated = 0;
+}
+
+void CBaseTransform::PostThink( void )
+{
+	m_hParent.Check();
+
+	for (unsigned int i = 0; i < m_hChildren.size(); i++)
+	{
+		if (!m_hChildren[i].Check())
+			m_hChildren.erase( m_hChildren.begin() + i-- ); // TODO: verify that every time something is erased like this it accounts for the deleted element
+	}
+
+	BaseClass::PostThink();
 }
 
 void CBaseTransform::SetPosition( const glm::vec3 &vec3Position )

@@ -9,6 +9,8 @@ class CStaticProp : public CBaseModeled
 public:
 	DECLARE_CLASS( CStaticProp, CBaseModeled )
 
+	DECLARE_LINKED_CLASS()
+
 	CStaticProp();
 };
 

@@ -1,51 +1,36 @@
 #include "Rigging.h"
 
+DEFINE_DATADESC( CRigging )
+
+	DEFINE_FIELD( LinkedDataField, CHandle<CSkeleton>, m_hSkeleton, "skeleton", FL_REQUIRED )
+	DEFINE_FIELD( LinkedVectorDataField, CHandle<CAnimation>, m_hAnimations, "animations", FL_REQUIRED )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CRigging, rigging )
+
 CRigging::CRigging()
 {
-	m_pSkeleton = NULL;
-}
 
-bool CRigging::Init( void )
-{
-	if (!BaseClass::Init())
-		return false;
-
-	if (!m_pSkeleton)
-		return false;
-
-	if (!m_pAnimations.empty())
-		return false;
-
-	return true;
 }
 
 unsigned int CRigging::GetBonesCount( void )
 {
-	return m_pSkeleton->GetBonesCount();
+	return m_hSkeleton->GetBonesCount();
 }
 
 float CRigging::GetAnimationTime( unsigned int uiAnimationIndex )
 {
-	return m_pAnimations[uiAnimationIndex]->GetTime();
+	return m_hAnimations[uiAnimationIndex]->GetTime();
 }
 
 void CRigging::UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, const std::vector<unsigned int> &uiAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors )
 {
-	unsigned int uiAnimationCount = uiAnimations.size();
+	unsigned int uiAnimationCount = (unsigned int)uiAnimations.size();
 	std::vector<CAnimation *> pAnimations;
 	pAnimations.resize( uiAnimationCount );
 	for (unsigned int i = 0; i < uiAnimationCount; i++)
-		pAnimations[i] = m_pAnimations[uiAnimations[i]];
+		pAnimations[i] = m_hAnimations[uiAnimations[i]];
 
-	m_pSkeleton->UpdateAnimation( matBoneTransforms, pAnimations, flAnimationTimes, flAnimationTransitionFactors );
-}
-
-void CRigging::SetSkeleton( CSkeleton *pSkeleton )
-{
-	m_pSkeleton = pSkeleton;
-}
-
-void CRigging::AddAnimation( CAnimation *pAnimation )
-{
-	m_pAnimations.push_back( pAnimation );
+	m_hSkeleton->UpdateAnimation( matBoneTransforms, pAnimations, flAnimationTimes, flAnimationTransitionFactors );
 }

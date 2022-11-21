@@ -1,11 +1,14 @@
-#ifndef BASEGLOBAL_H
-#define BASEGLOBAL_H
+#ifndef SHAREDGLOBAL_H
+#define SHAREDGLOBAL_H
 
 #include <vector>
+#include <stack>
 #include <unordered_map>
+#include <TextReader/TextReader.h>
+#include <FileReader/FileReader.h>
 
 #include "Maths.h"
-#include "UTIL.h"
+#include "Strings.h"
 
 #define DECLARE_CLASS( x, y )			typedef x ThisClass; \
 										typedef y BaseClass;
@@ -14,4 +17,4 @@
 
 typedef unsigned char EBaseEnum;
 
-#endif // BASEGLOBAL_H
+#endif // SHAREDGLOBAL_H

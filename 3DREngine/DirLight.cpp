@@ -1,14 +1,24 @@
 #include "DirLight.h"
 #include "RenderManager.h"
+#include "DirShadowCamera.h"
+
+DEFINE_LINKED_CLASS( CDirLight, light_dir )
 
 CDirLight::CDirLight()
 {
 
 }
 
-void CDirLight::SetShadowCamera( CDirShadowCamera *pDirShadowCamera )
+bool CDirLight::Init( void )
 {
-	BaseClass::SetShadowCamera( pDirShadowCamera );
+	if (!BaseClass::Init())
+		return false;
+
+	CBaseShadowCamera *pShadowCamera = GetShadowCamera();
+	if (pShadowCamera && !(dynamic_cast<CDirShadowCamera *>(pShadowCamera)))
+		return false;
+
+	return true;
 }
 
 void CDirLight::ActivateLight( void )

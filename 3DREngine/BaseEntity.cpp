@@ -3,14 +3,14 @@
 
 DEFINE_DATADESC_NOBASE( CBaseEntity )
 
-	DEFINE_FIELD( DataField, char *, m_sName, "name" )
-	DEFINE_FIELD( DataField, int, m_iFlags, "flags" )
+	DEFINE_FIELD( DataField, char *, m_sName, "name", FL_REQUIRED )
+	// DEFINE_FIELD( DataField, int, m_iFlags, "flags" ) // TODO: how should flags work?
 
 END_DATADESC()
 
 CBaseEntity::CBaseEntity()
 {
-	m_sName = NULL;
+	// m_sName = NULL;
 	m_sFileName = NULL;
 
 	m_iFlags = 0;
@@ -29,11 +29,6 @@ CBaseEntity::~CBaseEntity()
 }
 
 bool CBaseEntity::Init( void )
-{
-	return true;
-}
-
-bool CBaseEntity::Exit( void )
 {
 	return true;
 }

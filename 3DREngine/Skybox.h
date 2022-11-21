@@ -3,7 +3,6 @@
 
 #include "Global.h"
 #include "BaseDrawable.h"
-#include "Geometry.h"
 #include "BaseMaterial.h"
 /*
 class CSkybox : public CBaseDrawable

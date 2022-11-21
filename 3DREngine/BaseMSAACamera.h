@@ -9,6 +9,8 @@ class CBaseMSAACamera : public CBaseSizeCamera
 public:
 	DECLARE_CLASS( CBaseMSAACamera, CBaseSizeCamera )
 
+	DECLARE_DATADESC()
+
 	CBaseMSAACamera();
 
 	void SetMSAALevel( unsigned char ucMSAALevel );

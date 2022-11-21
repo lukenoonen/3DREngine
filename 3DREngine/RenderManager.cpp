@@ -2,7 +2,6 @@
 #include "InputManager.h"
 #include "EntityManager.h"
 #include "TimeManager.h"
-#include "AssetManager.h"
 
 bool CV_R_WindowSize( void );
 CConIVec2 cv_r_windowsize( glm::ivec2( 800, 600 ), "r_windowsize", CV_R_WindowSize );
@@ -52,7 +51,7 @@ bool CB_R_WindowName( void )
 	return true;
 }
 
-bool CC_R_ShaderQuality( CTextLine *pCommand )
+bool CC_R_ShaderQuality( const CTextLine *pCommand )
 {
 	EBaseEnum eQuality;
 	if (!pCommand->GetValue( eQuality, 1 ))

@@ -23,7 +23,7 @@ private:
 template <class T> class CEntityFactory : public CBaseEntityFactory
 {
 public:
-	DECLARE_CLASS( CEntityFactory<T>, CEntityFactory )
+	DECLARE_CLASS( CEntityFactory<T>, CBaseEntityFactory )
 
 	CEntityFactory( const char *sMapName );
 
@@ -40,8 +40,12 @@ template <class T> CBaseEntity *CEntityFactory<T>::CreateEntity( void )
 	return new T;
 }
 
-#define LINK_ENTITY_TO_CLASS( mapName, className ) \
+// TODO: see if GetMapName() is useful, if not, remove it
+#define DECLARE_LINKED_CLASS() \
+	virtual const char *GetMapName( void ) const;
+
+#define DEFINE_LINKED_CLASS( className, mapName ) \
 	static CEntityFactory<className> mapName( #mapName ); \
-	virtual const char *GetMapName( void ) const { return #mapName; }
+	const char *className::GetMapName( void ) const { return #mapName; }
 
 #endif // ENTITYFACTORY_H

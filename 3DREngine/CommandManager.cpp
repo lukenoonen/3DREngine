@@ -1,7 +1,6 @@
 #include "CommandManager.h"
 #include "TimeManager.h"
-#include "AssetManager.h"
-#include "File.h"
+#include "FileManager.h"
 
 /*if (command.size() == 0)
 {
@@ -27,16 +26,20 @@ else
 	pFileManager->Load( command[0] );
 }*/
 
-bool CC_Exec( CTextLine *pCommand )
+bool CC_Exec( const CTextLine *pCommand )
 {
 	const char *sFileName;
-	if (pCommand->GetValue( sFileName, 1 ))
+	if (!pCommand->GetValue( sFileName, 1 ))
 		return false;
 
-	CFile fFile( sFileName, EFileType::t_config );
-	char *sCommand;
-	if (!fFile.Success() || !fFile.Buffer( sCommand ))
+	if (!pFileManager->Open( sFileName, EFileType::t_config ))
 		return false;
+
+	char *sCommand;
+	if (!pFileManager->Buffer( sCommand ))
+		return false;
+
+	pFileManager->Close();
 
 	pCommandManager->ProcessCommand( sCommand );
 	delete[] sCommand;
@@ -93,7 +96,7 @@ bool CBaseConCommand::Dispatch( CTextLine *pTextLine )
 	return true;
 }
 
-const char *CBaseConCommand::GetName( void )
+const char *CBaseConCommand::GetName( void ) const
 {
 	return m_sName;
 }
@@ -420,17 +423,17 @@ const glm::ivec4 &CConIVec4::GetValue( void )
 
 CConString::CConString( const char *sDefaultValue, const char *sName ) : BaseClass( sName )
 {
-	m_sValue = UTIL_StringEdit( sDefaultValue );
+	m_sValue = UTIL_strdup( sDefaultValue );
 }
 
 CConString::CConString( const char *sDefaultValue, const char *sName, FnCommandCallback_t fnCommandCallback ) : BaseClass( sName, fnCommandCallback )
 {
-	m_sValue = UTIL_StringEdit( sDefaultValue );
+	m_sValue = UTIL_strdup( sDefaultValue );
 }
 
 CConString::CConString( const char *sDefaultValue, const char *sName, FnCommandCallbackVoid_t fnCommandCallbackVoid ) : BaseClass( sName, fnCommandCallbackVoid )
 {
-	m_sValue = UTIL_StringEdit( sDefaultValue );
+	m_sValue = UTIL_strdup( sDefaultValue );
 }
 
 CConString::~CConString()
@@ -495,8 +498,8 @@ void CCommandManager::ProcessCommand( const char *sCommand )
 	if (!m_pCommands)
 		return;
 
-	CTextReader trCommand( sCommand );
-	if (!trCommand.Success())
+	CTextReader trCommand;
+	if (!trCommand.ReadText( sCommand ))
 		return;
 
 	CTextBlock *pTextBlock = trCommand.GetTextBlock();
@@ -521,7 +524,7 @@ void CCommandManager::GetSimilarCommands( const char *sKey, std::vector<const ch
 	for (unsigned int i = 0; i < m_pCommands->size(); i++)
 	{
 		const char *sName = (*m_pCommands)[i]->GetName();
-		if (UTIL_StringIncludes( sName, sKey ))
+		if (UTIL_strstr( sName, sKey ))
 			sCommands.push_back( sName );
 	}
 }

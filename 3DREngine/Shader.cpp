@@ -1,6 +1,7 @@
 #include "Shader.h"
 #include "UniformBufferObjects.h"
 #include <iostream> // TODO: eliminate this
+#include "FileManager.h"
 
 CSubShader::CSubShader( const char *sVertexCode, const char *sGeometryCode, const char *sFragmentCode )
 {
@@ -67,8 +68,8 @@ CSubShader::CSubShader( const char *sVertexCode, const char *sGeometryCode, cons
 			m_sUniformNames.push_back( sUniformName );
 			if (iSize > 1)
 			{
-				GLchar *sUniformNameEdit = UTIL_StringEdit( sUniformName );
-				*(UTIL_CharSearch( sUniformNameEdit, '[' ) + 1) = '\0';
+				GLchar *sUniformNameEdit = UTIL_strdup( sUniformName );
+				*(UTIL_strchr( sUniformNameEdit, '[' ) + 1) = '\0';
 				for (GLint j = 1; j < iSize; j++)
 				{
 					GLchar *sModifiedUniformName = new GLchar[iMaxUniformLength];
@@ -107,7 +108,7 @@ GLint CSubShader::GetLocation( const char *sName )
 	{
 		for (unsigned int i = 0; i < m_sUniformNames.size(); i++)
 		{
-			if (UTIL_StringEquals( sName, m_sUniformNames[i] ))
+			if (UTIL_streq( sName, m_sUniformNames[i] ))
 			{
 				GLint iUniformLocation = m_iUniformLocations[i];
 				m_mapUniformNameToLocation.emplace( sName, iUniformLocation );
@@ -137,23 +138,24 @@ CShader::CShader( const char *sShaderName )
 {
 	m_bSuccess = false;
 
-	CFile fVertexFile( sShaderName, EFileType::t_vertexshader );
 	char *sVertexCode;
-	std::vector<unsigned int> uiVertexIndices[(EBaseEnum)EShaderPreprocessor::i_count]; // TODO: go back to using unsigned ints (for now)
+	std::vector<unsigned int> uiVertexIndices[(EBaseEnum)EShaderPreprocessor::i_count];
 
-	if (!LoadShader( &fVertexFile, sVertexCode, uiVertexIndices ))
+	if (!pFileManager->Open( sShaderName, EFileType::t_vertexshader ) || !LoadShader( sVertexCode, uiVertexIndices ))
 		return;
 
-	CFile fGeometryFile( sShaderName, EFileType::t_geometryshader );
+	pFileManager->Close();
+
 	char *sGeometryCode;
 	std::vector<unsigned int> uiGeometryIndices[(EBaseEnum)EShaderPreprocessor::i_count];
-	if (!LoadShader( &fGeometryFile, sGeometryCode, uiGeometryIndices ))
+	if (!pFileManager->Open( sShaderName, EFileType::t_vertexshader ) || !LoadShader( sGeometryCode, uiGeometryIndices ))
 		sGeometryCode = NULL;
+	else
+		pFileManager->Close();
 
-	CFile fFragmentFile( sShaderName, EFileType::t_fragmentshader );
 	char *sFragmentCode;
 	std::vector<unsigned int> uiFragmentIndices[(EBaseEnum)EShaderPreprocessor::i_count];
-	if (!LoadShader( &fFragmentFile, sFragmentCode, uiFragmentIndices ))
+	if (!pFileManager->Open( sShaderName, EFileType::t_vertexshader ) || !LoadShader( sFragmentCode, uiFragmentIndices ))
 	{
 		delete[] sVertexCode;
 
@@ -162,6 +164,8 @@ CShader::CShader( const char *sShaderName )
 
 		return;
 	}
+
+	pFileManager->Close();
 
 	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderPreprocessor::i_count; i++)
 		m_bHasPreprocessor[i] = !uiVertexIndices[i].empty() || !uiGeometryIndices[i].empty() || !uiFragmentIndices[i].empty();
@@ -201,11 +205,11 @@ bool CShader::Success( void ) const
 	return m_bSuccess;
 }
 
-bool CShader::LoadShader( CFile *pFile, char *&sSource, std::vector<unsigned int> *uiIndices )
+bool CShader::LoadShader( char *&sSource, std::vector<unsigned int> *uiIndices )
 {
 	char *sPreSource;
 
-	if (!LoadShader( pFile, sPreSource ))
+	if (!LoadShader( sPreSource ))
 		return false;
 
 	const char *sReadChar = sPreSource;
@@ -217,15 +221,15 @@ bool CShader::LoadShader( CFile *pFile, char *&sSource, std::vector<unsigned int
 		if (*sReadChar == '#')
 		{
 			const char *sPreProcessorChar = sReadChar + 1;
-			int iPreProcessorSize = (int)(UTIL_CharSearch( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
-			if (UTIL_StringEquals( "subshader", sPreProcessorChar, UTIL_Min( sizeof( "subshader" ), iPreProcessorSize ) - 1 ))
+			int iPreProcessorSize = (int)(UTIL_strpbrk( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
+			if (UTIL_strneq( "subshader", sPreProcessorChar, UTIL_min( (int)sizeof( "subshader" ), iPreProcessorSize ) - 1 ))
 			{
-				sPreProcessorChar = UTIL_CharSearchInverse( sPreProcessorChar + iPreProcessorSize, " \t\n" );
-				int iSubShaderSize = (int)(UTIL_CharSearch( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
+				sPreProcessorChar = UTIL_strskip( sPreProcessorChar + iPreProcessorSize, " \t\n" );
+				int iSubShaderSize = (int)(UTIL_strpbrk( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
 
 				for (EBaseEnum i = 0; i < (EBaseEnum)EShaderPreprocessor::i_count; i++)
 				{
-					if (uiIndices[i].empty() && UTIL_StringEquals( g_sShaderPreprocessorNames[i], sPreProcessorChar, UTIL_Min( sizeof( g_sShaderPreprocessorNames[i] ), iSubShaderSize ) - 1 ))
+					if (uiIndices[i].empty() && UTIL_strneq( g_sShaderPreprocessorNames[i], sPreProcessorChar, UTIL_min( (int)sizeof( g_sShaderPreprocessorNames[i] ), iSubShaderSize ) - 1 ))
 					{
 						uiIndices[i].resize( g_eShaderPreprocessorCount[i] );
 
@@ -233,7 +237,7 @@ bool CShader::LoadShader( CFile *pFile, char *&sSource, std::vector<unsigned int
 						{
 							const char *sSubShaderDefines = g_pShaderPreprocessorDefines[i][j];
 							while (*sSubShaderDefines) cSource.push_back( *sSubShaderDefines++ );
-							uiIndices[i][j] = cSource.size() - 2;
+							uiIndices[i][j] = (unsigned int)(cSource.size() - 2);
 						}
 					}
 				}
@@ -248,7 +252,7 @@ bool CShader::LoadShader( CFile *pFile, char *&sSource, std::vector<unsigned int
 
 	delete[] sPreSource;
 
-	unsigned int uiSize = cSource.size();
+	unsigned int uiSize = (unsigned int)cSource.size();
 	sSource = new char[uiSize + 1];
 	for (unsigned int i = 0; i < uiSize; i++)
 		sSource[i] = cSource[i];
@@ -257,10 +261,10 @@ bool CShader::LoadShader( CFile *pFile, char *&sSource, std::vector<unsigned int
 	return true;
 }
 
-bool CShader::LoadShader( CFile *pFile, char *&sSource )
+bool CShader::LoadShader( char *&sSource )
 {
 	char *sContents;
-	if (!pFile->Buffer( sContents ))
+	if (!pFileManager->Buffer( sContents ))
 		return false;
 
 	const char *sReadChar = sContents;
@@ -272,22 +276,23 @@ bool CShader::LoadShader( CFile *pFile, char *&sSource )
 		if (*sReadChar == '#')
 		{
 			const char *sPreProcessorChar = sReadChar + 1;
-			int iPreProcessorSize = (int)(UTIL_CharSearch( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
-			if (UTIL_StringEquals( "include", sPreProcessorChar, UTIL_Min( sizeof( "include" ), iPreProcessorSize ) - 1 ))
+			int iPreProcessorSize = (int)(UTIL_strpbrk( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
+			if (UTIL_strneq( "include", sPreProcessorChar, UTIL_min( (int)sizeof( "include" ), iPreProcessorSize ) - 1 ))
 			{
-				sPreProcessorChar = UTIL_CharSearch( sPreProcessorChar + iPreProcessorSize, '\"' ) + 1;
-				int iPathSize = (int)(UTIL_CharSearch( sPreProcessorChar, '\"' ) - sPreProcessorChar);
+				sPreProcessorChar = UTIL_strchr( sPreProcessorChar + iPreProcessorSize, '\"' ) + 1;
+				int iPathSize = (int)(UTIL_strchr( sPreProcessorChar, '\"' ) - sPreProcessorChar);
 
-				char *sPathName = UTIL_StringEdit( sPreProcessorChar, iPathSize );
+				char *sPathName = UTIL_strndup( sPreProcessorChar, iPathSize );
 
-				CFile fIncludeFile( sPathName, EFileType::t_headershader );
 				char *sIncludeSource;
-				if (!fIncludeFile.Success() || !LoadShader( &fIncludeFile, sIncludeSource ))
+				if (!pFileManager->Open( sPathName, EFileType::t_headershader ) || !LoadShader( sIncludeSource ))
 				{
 					delete[] sPathName;
 					delete[] sContents;
 					return false;
 				}
+
+				pFileManager->Close();
 
 				const char *sIncludeSourceReadChar = sIncludeSource;
 				while (*sIncludeSourceReadChar)
@@ -308,7 +313,7 @@ bool CShader::LoadShader( CFile *pFile, char *&sSource )
 
 	delete[] sContents;
 
-	unsigned int uiSize = cSource.size();
+	unsigned int uiSize = (unsigned int)cSource.size();
 	sSource = new char[uiSize + 1];
 	for (unsigned int i = 0; i < uiSize; i++)
 		sSource[i] = cSource[i];

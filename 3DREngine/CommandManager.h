@@ -2,10 +2,9 @@
 #define COMMANDMANAGER_H
 
 #include "Global.h"
-#include "TextReader.h"
 
 typedef bool ( *FnCommandCallbackVoid_t )( void );
-typedef bool ( *FnCommandCallback_t )( CTextLine *pCommand );
+typedef bool ( *FnCommandCallback_t )( const CTextLine *pCommand );
 
 // TODO: consider templatising these
 
@@ -20,7 +19,7 @@ public:
 
 	virtual bool Dispatch( CTextLine *pTextLine );
 
-	const char *GetName( void );
+	const char *GetName( void ) const;
 
 	bool WasDispatched( void ) const;
 

@@ -1,17 +1,17 @@
 #include "SkyboxMaterial.h"
 #include "RenderManager.h"
 
+DEFINE_DATADESC( CSkyboxMaterial )
+
+	DEFINE_FIELD( LinkedDataField, CHandle<CCubemap>, m_hCubemap, "cubemap", FL_REQUIRED )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CSkyboxMaterial, material_skybox )
+
 CSkyboxMaterial::CSkyboxMaterial()
 {
-	m_pSkybox = NULL;
-}
 
-bool CSkyboxMaterial::Init( void )
-{
-	if (!BaseClass::Init())
-		return false;
-
-	return true;
 }
 
 EShaderType CSkyboxMaterial::GetShaderType( void )
@@ -29,10 +29,5 @@ void CSkyboxMaterial::Apply( void )
 {
 	BaseClass::Apply();
 
-	pRenderManager->SetUniform( "u_sSkybox", m_pSkybox->Bind() );
-}
-
-void CSkyboxMaterial::SetSkybox( CCubemapTexture *pSkybox )
-{
-	m_pSkybox = pSkybox;
+	pRenderManager->SetUniform( "u_sSkybox", m_hCubemap->Bind() ); // TODO: change uniform name
 }

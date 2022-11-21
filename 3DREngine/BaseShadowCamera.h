@@ -9,6 +9,8 @@ class CBaseShadowCamera : public CBaseVariableSizeCamera
 public:
 	DECLARE_CLASS( CBaseShadowCamera, CBaseVariableSizeCamera )
 
+	DECLARE_DATADESC()
+
 	CBaseShadowCamera();
 
 	virtual void ActivateLight( void );

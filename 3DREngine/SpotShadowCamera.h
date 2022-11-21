@@ -9,6 +9,10 @@ class CSpotShadowCamera : public CBaseShadowCamera
 public:
 	DECLARE_CLASS( CSpotShadowCamera, CBaseShadowCamera )
 
+	DECLARE_DATADESC()
+
+	DECLARE_LINKED_CLASS()
+
 	CSpotShadowCamera();
 
 	virtual bool Init( void );

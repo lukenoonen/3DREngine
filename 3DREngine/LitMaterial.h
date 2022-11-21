@@ -3,44 +3,34 @@
 
 #include "Global.h"
 #include "BaseMaterial.h"
-#include "FlatTexture.h"
+#include "Texture.h"
 
 class CLitMaterial : public CBaseMaterial
 {
 public:
 	DECLARE_CLASS( CLitMaterial, CBaseMaterial )
 
+	DECLARE_DATADESC()
+
+	DECLARE_LINKED_CLASS()
+
 	CLitMaterial();
 
-	virtual bool Init( void );
+	virtual void PostThink( void );
 
 	virtual EShaderType GetShaderType( void );
 
 	virtual void Apply( void );
 
-	void SetDiffuse( CFlatTexture *pDiffuse );
-
-	void SetSpecular( CFlatTexture *pSpecular );
-	void SetShininess( float flShininess );
-
-	void SetNormal( CFlatTexture *pNormal );
-
-	void SetCamera( CFlatTexture *pCamera );
-
-	void SetTextureScale( const glm::vec2 &vec2TextureScale );
-
-	void SetRecieveShadows( bool bRecieveShadows );
-	void SetCastShadows( bool bCastShadows );
-
 private:
-	CFlatTexture *m_pDiffuse;
+	CHandle<CTexture> m_hDiffuse;
 
-	CFlatTexture *m_pSpecular;
+	CHandle<CTexture> m_hSpecular;
 	float m_flShininess;
 
-	CFlatTexture *m_pNormal;
+	CHandle<CTexture> m_hNormal;
 
-	CFlatTexture *m_pCamera;
+	CHandle<CTexture> m_hCamera;
 
 	glm::vec2 m_vec2TextureScale;
 

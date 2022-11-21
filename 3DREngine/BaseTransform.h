@@ -3,7 +3,6 @@
 
 #include "Global.h"
 #include "BaseDrawable.h"
-#include "Handle.h"
 
 #define FL_PARENTPOSITION	(1<<1)
 #define FL_PARENTROTATION	(1<<2)
@@ -17,6 +16,8 @@ public:
 	DECLARE_DATADESC()
 
 	CBaseTransform();
+
+	virtual void PostThink( void );
 
 	void SetPosition( const glm::vec3 &vec3Position );
 	void SetRotation( const glm::quat &qRotation );

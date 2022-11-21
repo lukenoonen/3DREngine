@@ -1,18 +1,17 @@
 #include "UnlitMaterial.h"
 
+DEFINE_DATADESC( CUnlitMaterial )
+
+	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hDiffuse, "diffuse", FL_REQUIRED )
+	DEFINE_FIELD( DataField, glm::vec2, m_vec2TextureScale, "texturescale", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CUnlitMaterial, material_unlit )
+
 CUnlitMaterial::CUnlitMaterial()
 {
-	m_pDiffuse = NULL;
-
 	m_vec2TextureScale = g_vec2One;
-}
-
-bool CUnlitMaterial::Init( void )
-{
-	if (!BaseClass::Init())
-		return false;
-
-	return true;
 }
 
 EShaderType CUnlitMaterial::GetShaderType( void )
@@ -34,15 +33,5 @@ void CUnlitMaterial::Apply( void )
 
 	pRenderManager->SetUniform( "u_vecTextureScale", m_vec2TextureScale );
 
-	pRenderManager->SetUniform( "u_sDiffuse", m_pDiffuse->Bind() );
-}
-
-void CUnlitMaterial::SetDiffuse( CFlatTexture *pDiffuse )
-{
-	m_pDiffuse = pDiffuse;
-}
-
-void CUnlitMaterial::SetTextureScale( const glm::vec2 &vec2TextureScale )
-{
-	m_vec2TextureScale = vec2TextureScale;
+	pRenderManager->SetUniform( "u_sDiffuse", m_hDiffuse->Bind() );
 }

@@ -9,6 +9,8 @@ class CPerspectivePlayerCamera : public CBasePlayerCamera
 public:
 	DECLARE_CLASS( CPerspectivePlayerCamera, CBasePlayerCamera )
 
+	DECLARE_LINKED_CLASS()
+
 	CPerspectivePlayerCamera();
 
 	virtual bool Init( void );

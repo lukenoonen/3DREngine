@@ -1,9 +1,16 @@
 #include "BaseVariableSizeCamera.h"
 #include "RenderManager.h"
 
+DEFINE_DATADESC( CBaseVariableSizeCamera )
+
+	DEFINE_FIELD( DataField, unsigned int, m_uiBaseSize, "basesize", 0 )
+	DEFINE_FIELD( DataField, float, m_flSizeRatio, "sizeratio", 0 )
+
+END_DATADESC()
+
 CBaseVariableSizeCamera::CBaseVariableSizeCamera()
 {
-	m_uiBaseSize = 1024;
+	m_uiBaseSize = 1024;  // TODO: maybe just make this a vec2?
 	m_flSizeRatio = 1.0f;
 }
 

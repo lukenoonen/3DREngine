@@ -3,8 +3,6 @@
 
 #include "Global.h"
 #include "BaseModeled.h"
-#include "Skeleton.h"
-#include "Animation.h"
 
 #define FL_ANIMATE			(1<<4)
 #define FL_UPDATEANIMATION	(1<<5)
@@ -13,6 +11,8 @@ class CBaseAnimated : public CBaseModeled
 {
 public:
 	DECLARE_CLASS( CBaseAnimated, CBaseModeled )
+
+	DECLARE_DATADESC()
 
 	CBaseAnimated();
 
@@ -24,8 +24,6 @@ public:
 
 	void TransitionAnimation( unsigned int uiAnimationIndex, float flAnimationTransitionTime );
 	void SetAnimation( unsigned int uiAnimationIndex );
-
-	void SetAnimationTimeScale( float flAnimationTimeScale );
 		
 private:
 	std::vector<unsigned int> m_uiAnimations;

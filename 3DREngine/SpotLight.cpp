@@ -1,18 +1,50 @@
 #include "SpotLight.h"
 #include "RenderManager.h"
+#include "SpotShadowCamera.h"
+
+DEFINE_DATADESC( CSpotLight )
+
+	DEFINE_FIELD( DataField, float, m_flCutoff, "cutoff", 0 )
+	DEFINE_FIELD( DataField, float, m_flOuterCutoff, "outercutoff", 0 )
+	DEFINE_FIELD( DataField, float, m_flConstant, "constant", 0 )
+	DEFINE_FIELD( DataField, float, m_flLinear, "linear", 0 )
+	DEFINE_FIELD( DataField, float, m_flQuadratic, "quadratic", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CSpotLight, light_spot )
 
 CSpotLight::CSpotLight()
 {
-	m_pSpotShadowCamera = NULL;
-
 	m_flCutoff = 0.7660f;
 	m_flOuterCutoff = 0.7071f;
 
 	m_flConstant = 1.0f;
 	m_flLinear = 0.09f;
 	m_flQuadratic = 0.032f;
+}
 
-	m_flMaxRadius = 51.3501f;
+bool CSpotLight::Init( void )
+{
+	if (!BaseClass::Init())
+		return false;
+
+	CBaseShadowCamera *pShadowCamera = GetShadowCamera();
+	if (pShadowCamera)
+	{
+		CSpotShadowCamera *pSpotShadowCamera = dynamic_cast<CSpotShadowCamera *>(pShadowCamera);
+		if (!pSpotShadowCamera)
+			return false;
+
+		pSpotShadowCamera->SetOuterCutoff( m_flOuterCutoff );
+	}
+
+	m_flCutoff = glm::cos( m_flCutoff );
+	m_flOuterCutoff = glm::cos( m_flOuterCutoff );
+
+	CalculateMaxRadius();
+
+	return true;
 }
 
 void CSpotLight::ActivateLight( void )
@@ -32,13 +64,6 @@ void CSpotLight::ActivateLight( void )
 	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightspot, 1, &m_flOuterCutoff );
 }
 
-void CSpotLight::SetShadowCamera( CSpotShadowCamera *pSpotShadowCamera )
-{
-	m_pSpotShadowCamera = pSpotShadowCamera;
-
-	BaseClass::SetShadowCamera( pSpotShadowCamera );
-}
-
 void CSpotLight::SetCutoff( float flCutoff )
 {
 	m_flCutoff = glm::cos( flCutoff );
@@ -48,8 +73,9 @@ void CSpotLight::SetOuterCutoff( float flOuterCutoff )
 {
 	m_flOuterCutoff = glm::cos( flOuterCutoff );
 
-	if (m_pSpotShadowCamera)
-		m_pSpotShadowCamera->SetOuterCutoff( flOuterCutoff );
+	CSpotShadowCamera *pSpotShadowCamera = static_cast<CSpotShadowCamera *>(GetShadowCamera());
+	if (pSpotShadowCamera)
+		pSpotShadowCamera->SetOuterCutoff( flOuterCutoff );
 }
 
 void CSpotLight::SetConstant( float flConstant )

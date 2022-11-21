@@ -2,6 +2,15 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 
+DEFINE_DATADESC( CPointShadowCamera )
+
+	DEFINE_FIELD( DataField, float, m_flNear, "near", 0 )
+	DEFINE_FIELD( DataField, float, m_flFar, "far", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CPointShadowCamera, camera_shadow_point )
+
 CPointShadowCamera::CPointShadowCamera()
 {
 	m_flNear = 0.1f;

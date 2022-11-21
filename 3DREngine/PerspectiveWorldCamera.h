@@ -9,6 +9,10 @@ class CPerspectiveWorldCamera : public CBaseWorldCamera
 public:
 	DECLARE_CLASS( CPerspectiveWorldCamera, CBaseWorldCamera )
 
+	DECLARE_DATADESC()
+
+	DECLARE_LINKED_CLASS()
+
 	CPerspectiveWorldCamera();
 
 	virtual bool Init( void );

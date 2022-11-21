@@ -1,5 +1,7 @@
 #include "AnimatedProp.h"
 
+DEFINE_LINKED_CLASS( CAnimatedProp, prop_animated )
+
 CAnimatedProp::CAnimatedProp()
 {
 
@@ -12,8 +14,7 @@ bool CAnimatedProp::Init( void )
 
 	SetAnimation( 0 );
 
-	SetUpdateAnimation( true );
-	SetAnimate( true );
+	AddFlags( FL_ANIMATE | FL_UPDATEANIMATION );
 
 	return true;
 }

@@ -3,12 +3,13 @@
 
 #include "Global.h"
 #include "BaseMSAACamera.h"
-#include "Handle.h"
 
 class CBaseCopyMSAACamera : public CBaseMSAACamera // TODO: consider trying to make this a BaseWorldCamera derived class
 {
 public:
 	DECLARE_CLASS( CBaseCopyMSAACamera, CBaseMSAACamera )
+
+	DECLARE_DATADESC()
 
 	CBaseCopyMSAACamera();
 
@@ -17,9 +18,7 @@ public:
 	virtual void PostThink( void );
 
 	void SetTargetCamera( CBaseMSAACamera *pTargetCamera );
-
 	void SetSizeQualityFactor( float flSizeQualityFactor );
-
 	void SetMSAALevelQualityFactor( float flMSAALevelQualityFactor );
 
 	CBaseMSAACamera *GetTargetCamera( void );

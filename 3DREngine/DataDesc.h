@@ -2,25 +2,35 @@
 #define DATADESC_H
 
 #include "Global.h"
-#include "File.h"
-#include "TextReader.h"
+#include "FileManager.h"
 
 // TODO: clean this up, maybe split into multiple files
+
+#define FL_REQUIRED	(1<<0)
+#define FL_SAVED	(1<<1)
 
 class CBaseDataField
 {
 public:
 	DECLARE_CLASS_NOBASE( CBaseDataField )
 
-	CBaseDataField( const char *sName, unsigned int uiOffset );
+	CBaseDataField( const char *sName, unsigned int uiOffset, int iFlags );
 
-	virtual bool Save( void *pData, CFile *pFile );
-	virtual bool Load( void *pData, CFile *pFile );
-	virtual bool Load( void *pData, CTextBlock *pTextBlock );
+	bool Save( void *pData ) const;
+	bool Load( void *pData ) const;
+	bool LoadText( void *pData, const CTextBlock *pTextBlock ) const;
+	bool Link( void *pData ) const;
+
+protected:
+	virtual bool SaveInternal( void *pData ) const;
+	virtual bool LoadInternal( void *pData ) const;
+	virtual bool LoadTextInternal( void *pData, const CTextBlock *pTextBlock ) const;
+	virtual bool LinkInternal( void *pData ) const;
 
 protected:
 	const char *m_sName;
 	unsigned int m_uiOffset;
+	int m_iFlags;
 };
 
 class CDataMap
@@ -33,9 +43,10 @@ public:
 	void AddDataField( CBaseDataField *pDataField );
 	void SetBaseMap( CDataMap *pBaseMap );
 
-	bool Save( void *pData, CFile *pFile );
-	bool Load( void *pData, CFile *pFile );
-	bool Load( void *pData, CTextBlock *pTextBlock );
+	bool Save( void *pData ) const;
+	bool Load( void *pData ) const;
+	bool LoadText( void *pData, const CTextBlock *pTextBlock ) const;
+	bool Link( void *pData ) const;
 
 private:
 	std::vector<CBaseDataField *> m_pDataFields;
@@ -47,42 +58,52 @@ template <typename T> void UTIL_DataMapAccess( CDataMap **p ) // TODO: what shou
 	*p = &T::m_dmDataMap;
 }
 
-template <typename T> bool UTIL_SaveData( T *pData, CFile *pFile )
+template <typename T> bool UTIL_SaveData( T *pData )
 {
-	return pData->GetDataMap()->Save( pData, pFile );
+	return pData->GetDataMap()->Save( pData );
 }
 
-template <typename T> bool UTIL_LoadData( T *pData, CFile *pFile )
+template <typename T> bool UTIL_LoadData( T *pData )
 {
-	return pData->GetDataMap()->Load( pData, pFile );
+	return pData->GetDataMap()->Load( pData );
 }
 
-template <typename T> bool UTIL_LoadData( T *pData, CTextBlock *pTextBlock )
+template <typename T> bool UTIL_LoadTextData( T *pData, const CTextBlock *pTextBlock )
 {
-	return pData->GetDataMap()->Load( pData, pTextBlock );
+	return pData->GetDataMap()->LoadText( pData, pTextBlock );
 }
 
-#define DEFINE_FIELDTYPE( name ) \
-	template <class T> class name : public CBaseDataField \
+template <typename T> bool UTIL_LinkData( T *pData )
+{
+	return pData->GetDataMap()->Link( pData );
+}
+
+#define DEFINE_FIELDTYPE( templatename, name, basename ) \
+	template <class templatename> class name : public basename \
 	{ \
 	public: \
-		DECLARE_CLASS( name<T>, CBaseDataField ) \
-		name( const char *sName, unsigned int uiOffset ) : BaseClass( sName, uiOffset ) { }
+		DECLARE_CLASS( name<templatename>, basename ) \
+		name( const char *sName, unsigned int uiOffset, int iFlags ) : BaseClass( sName, uiOffset, iFlags ) { }
 
-#define DEFINE_FIELDTYPE_SAVE( dataname, filename ) \
-		virtual bool Save( void *dataname, CFile *filename )
+#define DEFINE_FIELDTYPE_SAVE( dataname ) \
+		virtual bool SaveInternal( void *dataname ) const
 
-#define DEFINE_FIELDTYPE_LOAD( dataname, filename ) \
-		virtual bool Load( void *dataname, CFile *filename )
+#define DEFINE_FIELDTYPE_LOAD( dataname ) \
+		virtual bool LoadInternal( void *dataname ) const
 
 #define DEFINE_FIELDTYPE_LOAD_TEXT( dataname, textblockname ) \
-		virtual bool Load( void *dataname, CTextBlock *textblockname )
+		virtual bool LoadTextInternal( void *dataname, const CTextBlock *textblockname ) const
+
+#define DEFINE_FIELDTYPE_LINK( dataname ) \
+		virtual bool LinkInternal( void *dataname ) const
 
 #define END_FIELDTYPE() \
 	};
 
-#define DEFINE_FIELD( fieldtype, type, variable, name ) \
-	static fieldtype<type> variable##_dataField( name, (unsigned int)offsetof( classNameTypedef, variable ) ); \
+#define DEFINE_FIELDTYPE_NOBASE( templatename, name )			DEFINE_FIELDTYPE( templatename, name, CBaseDataField )
+
+#define DEFINE_FIELD( fieldtype, type, variable, name, flags ) \
+	static fieldtype<type> variable##_dataField( name, (unsigned int)offsetof( classNameTypedef, variable ), flags ); \
 	classNameTypedef::m_dmDataMap.AddDataField( &variable##_dataField );
 
 #define DECLARE_DATADESC() \
@@ -124,16 +145,18 @@ template <typename T> bool UTIL_LoadData( T *pData, CTextBlock *pTextBlock )
 #define GET_DATA_ADDRESS( data, offset, type )	((type *)((char *)data + offset))
 #define GET_DATA( data, offset, type )			(*(GET_DATA_ADDRESS( data, offset, type )))
 
-DEFINE_FIELDTYPE( DataField )
+// TODO: make a macro for m_uiOffset and m_sName
 
-	DEFINE_FIELDTYPE_SAVE( pData, pFile )
+DEFINE_FIELDTYPE_NOBASE( T, DataField )
+
+	DEFINE_FIELDTYPE_SAVE( pData )
 	{
-		return pFile->Write( GET_DATA( pData, m_uiOffset, T ) );
+		return pFileManager->Write( GET_DATA( pData, m_uiOffset, T ) );
 	}
 
-	DEFINE_FIELDTYPE_LOAD( pData, pFile )
+	DEFINE_FIELDTYPE_LOAD( pData )
 	{
-		return pFile->Read( GET_DATA( pData, m_uiOffset, T ) );
+		return pFileManager->Read( GET_DATA( pData, m_uiOffset, T ) );
 	}
 
 	DEFINE_FIELDTYPE_LOAD_TEXT( pData, pTextBlock )
@@ -143,16 +166,26 @@ DEFINE_FIELDTYPE( DataField )
 
 END_FIELDTYPE()
 
-DEFINE_FIELDTYPE( EmbeddedDataField )
+DEFINE_FIELDTYPE( T, LinkedDataField, DataField<T> )
 
-	DEFINE_FIELDTYPE_SAVE( pData, pFile )
+	DEFINE_FIELDTYPE_LINK( pData )
 	{
-		return UTIL_SaveData( GET_DATA_ADDRESS( pData, m_uiOffset, T ), pFile );
+		T &tData = GET_DATA( pData, CBaseDataField::m_uiOffset, T );
+		return tData.Link();
 	}
 
-	DEFINE_FIELDTYPE_LOAD( pData, pFile )
+END_FIELDTYPE()
+
+DEFINE_FIELDTYPE_NOBASE( T, EmbeddedDataField )
+
+	DEFINE_FIELDTYPE_SAVE( pData )
 	{
-		return UTIL_LoadData( GET_DATA_ADDRESS( pData, m_uiOffset, T ), pFile );
+		return UTIL_SaveData( GET_DATA_ADDRESS( pData, m_uiOffset, T ) );
+	}
+
+	DEFINE_FIELDTYPE_LOAD( pData )
+	{
+		return UTIL_LoadData( GET_DATA_ADDRESS( pData, m_uiOffset, T ) );
 	}
 
 	DEFINE_FIELDTYPE_LOAD_TEXT( pData, pTextBlock )
@@ -164,42 +197,52 @@ DEFINE_FIELDTYPE( EmbeddedDataField )
 		if (!pTextBlock->GetValue( pEmbeddedTextBlock, 1, m_sName ))
 			return false;
 
-		return UTIL_LoadData( GET_DATA_ADDRESS( pData, m_uiOffset, T ), pEmbeddedTextBlock );
+		return UTIL_LoadTextData( GET_DATA_ADDRESS( pData, m_uiOffset, T ), pEmbeddedTextBlock );
 	}
 
 END_FIELDTYPE()
 
-DEFINE_FIELDTYPE( VectorDataField )
+DEFINE_FIELDTYPE( T, LinkedEmbeddedDataField, EmbeddedDataField<T> )
 
-	DEFINE_FIELDTYPE_SAVE( pData, pFile )
+	DEFINE_FIELDTYPE_LINK( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, T );
+		T &tData = GET_DATA( pData, CBaseDataField::m_uiOffset, T );
+		return tData.Link();
+	}
 
-		unsigned int uiSize = vecData.size();
-		if (!pFile->Write( uiSize ))
+END_FIELDTYPE()
+
+DEFINE_FIELDTYPE_NOBASE( T, VectorDataField )
+
+	DEFINE_FIELDTYPE_SAVE( pData )
+	{
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
+
+		unsigned int uiSize = (unsigned int)vecData.size();
+		if (!pFileManager->Write( uiSize ))
 			return false;
 
 		for (unsigned int i = 0; i < uiSize; i++)
 		{
-			if (!pFile->Write( vecData[i] ))
+			if (!pFileManager->Write( vecData[i] ))
 				return false;
 		}
 
 		return true;
 	}
 
-	DEFINE_FIELDTYPE_LOAD( pData, pFile )
+	DEFINE_FIELDTYPE_LOAD( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, T );
+		std::vector<T> &vecData = GET_DATA( pData, CBaseDataField::m_uiOffset, std::vector<T> );
 
 		unsigned int uiSize;
-		if (!pFile->Read( uiSize ))
+		if (!pFileManager->Read( uiSize ))
 			return false;
 
 		for (unsigned int i = 0; i < uiSize; i++)
 		{
 			T tData;
-			if (!pFile->Read( tData ))
+			if (!pFileManager->Read( tData ))
 				return false;
 
 			vecData.push_back( tData );
@@ -217,7 +260,7 @@ DEFINE_FIELDTYPE( VectorDataField )
 		if (!pTextBlock->GetValue( pTextLine, 1, m_sName ))
 			return false;
 
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, T );
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
 
 		for (unsigned int i = 0; i < pTextLine->GetTextItemCount(); i++)
 		{
@@ -233,37 +276,57 @@ DEFINE_FIELDTYPE( VectorDataField )
 
 END_FIELDTYPE()
 
-DEFINE_FIELDTYPE( EmbeddedVectorDataField )
+DEFINE_FIELDTYPE( T, LinkedVectorDataField, VectorDataField<T> )
 
-	DEFINE_FIELDTYPE_SAVE( pData, pFile )
+	DEFINE_FIELDTYPE_LINK( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, T );
-
-		unsigned int uiSize = vecData.size();
-		if (!pFile->Write( uiSize ))
+		std::vector<T> &vecData = GET_DATA( pData, CBaseDataField::m_uiOffset, std::vector<T> );
+		if (vecData.empty())
 			return false;
 
-		for (unsigned int i = 0; i < uiSize; i++)
+		for (unsigned int i = 0; i < vecData.size(); i++)
 		{
-			if (!UTIL_SaveData( &vecData[i], pFile ))
+			T &tData = vecData[i];
+			if (!tData.Link())
 				return false;
 		}
 
 		return true;
 	}
 
-	DEFINE_FIELDTYPE_LOAD( pData, pFile )
+END_FIELDTYPE()
+
+DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
+
+	DEFINE_FIELDTYPE_SAVE( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, T );
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
+
+		unsigned int uiSize = (unsigned int)vecData.size();
+		if (!pFileManager->Write( uiSize ))
+			return false;
+
+		for (unsigned int i = 0; i < uiSize; i++)
+		{
+			if (!UTIL_SaveData( &vecData[i] ))
+				return false;
+		}
+
+		return true;
+	}
+
+	DEFINE_FIELDTYPE_LOAD( pData )
+	{
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
 
 		unsigned int uiSize;
-		if (!pFile->Read( uiSize ))
+		if (!pFileManager->Read( uiSize ))
 			return false;
 
 		for (unsigned int i = 0; i < uiSize; i++)
 		{
 			T tData;
-			if (!UTIL_LoadData( &tData, pFile ))
+			if (!UTIL_LoadData( &tData ))
 				return false;
 
 			vecData.push_back( tData );
@@ -281,7 +344,7 @@ DEFINE_FIELDTYPE( EmbeddedVectorDataField )
 		if (!pTextBlock->GetValue( pTextLine, 1, m_sName ))
 			return false;
 
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, T );
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
 
 		for (unsigned int i = 0; i < pTextLine->GetTextItemCount(); i++)
 		{
@@ -294,6 +357,25 @@ DEFINE_FIELDTYPE( EmbeddedVectorDataField )
 				return false;
 
 			vecData.push_back( tData );
+		}
+
+		return true;
+	}
+
+END_FIELDTYPE()
+
+DEFINE_FIELDTYPE( T, LinkedEmbeddedVectorDataField, EmbeddedVectorDataField<T> )
+
+	DEFINE_FIELDTYPE_LINK( pData )
+	{
+		std::vector<T> &vecData = GET_DATA( pData, CBaseDataField::m_uiOffset, std::vector<T> );
+		if (vecData.empty())
+			return false;
+
+		for (unsigned int i = 0; i < vecData.size(); i++)
+		{
+			if (!vecData[i].Link())
+				return false;
 		}
 
 		return true;

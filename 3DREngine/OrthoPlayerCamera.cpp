@@ -2,6 +2,8 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 
+DEFINE_LINKED_CLASS( COrthoPlayerCamera, camera_player_ortho )
+
 COrthoPlayerCamera::COrthoPlayerCamera()
 {
 

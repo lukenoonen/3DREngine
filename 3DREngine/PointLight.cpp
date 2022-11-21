@@ -1,13 +1,35 @@
 #include "PointLight.h"
 #include "RenderManager.h"
+#include "PointShadowCamera.h"
+
+DEFINE_DATADESC( CPointLight )
+
+	DEFINE_FIELD( DataField, float, m_flConstant, "constant", 0 )
+	DEFINE_FIELD( DataField, float, m_flLinear, "linear", 0 )
+	DEFINE_FIELD( DataField, float, m_flQuadratic, "quadratic", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CPointLight, light_point )
 
 CPointLight::CPointLight()
 {
 	m_flConstant = 1.0f;
 	m_flLinear = 0.09f;
 	m_flQuadratic = 0.032f;
-		
-	m_flMaxRadius = 51.3501f;
+}
+
+bool CPointLight::Init( void )
+{
+	if (!BaseClass::Init())
+		return false;
+
+	CBaseShadowCamera *pShadowCamera = GetShadowCamera();
+	if (pShadowCamera && !(dynamic_cast<CPointShadowCamera *>(pShadowCamera)))
+		return false;
+
+	CalculateMaxRadius();
+	return true;
 }
 
 void CPointLight::ActivateLight( void )
@@ -21,11 +43,6 @@ void CPointLight::ActivateLight( void )
 	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightpoint, 1, &m_flLinear );
 	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightpoint, 2, &m_flQuadratic );
 	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_lightmaxdistance, 0, &m_flMaxRadius );
-}
-
-void CPointLight::SetShadowCamera( CPointShadowCamera *pPointShadowCamera )
-{
-	BaseClass::SetShadowCamera( pPointShadowCamera );
 }
 
 void CPointLight::SetConstant( float flConstant )

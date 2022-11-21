@@ -9,6 +9,8 @@ class CBaseVariableMSAACamera : public CBaseMSAACamera
 public:
 	DECLARE_CLASS( CBaseVariableMSAACamera, CBaseMSAACamera )
 
+	DECLARE_DATADESC()
+
 	CBaseVariableMSAACamera();
 
 	virtual bool Init( void );

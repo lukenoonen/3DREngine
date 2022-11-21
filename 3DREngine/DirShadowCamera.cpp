@@ -2,6 +2,17 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 
+DEFINE_DATADESC( CDirShadowCamera )
+
+	DEFINE_FIELD( DataField, float, m_flHeight, "height", 0 )
+	DEFINE_FIELD( DataField, float, m_flNear, "near", 0 )
+	DEFINE_FIELD( DataField, float, m_flFar, "far", 0 )
+	DEFINE_FIELD( DataField, float, m_flBlurRadius, "blurradius", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CDirShadowCamera, camera_shadow_dir )
+
 CDirShadowCamera::CDirShadowCamera()
 {
 	m_flHeight = 16.0f;

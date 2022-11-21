@@ -2,6 +2,8 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 
+DEFINE_LINKED_CLASS( CPerspectivePlayerCamera, camera_player_perspective )
+
 CPerspectivePlayerCamera::CPerspectivePlayerCamera()
 {
 

@@ -1,9 +1,17 @@
 #include "BaseVariableMSAACamera.h"
 #include "RenderManager.h"
 
+DEFINE_DATADESC( CBaseVariableMSAACamera )
+
+	DEFINE_FIELD( DataField, unsigned int, m_uiBaseSize, "basesize", 0 )
+	DEFINE_FIELD( DataField, float, m_flSizeRatio, "sizeratio", 0 )
+	DEFINE_FIELD( DataField, float, m_ucBaseMSAALevel, "basemsaalevel", 0 )
+
+END_DATADESC()
+
 CBaseVariableMSAACamera::CBaseVariableMSAACamera()
 {
-	m_uiBaseSize = 1024;
+	m_uiBaseSize = 1024; // TODO: maybe just make this a vec2?
 	m_flSizeRatio = 1.0f;
 
 	m_ucBaseMSAALevel = 0;

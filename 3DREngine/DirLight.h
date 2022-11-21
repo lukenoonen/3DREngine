@@ -3,16 +3,17 @@
 
 #include "Global.h"
 #include "BaseLight.h"
-#include "DirShadowCamera.h"
 
 class CDirLight : public CBaseLight
 {
 public:
 	DECLARE_CLASS( CDirLight, CBaseLight )
 
+	DECLARE_LINKED_CLASS()
+
 	CDirLight();
 
-	void SetShadowCamera( CDirShadowCamera *pDirShadowCamera );
+	virtual bool Init( void );
 
 	virtual void ActivateLight( void );
 };

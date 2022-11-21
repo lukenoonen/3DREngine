@@ -12,12 +12,16 @@ public:
 
 	CBaseHandle();
 	CBaseHandle( CBaseEntity *pEntity );
+	virtual ~CBaseHandle();
 
 	void SetEntity( CBaseEntity *pEntity );
 	void SetName( const char *sName );
 	void SetIndex( unsigned int uiIndex );
 
-	CBaseEntity *Get( void );
+	bool Link( void );
+
+	CBaseEntity *Get( void ) const;
+	bool Check( void );
 
 	virtual bool Verify( CBaseEntity *pEntity );
 
@@ -31,6 +35,10 @@ private:
 	} m_uData;
 };
 
+bool UTIL_Write( CFile *pFile, CBaseHandle &hData );
+bool UTIL_Read( CFile *pFile, CBaseHandle &hData );
+bool UTIL_GetValue( const CTextItem *pTextItem, CBaseHandle &hValue );
+
 template <class T> class CHandle : public CBaseHandle
 {
 public:
@@ -39,7 +47,7 @@ public:
 	CHandle();
 	CHandle( T *pEntity );
 
-	T *Get( void );
+	T *Get( void ) const;
 
 	virtual bool Verify( CBaseEntity *pEntity );
 
@@ -48,7 +56,7 @@ public:
 	bool operator ! () const;
 	bool operator == ( T *val ) const;
 	bool operator != ( T *val ) const;
-	CHandle<T> &operator = ( const T *val );
+	CHandle<T> &operator = ( T *val );
 	T *operator -> () const;
 };
 
@@ -62,7 +70,7 @@ template <class T> CHandle<T>::CHandle( T *pEntity ) : BaseClass( pEntity )
 
 }
 
-template <class T> T *CHandle<T>::Get( void )
+template <class T> T *CHandle<T>::Get( void ) const
 {
 	return static_cast<T *>(BaseClass::Get());
 }
@@ -97,7 +105,7 @@ template<class T> bool CHandle<T>::operator != ( T *pEntity ) const
 	return Get() != pEntity;
 }
 
-template<class T> CHandle<T> &CHandle<T>::operator = ( const T *pEntity )
+template<class T> CHandle<T> &CHandle<T>::operator = ( T *pEntity )
 {
 	SetEntity( pEntity );
 	return *this;
@@ -106,6 +114,21 @@ template<class T> CHandle<T> &CHandle<T>::operator = ( const T *pEntity )
 template<class T> T *CHandle<T>::operator -> () const
 {
 	return Get();
+}
+
+template <class T> bool UTIL_Write( CFile *pFile, CHandle<T> &hData )
+{
+	return UTIL_Write( pFile, (CBaseHandle &)hData );
+}
+
+template <class T> bool UTIL_Read( CFile *pFile, CHandle<T> &hData )
+{
+	return UTIL_Read( pFile, (CBaseHandle &)hData );
+}
+
+template <class T> bool UTIL_GetValue( const CTextItem *pTextItem, CHandle<T> &hValue )
+{
+	return UTIL_GetValue( pTextItem, (CBaseHandle &)hValue );
 }
 
 #endif // HANDLE_H

@@ -9,6 +9,10 @@ class CCSMShadowCamera : public CBaseShadowCamera
 public:
 	DECLARE_CLASS( CCSMShadowCamera, CBaseShadowCamera )
 
+	DECLARE_DATADESC()
+
+	DECLARE_LINKED_CLASS()
+
 	CCSMShadowCamera();
 
 	virtual bool Init( void );

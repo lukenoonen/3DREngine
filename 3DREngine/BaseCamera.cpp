@@ -6,6 +6,12 @@ CBaseCamera::CBaseCamera()
 
 }
 
+CBaseCamera::~CBaseCamera()
+{
+	DestroyTextureBuffers();
+	DestroyMSAABuffers();
+}
+
 bool CBaseCamera::Init( void )
 {
 	if (!BaseClass::Init())
@@ -18,14 +24,6 @@ bool CBaseCamera::Init( void )
 	CreateMSAABuffers();
 
 	return true;
-}
-
-bool CBaseCamera::Exit( void )
-{
-	DestroyTextureBuffers();
-	DestroyMSAABuffers();
-
-	return BaseClass::Exit();
 }
 
 void CBaseCamera::PostThink( void )
@@ -69,11 +67,6 @@ void CBaseCamera::SetUpdateTextureBuffers( bool bUpdateTextureBuffers )
 	m_bUpdateTextureBuffers = bUpdateTextureBuffers;
 }
 
-bool CBaseCamera::GetUpdateTextureBuffers( void ) const
-{
-
-}
-
 void CBaseCamera::CreateTextureBuffers( void )
 {
 
@@ -87,11 +80,6 @@ void CBaseCamera::DestroyTextureBuffers( void )
 void CBaseCamera::SetUpdateMSAABuffers( bool bUpdateMSAABuffers )
 {
 	m_bUpdateMSAABuffers = bUpdateMSAABuffers;
-}
-
-bool CBaseCamera::GetUpdateMSAABuffers( void ) const
-{
-
 }
 
 void CBaseCamera::CreateMSAABuffers( void )

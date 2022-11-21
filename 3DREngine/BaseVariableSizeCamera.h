@@ -9,6 +9,8 @@ class CBaseVariableSizeCamera : public CBaseSizeCamera
 public:
 	DECLARE_CLASS( CBaseVariableSizeCamera, CBaseSizeCamera )
 
+	DECLARE_DATADESC()
+
 	CBaseVariableSizeCamera();
 
 	virtual bool Init( void );

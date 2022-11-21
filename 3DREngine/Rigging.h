@@ -11,21 +11,19 @@ class CRigging : public CBaseAsset
 public:
 	DECLARE_CLASS( CRigging, CBaseAsset )
 
-	CRigging();
+	DECLARE_DATADESC()
 
-	virtual bool Init( void );
+	DECLARE_LINKED_CLASS()
+
+	CRigging();
 
 	unsigned int GetBonesCount( void );
 	float GetAnimationTime( unsigned int uiAnimationIndex );
 	void UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, const std::vector<unsigned int> &uiAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors );
 
-	void SetSkeleton( CSkeleton *pSkeleton );
-
-	void AddAnimation( CAnimation *pAnimation );
-
 private:
-	CSkeleton *m_pSkeleton;
-	std::vector<CAnimation *> m_pAnimations;
+	CHandle<CSkeleton> m_hSkeleton;
+	std::vector<CHandle<CAnimation>> m_hAnimations;
 };
 
 #endif // RIGGING_H

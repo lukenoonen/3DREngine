@@ -4,15 +4,17 @@
 #include "Global.h"
 #include "BaseTransform.h"
 
+// TODO: clean up the use of Init() in these classes and derrived classes, since they often call the same functions as PostThink()
+
 class CBaseCamera : public CBaseTransform
 {
 public:
 	DECLARE_CLASS( CBaseCamera, CBaseTransform )
 
 	CBaseCamera();
+	virtual ~CBaseCamera();
 
 	virtual bool Init( void );
-	virtual bool Exit( void );
 
 	virtual void PostThink( void );
 
@@ -24,13 +26,11 @@ public:
 
 protected:
 	void SetUpdateTextureBuffers( bool bUpdateTextureBuffers );
-	bool GetUpdateTextureBuffers( void ) const;
 
 	virtual void CreateTextureBuffers( void );
 	virtual void DestroyTextureBuffers( void );
 
 	void SetUpdateMSAABuffers( bool bUpdateTextureBuffers );
-	bool GetUpdateMSAABuffers( void ) const;
 
 	virtual void CreateMSAABuffers( void );
 	virtual void DestroyMSAABuffers( void );

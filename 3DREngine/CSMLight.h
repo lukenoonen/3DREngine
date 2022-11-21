@@ -3,16 +3,17 @@
 
 #include "Global.h"
 #include "BaseLight.h"
-#include "CSMShadowCamera.h"
 
 class CCSMLight : public CBaseLight
 {
 public:
 	DECLARE_CLASS( CCSMLight, CBaseLight );
 
+	DECLARE_LINKED_CLASS()
+
 	CCSMLight();
 
-	void SetShadowCamera( CCSMShadowCamera *pCSMShadowCamera );
+	virtual bool Init( void );
 
 	virtual void ActivateLight( void );
 };

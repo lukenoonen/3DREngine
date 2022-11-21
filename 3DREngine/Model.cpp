@@ -1,8 +1,18 @@
 #include "Model.h"
 
+DEFINE_DATADESC( CModel )
+
+	DEFINE_FIELD( LinkedVectorDataField, CHandle<CGeometry>, m_hGeometry, "geometry", FL_REQUIRED )
+	DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseMaterial>, m_hMaterials, "materials", FL_REQUIRED )
+	DEFINE_FIELD( LinkedDataField, CHandle<CRigging>, m_hRigging, "rigging", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CModel, model )
+
 CModel::CModel()
 {
-	m_pRigging = NULL;
+
 }
 
 bool CModel::Init( void )
@@ -10,13 +20,7 @@ bool CModel::Init( void )
 	if (!BaseClass::Init())
 		return false;
 
-	if (m_pGeometry.empty())
-		return false;
-
-	if (m_pMaterials.empty())
-		return false;
-
-	if (m_pGeometry.size() != m_pMaterials.size())
+	if (m_hGeometry.size() != m_hMaterials.size())
 		return false;
 
 	ERenderPass eRenderPass = pRenderManager->GetRenderPass();
@@ -24,9 +28,9 @@ bool CModel::Init( void )
 	{
 		pRenderManager->SetRenderPass( (ERenderPass)i );
 		m_bShouldDraw[i] = false;
-		for (unsigned int j = 0; j < m_pMaterials.size(); j++)
+		for (unsigned int j = 0; j < m_hMaterials.size(); j++)
 		{
-			if (m_pMaterials[j]->ShouldApply())
+			if (m_hMaterials[j]->ShouldApply())
 			{
 				m_bShouldDraw[i] = true;
 				break;
@@ -45,47 +49,32 @@ bool CModel::ShouldDraw( void )
 
 void CModel::Draw( void )
 {
-	for (unsigned int i = 0; i < m_pGeometry.size(); i++)
+	for (unsigned int i = 0; i < m_hGeometry.size(); i++)
 	{
-		if (m_pMaterials[i]->ShouldApply())
+		if (m_hMaterials[i]->ShouldApply())
 		{
-			m_pMaterials[i]->Apply();
-			m_pGeometry[i]->Draw();
+			m_hMaterials[i]->Apply();
+			m_hGeometry[i]->Draw();
 		}
 	}
 }
 
-bool CModel::IsAnimated( void )
+bool CModel::IsAnimated( void ) const
 {
-	return m_pRigging != NULL;
+	return m_hRigging != NULL;
 }
 
-unsigned int CModel::GetBonesCount( void )
+unsigned int CModel::GetBonesCount( void ) const
 {
-	return m_pRigging->GetBonesCount();
+	return m_hRigging->GetBonesCount();
 }
 
 float CModel::GetAnimationTime( unsigned int uiAnimationIndex )
 {
-	return m_pRigging->GetAnimationTime( uiAnimationIndex );
+	return m_hRigging->GetAnimationTime( uiAnimationIndex );
 }
 
 void CModel::UpdateAnimation( std::vector<glm::mat4> &matBoneTransforms, const std::vector<unsigned int> &uiAnimations, const std::vector<float> &flAnimationTimes, const std::vector<float> &flAnimationTransitionFactors )
 {
-	m_pRigging->UpdateAnimation( matBoneTransforms, uiAnimations, flAnimationTimes, flAnimationTransitionFactors );
-}
-
-void CModel::AddGeometry( CGeometry *pGeometry )
-{
-	m_pGeometry.push_back( pGeometry );
-}
-
-void CModel::AddMaterial( CBaseMaterial *pMaterial )
-{
-	m_pMaterials.push_back( pMaterial );
-}
-
-void CModel::SetRigging( CRigging *pRigging )
-{
-	m_pRigging = pRigging;
+	m_hRigging->UpdateAnimation( matBoneTransforms, uiAnimations, flAnimationTimes, flAnimationTransitionFactors );
 }

@@ -1,14 +1,24 @@
 #include "CSMLight.h"
 #include "RenderManager.h"
+#include "CSMShadowCamera.h"
+
+DEFINE_LINKED_CLASS( CCSMLight, light_csm )
 
 CCSMLight::CCSMLight()
 {
 
 }
 
-void CCSMLight::SetShadowCamera( CCSMShadowCamera *pCSMShadowCamera )
+bool CCSMLight::Init( void )
 {
-	BaseClass::SetShadowCamera( pCSMShadowCamera );
+	if (!BaseClass::Init())
+		return false;
+
+	CBaseShadowCamera *pShadowCamera = GetShadowCamera();
+	if (pShadowCamera && !(dynamic_cast<CCSMShadowCamera *>(pShadowCamera)))
+		return false;
+
+	return true;
 }
 
 void CCSMLight::ActivateLight( void )

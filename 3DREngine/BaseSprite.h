@@ -4,7 +4,7 @@
 #include "Global.h"
 #include "BaseWorld.h"
 #include "BaseMaterial.h"
-#include "Geometry.h"
+
 /*
 class CBaseSprite : public CBaseWorld
 {

@@ -3,18 +3,21 @@
 
 #include "Global.h"
 #include "BaseLight.h"
-#include "SpotShadowCamera.h"
 
 class CSpotLight : public CBaseLight
 {
 public:
 	DECLARE_CLASS( CSpotLight, CBaseLight )
 
+	DECLARE_DATADESC()
+
+	DECLARE_LINKED_CLASS()
+
 	CSpotLight();
 
-	virtual void ActivateLight( void );
+	virtual bool Init( void );
 
-	void SetShadowCamera( CSpotShadowCamera *pSpotShadowCamera );
+	virtual void ActivateLight( void );
 
 	void SetCutoff( float flCutoff );
 	void SetOuterCutoff( float flOuterCutoff );
@@ -26,9 +29,8 @@ public:
 protected:
 	virtual void CalculateMaxRadius( void );
 
-private:
-	CSpotShadowCamera *m_pSpotShadowCamera;
 
+private:
 	float m_flCutoff;
 	float m_flOuterCutoff;
 

@@ -108,6 +108,12 @@
     <Filter Include="Source Files\Misc">
       <UniqueIdentifier>{00f63a27-ca07-4543-97b3-0ed85099e94f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Resources">
+      <UniqueIdentifier>{22a4aee4-212f-425f-abd5-b3214c3beed2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Resources">
+      <UniqueIdentifier>{73222ac1-5726-4654-a4f4-6d3e628a2eb3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Global.cpp">
@@ -130,9 +136,6 @@
     </ClCompile>
     <ClCompile Include="AnimatedProp.cpp">
       <Filter>Source Files\Entity\Prop</Filter>
-    </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Source Files\Entity\Asset</Filter>
     </ClCompile>
     <ClCompile Include="BaseCamera.cpp">
       <Filter>Source Files\Entity\Camera</Filter>
@@ -163,18 +166,6 @@
     </ClCompile>
     <ClCompile Include="DirLight.cpp">
       <Filter>Source Files\Entity\Light</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseTexture.cpp">
-      <Filter>Source Files\Entity\Asset</Filter>
-    </ClCompile>
-    <ClCompile Include="CubemapTexture.cpp">
-      <Filter>Source Files\Entity\Asset</Filter>
-    </ClCompile>
-    <ClCompile Include="FlatTexture.cpp">
-      <Filter>Source Files\Entity\Asset</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometry.cpp">
-      <Filter>Source Files\Entity\Asset</Filter>
     </ClCompile>
     <ClCompile Include="StaticProp.cpp">
       <Filter>Source Files\Entity\Prop</Filter>
@@ -263,12 +254,6 @@
     <ClCompile Include="glad.cpp">
       <Filter>Include</Filter>
     </ClCompile>
-    <ClCompile Include="AssetManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Skeleton.cpp">
-      <Filter>Source Files\Entity\Asset</Filter>
-    </ClCompile>
     <ClCompile Include="BaseMaterial.cpp">
       <Filter>Source Files\Entity\Asset</Filter>
     </ClCompile>
@@ -302,17 +287,50 @@
     <ClCompile Include="Handle.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="UTIL.cpp">
-      <Filter>Source Files\Global</Filter>
-    </ClCompile>
-    <ClCompile Include="TextReader.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="File.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseResource.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationResource.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryResource.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonResource.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureResource.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="CubemapResource.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Entity\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>Source Files\Entity\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>Source Files\Entity\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Cubemap.cpp">
+      <Filter>Source Files\Entity\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Entity\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Maths.cpp">
+      <Filter>Source Files\Global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\ResourceManager.cpp">
+      <Filter>Source Files\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\FileManager.cpp">
+      <Filter>Source Files\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -379,18 +397,6 @@
     <ClInclude Include="PointLight.h">
       <Filter>Header Files\Entity\Light</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Header Files\Entity\Asset</Filter>
-    </ClInclude>
-    <ClInclude Include="CubemapTexture.h">
-      <Filter>Header Files\Entity\Asset</Filter>
-    </ClInclude>
-    <ClInclude Include="FlatTexture.h">
-      <Filter>Header Files\Entity\Asset</Filter>
-    </ClInclude>
-    <ClInclude Include="Geometry.h">
-      <Filter>Header Files\Entity\Asset</Filter>
-    </ClInclude>
     <ClInclude Include="Skybox.h">
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
@@ -405,9 +411,6 @@
     </ClInclude>
     <ClInclude Include="AnimatedProp.h">
       <Filter>Header Files\Entity\Prop</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseTexture.h">
-      <Filter>Header Files\Entity\Asset</Filter>
     </ClInclude>
     <ClInclude Include="BaseCopySizeCamera.h">
       <Filter>Header Files\Entity\Camera\Copy</Filter>
@@ -466,12 +469,6 @@
     <ClInclude Include="OrthoPlayerCamera.h">
       <Filter>Header Files\Entity\Camera\Uniform\Player</Filter>
     </ClInclude>
-    <ClInclude Include="AssetManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Skeleton.h">
-      <Filter>Header Files\Entity\Asset</Filter>
-    </ClInclude>
     <ClInclude Include="BaseMaterial.h">
       <Filter>Header Files\Entity\Asset</Filter>
     </ClInclude>
@@ -502,26 +499,59 @@
     <ClInclude Include="Handle.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="BaseGlobal.h">
-      <Filter>Header Files\Global</Filter>
-    </ClInclude>
-    <ClInclude Include="Maths.h">
-      <Filter>Header Files\Global</Filter>
-    </ClInclude>
-    <ClInclude Include="UTIL.h">
-      <Filter>Header Files\Global</Filter>
-    </ClInclude>
-    <ClInclude Include="TextReader.h">
-      <Filter>Header Files\Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="File.h">
-      <Filter>Header Files\Misc</Filter>
-    </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
     <ClInclude Include="UniformBufferObjects.h">
       <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseResource.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationResource.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryResource.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonResource.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureResource.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="CubemapResource.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files\Entity\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Cubemap.h">
+      <Filter>Header Files\Entity\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>Header Files\Entity\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Header Files\Entity\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Entity\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\SharedGlobal.h">
+      <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Maths.h">
+      <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\ResourceManager.h">
+      <Filter>Header Files\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\FileManager.h">
+      <Filter>Header Files\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Strings.h">
+      <Filter>Header Files\Global</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

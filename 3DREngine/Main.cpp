@@ -4,6 +4,7 @@
 #include "EntityManager.h"
 #include "RenderManager.h"
 
+/*
 #include "Geometry.h"
 #include "FlatTexture.h"
 #include "UnlitMaterial.h"
@@ -12,7 +13,6 @@
 #include "TestPlayer.h"
 #include "StaticProp.h"
 
-/*
 CAnimatedProp *g_pAnimatedPropTest = NULL;
 
 bool CC_AnimatedPropTest( CTextLine *pCommand )
@@ -22,9 +22,9 @@ bool CC_AnimatedPropTest( CTextLine *pCommand )
 }
 CConCommand cc_animatedproptest( "animatedproptest", CC_AnimatedPropTest );*/
 
-void CreateLevel( unsigned int uiParam );
+/*void CreateLevel( unsigned int uiParam );
 
-bool CC_ReloadTest( CTextLine *pCommand )
+bool CC_ReloadTest( const CTextLine *pCommand )
 {
 	pEntityManager->ClearEntities();
 
@@ -80,7 +80,7 @@ void CreateLevel( unsigned int uiParam )
 	}
 }
 
-/*void CreateLevel( void )
+void CreateLevel( void )
 {
 	{
 		CSkybox *pNewSkybox;
@@ -440,9 +440,7 @@ int main()
 {
 	CreateGlobals();
 
-	pCommandManager->ProcessCommand( "exec autoexec.cfg;" );
-
-	CreateLevel( 0 );
+	pCommandManager->ProcessCommand( "exec autoexec;" );
 
 	while (!pTimeManager->MarkedForQuit())
 	{

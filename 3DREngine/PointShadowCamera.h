@@ -9,6 +9,10 @@ class CPointShadowCamera : public CBaseShadowCamera
 public:
 	DECLARE_CLASS( CPointShadowCamera, CBaseShadowCamera )
 
+	DECLARE_DATADESC()
+
+	DECLARE_LINKED_CLASS()
+
 	CPointShadowCamera();
 
 	virtual bool Init( void );

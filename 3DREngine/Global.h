@@ -3,28 +3,30 @@
 
 #define PROJECT_ENGINE
 
-#include "BaseGlobal.h"
+#include "SharedGlobal.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 // TODO: clean this up
 
-class CAssetManager;
+class CResourceManager;
 class CRenderManager;
 class CCommandManager;
 class CEntityManager;
 class CTimeManager;
 class CInputManager;
+class CFileManager;
 
 void CreateGlobals( void );
 void DestroyGlobals( void );
 
-extern CAssetManager *pAssetManager;
+extern CResourceManager *pResourceManager;
 extern CRenderManager *pRenderManager;
 extern CCommandManager *pCommandManager;
 extern CEntityManager *pEntityManager;
 extern CTimeManager *pTimeManager;
 extern CInputManager *pInputManager;
+extern CFileManager *pFileManager;
 
 #endif // GLOBAL_H

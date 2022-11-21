@@ -9,6 +9,10 @@ class CDirShadowCamera : public CBaseShadowCamera
 public:
 	DECLARE_CLASS( CDirShadowCamera, CBaseShadowCamera )
 
+	DECLARE_DATADESC()
+
+	DECLARE_LINKED_CLASS()
+
 	CDirShadowCamera();
 
 	virtual bool Init( void );

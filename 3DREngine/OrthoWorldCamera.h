@@ -9,6 +9,10 @@ class COrthoWorldCamera : public CBaseWorldCamera
 public:
 	DECLARE_CLASS( COrthoWorldCamera, CBaseWorldCamera )
 
+	DECLARE_DATADESC()
+
+	DECLARE_LINKED_CLASS()
+
 	COrthoWorldCamera();
 
 	virtual bool Init( void );

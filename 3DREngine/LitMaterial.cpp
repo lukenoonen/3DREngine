@@ -3,32 +3,38 @@
 #include "EntityManager.h"
 #include "RenderManager.h"
 
+DEFINE_DATADESC( CLitMaterial )
+
+	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hDiffuse, "diffuse", FL_REQUIRED )
+	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hSpecular, "specular", 0 )
+	DEFINE_FIELD( DataField, float, m_flShininess, "shininess", 0 )
+	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hNormal, "normal", 0 )
+	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hCamera, "camera", 0 )
+	DEFINE_FIELD( DataField, glm::vec2, m_vec2TextureScale, "texturescale", 0 )
+	DEFINE_FIELD( DataField, bool, m_bRecieveShadows, "recieveshadows", 0 )
+	DEFINE_FIELD( DataField, bool, m_bCastShadows, "castshadows", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CLitMaterial, material_lit )
+
 CLitMaterial::CLitMaterial()
 {
-	m_pDiffuse = NULL;
-
-	m_pSpecular = NULL;
-	m_flShininess;
-
-	m_pNormal = NULL;
-
-	m_pCamera = NULL;
+	m_flShininess = 4.0f;
 
 	m_vec2TextureScale = g_vec2One;
 
-	m_bRecieveShadows = false;
-	m_bCastShadows = false;
+	m_bRecieveShadows = true;
+	m_bCastShadows = true;
 }
 
-bool CLitMaterial::Init( void )
+void CLitMaterial::PostThink( void )
 {
-	if (!BaseClass::Init())
-		return false;
+	m_hSpecular.Check();
+	m_hNormal.Check();
+	m_hCamera.Check();
 
-	if (!m_pDiffuse)
-		return false;
-
-	return true;
+	BaseClass::PostThink();
 }
 
 EShaderType CLitMaterial::GetShaderType( void )
@@ -74,12 +80,12 @@ void CLitMaterial::Apply( void )
 	case ERenderPass::t_litspot:
 	case ERenderPass::t_litcsm:
 	{
-		bool bDisplaySpecular = m_pSpecular != NULL;
+		bool bDisplaySpecular = m_hSpecular != NULL;
 
-		bool bDisplayNormal = m_pNormal != NULL;
+		bool bDisplayNormal = m_hNormal != NULL;
 
 		CBaseCamera *pTextureCamera = pEntityManager->GetTextureCamera();
-		bool bDisplayCamera = pTextureCamera != NULL && m_pCamera != NULL;
+		bool bDisplayCamera = pTextureCamera != NULL && m_hCamera != NULL;
 
 		CBaseCamera *pShadowCamera = pEntityManager->GetShadowCamera();
 		bool bDisplayShadow = m_bRecieveShadows && pShadowCamera != NULL;
@@ -91,25 +97,25 @@ void CLitMaterial::Apply( void )
 
 		BaseClass::Apply();
 
-		pRenderManager->SetUniform( "u_sDiffuse", m_pDiffuse->Bind() );
+		pRenderManager->SetUniform( "u_sDiffuse", m_hDiffuse->Bind() );
 
 		if ((EShaderPreprocessorQuality)pRenderManager->GetShaderPreprocessor( EShaderPreprocessor::t_quality ) != EShaderPreprocessorQuality::t_low) // TODO: make normals not render on low quality in the shader
 		{
 			if (bDisplaySpecular)
 			{
-				pRenderManager->SetUniform( "u_sSpecular", m_pSpecular->Bind() );
+				pRenderManager->SetUniform( "u_sSpecular", m_hSpecular->Bind() );
 				pRenderManager->SetUniform( "u_flShininess", m_flShininess ); // TODO: check shaders to see if this is all aligned
 			}
 
 			if (bDisplayNormal)
 			{
-				pRenderManager->SetUniform( "u_sNormal", m_pNormal->Bind() );
+				pRenderManager->SetUniform( "u_sNormal", m_hNormal->Bind() );
 			}
 		}
 
 		if (bDisplayCamera)
 		{
-			pRenderManager->SetUniform( "u_sCamera", m_pCamera->Bind() ); // TODO: add these to shaders
+			pRenderManager->SetUniform( "u_sCamera", m_hCamera->Bind() ); // TODO: add these to shaders
 			pRenderManager->SetUniform( "u_sCameraTexture", pTextureCamera->BindTexture() );
 		}
 
@@ -128,44 +134,4 @@ void CLitMaterial::Apply( void )
 		break;
 	}
 	}
-}
-
-void CLitMaterial::SetDiffuse( CFlatTexture *pDiffuse )
-{
-	m_pDiffuse = pDiffuse;
-}
-
-void CLitMaterial::SetSpecular( CFlatTexture *pSpecular )
-{
-	m_pSpecular = pSpecular;
-}
-
-void CLitMaterial::SetShininess( float flShininess )
-{
-	m_flShininess = flShininess;
-}
-
-void CLitMaterial::SetNormal( CFlatTexture *pNormal )
-{
-	m_pNormal = pNormal;
-}
-
-void CLitMaterial::SetCamera( CFlatTexture *pCamera )
-{
-	m_pCamera = pCamera;
-}
-
-void CLitMaterial::SetTextureScale( const glm::vec2 &vec2TextureScale )
-{
-	m_vec2TextureScale = vec2TextureScale;
-}
-
-void CLitMaterial::SetRecieveShadows( bool bRecieveShadows )
-{
-	m_bRecieveShadows = bRecieveShadows;
-}
-
-void CLitMaterial::SetCastShadows( bool bCastShadows )
-{
-	m_bCastShadows = bCastShadows;
 }

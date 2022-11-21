@@ -2,7 +2,6 @@
 #define SHADER_H
 
 #include "Global.h"
-#include "File.h"
 
 enum class EShaderType : EBaseEnum
 {
@@ -250,8 +249,8 @@ public:
 	CSubShader *GetSubShader( EBaseEnum *eShaderPreprocessors ) const;
 
 private:
-	bool LoadShader( CFile *pFile, char *&sSource, std::vector<unsigned int> *uiIndices );
-	bool LoadShader( CFile *pFile, char *&sSource );
+	bool LoadShader( char *&sSource, std::vector<unsigned int> *uiIndices );
+	bool LoadShader( char *&sSource );
 
 	void CreateSubShaders( char *sVertexCode, char *sGeometryCode, char *sFragmentCode, std::vector<unsigned int> *uiVertexIndices, std::vector<unsigned int> *uiGeometryIndices, std::vector<unsigned int> *uiFragmentIndices, EBaseEnum eIndex, unsigned int uiIndex, unsigned int uiPreviousCount );
 

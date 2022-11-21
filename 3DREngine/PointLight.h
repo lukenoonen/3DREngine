@@ -3,18 +3,21 @@
 
 #include "Global.h"
 #include "BaseLight.h"
-#include "PointShadowCamera.h"
 
 class CPointLight : public CBaseLight
 {
 public:
 	DECLARE_CLASS( CPointLight, CBaseLight )
 
+	DECLARE_DATADESC()
+
+	DECLARE_LINKED_CLASS()
+
 	CPointLight();
 
-	virtual void ActivateLight( void );
+	virtual bool Init( void );
 
-	void SetShadowCamera( CPointShadowCamera *pPointShadowCamera );
+	virtual void ActivateLight( void );
 
 	void SetConstant( float flConstant );
 	void SetLinear( float flLinear );

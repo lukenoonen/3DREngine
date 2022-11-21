@@ -2,6 +2,12 @@
 #include "RenderManager.h"
 #include "TimeManager.h"
 
+DEFINE_DATADESC_NOBASE( CBaseAnimated )
+
+	DEFINE_FIELD( DataField, float, m_flAnimationTimeScale, "animationtimescale", 0 )
+
+END_DATADESC()
+
 CBaseAnimated::CBaseAnimated()
 {
 	m_flAnimationTimeScale = 1.0f;
@@ -67,7 +73,7 @@ void CBaseAnimated::PreDraw( void )
 	if (HasFlags( FL_ANIMATE ))
 	{
 		pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_animate, (EBaseEnum)EShaderPreprocessorAnimate::t_true );
-		pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_bones, 0, 0, UTIL_Min( m_matBoneTransforms.size(), 64 ), &m_matBoneTransforms[0] );
+		pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_bones, 0, 0, UTIL_min( (int)m_matBoneTransforms.size(), 64 ), &m_matBoneTransforms[0] );
 	}
 
 	BaseClass::PreDraw();
@@ -98,9 +104,4 @@ void CBaseAnimated::SetAnimation( unsigned int uiAnimationIndex )
 
 	m_uiAnimations.push_back( uiAnimationIndex );
 	m_flAnimationTimes.push_back( 0.0f );
-}
-
-void CBaseAnimated::SetAnimationTimeScale( float flAnimationTimeScale )
-{
-	m_flAnimationTimeScale = flAnimationTimeScale;
 }

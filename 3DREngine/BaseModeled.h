@@ -10,20 +10,22 @@ class CBaseModeled : public CBaseWorld
 public:
 	DECLARE_CLASS( CBaseModeled, CBaseWorld )
 
+	DECLARE_DATADESC()
+
 	CBaseModeled();
+
+	virtual bool Init( void );
 
 	virtual void PreDraw( void );
 	virtual void Draw( void );
 
 	virtual bool ShouldDraw( void ) const;
 
-	void SetModel( CModel *pModel );
-
 protected:
 	CModel *GetModel( void );
 
 private:
-	CModel *m_pModel;
+	CHandle<CModel> m_hModel;
 };
 
 #endif // BASEMODELED_H

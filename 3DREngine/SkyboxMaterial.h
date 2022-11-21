@@ -3,25 +3,25 @@
 
 #include "Global.h"
 #include "BaseMaterial.h"
-#include "CubemapTexture.h"
+#include "Cubemap.h"
 
 class CSkyboxMaterial : public CBaseMaterial
 {
 public:
 	DECLARE_CLASS( CSkyboxMaterial, CBaseMaterial )
 
-	CSkyboxMaterial();
+	DECLARE_DATADESC()
 
-	virtual bool Init( void );
+	DECLARE_LINKED_CLASS()
+
+	CSkyboxMaterial();
 
 	virtual EShaderType GetShaderType( void );
 
 	virtual void Apply( void );
 
-	void SetSkybox( CCubemapTexture *pSkybox );
-
 private:
-	CCubemapTexture *m_pSkybox;
+	CHandle<CCubemap> m_hCubemap;
 };
 
 #endif // SKYBOXMATERIAL_H

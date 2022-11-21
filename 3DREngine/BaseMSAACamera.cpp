@@ -1,5 +1,11 @@
 #include "BaseMSAACamera.h"
 
+DEFINE_DATADESC( CBaseMSAACamera )
+
+	DEFINE_FIELD( DataField, unsigned char, m_ucMSAALevel, "msaalevel", 0 )
+
+END_DATADESC()
+
 CBaseMSAACamera::CBaseMSAACamera()
 {
 	m_ucMSAALevel = 0;

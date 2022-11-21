@@ -2,6 +2,18 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 
+DEFINE_DATADESC( CSpotShadowCamera )
+
+	DEFINE_FIELD( DataField, float, m_flNear, "near", 0 )
+	DEFINE_FIELD( DataField, float, m_flFar, "far", 0 )
+	DEFINE_FIELD( DataField, float, m_flOuterCutoff, "outercutoff", 0 )
+	DEFINE_FIELD( DataField, float, m_flBlurRadius, "blurradius", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CSpotShadowCamera, camera_shadow_spot )
+
+
 CSpotShadowCamera::CSpotShadowCamera()
 {
 	m_flNear = 0.1f;

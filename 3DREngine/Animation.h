@@ -3,26 +3,25 @@
 
 #include "Global.h"
 #include "BaseAsset.h"
-#include "AssetManager.h"
+#include "AnimationResource.h"
 
 class CAnimation : public CBaseAsset
 {
 public:
 	DECLARE_CLASS( CAnimation, CBaseAsset )
 
-	CAnimation();
-	virtual ~CAnimation();
+	DECLARE_DATADESC()
 
-	virtual bool Init( void );
-	virtual bool Exit( void );
+	DECLARE_LINKED_CLASS()
+
+	CAnimation();
 
 	float GetTime( void ) const;
 
-	void GetTransform( glm::vec3 &vec3Position, glm::quat &qRotation, glm::vec3 &vec3Scale, unsigned int uiIndex, float flAnimationTime );
+	void GetTransform( glm::vec3 &vec3Position, glm::quat &qRotation, glm::vec3 &vec3Scale, unsigned int uiIndex, float flAnimationTime ) const;
 
 private:
-	float m_flTime;
-	std::vector<SAnimationChannel *> m_pAnimationChannels;
+	CAnimationResource *m_pAnimationResource;
 };
 
 #endif // ANIMATION_H

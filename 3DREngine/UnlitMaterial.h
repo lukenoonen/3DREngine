@@ -3,27 +3,25 @@
 
 #include "Global.h"
 #include "BaseMaterial.h"
-#include "FlatTexture.h"
+#include "Texture.h"
 
 class CUnlitMaterial : public CBaseMaterial
 {
 public:
 	DECLARE_CLASS( CUnlitMaterial, CBaseMaterial )
 
-	CUnlitMaterial();
+	DECLARE_DATADESC()
 
-	virtual bool Init( void );
+	DECLARE_LINKED_CLASS()
+
+	CUnlitMaterial();
 
 	virtual EShaderType GetShaderType( void );
 
 	virtual void Apply( void );
 
-	void SetDiffuse( CFlatTexture *pDiffuse );
-
-	void SetTextureScale( const glm::vec2 &vec2TextureScale );
-
 private:
-	CFlatTexture *m_pDiffuse;
+	CHandle<CTexture> m_hDiffuse;
 
 	glm::vec2 m_vec2TextureScale;
 };

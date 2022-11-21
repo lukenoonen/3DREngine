@@ -1,6 +1,14 @@
 #include "BaseShadowCamera.h"
 #include "RenderManager.h"
 
+DEFINE_DATADESC( CBaseShadowCamera )
+
+	DEFINE_FIELD( DataField, float, m_flFadeNear, "fadenear", 0 )
+	DEFINE_FIELD( DataField, float, m_flFadeFar, "fadefar", 0 )
+	DEFINE_FIELD( DataField, float, m_flBlurScale, "blurscale", 0 )
+
+END_DATADESC()
+
 CBaseShadowCamera::CBaseShadowCamera()
 {
 	m_flFadeNear = 225.0f;

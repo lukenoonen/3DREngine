@@ -9,6 +9,8 @@ class COrthoPlayerCamera : public CBasePlayerCamera
 public:
 	DECLARE_CLASS( COrthoPlayerCamera, CBasePlayerCamera )
 
+	DECLARE_LINKED_CLASS()
+
 	COrthoPlayerCamera();
 
 	virtual bool Init( void );

@@ -2,6 +2,16 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 
+DEFINE_DATADESC( CPerspectiveWorldCamera )
+
+	DEFINE_FIELD( DataField, float, m_flFOV, "fov", 0 )
+	DEFINE_FIELD( DataField, float, m_flNear, "near", 0 )
+	DEFINE_FIELD( DataField, float, m_flFar, "far", 0 )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CPerspectiveWorldCamera, camera_world_perspective )
+
 CPerspectiveWorldCamera::CPerspectiveWorldCamera()
 {
 	m_flFOV = M_PI * 0.5f;

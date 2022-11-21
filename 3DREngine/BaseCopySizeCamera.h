@@ -9,6 +9,8 @@ class CBaseCopySizeCamera : public CBaseSizeCamera
 public:
 	DECLARE_CLASS( CBaseCopySizeCamera, CBaseSizeCamera )
 
+	DECLARE_DATADESC()
+
 	CBaseCopySizeCamera();
 
 	virtual bool Init( void );
@@ -16,11 +18,12 @@ public:
 	virtual void PostThink( void );
 
 	void SetTargetCamera( CBaseSizeCamera *pTargetCamera );
-
 	void SetSizeQualityFactor( float flSizeQualityFactor );
 
+	CBaseSizeCamera *GetTargetCamera( void );
+
 private:
-	CBaseSizeCamera *m_pTargetCamera;
+	CHandle<CBaseSizeCamera> m_hTargetCamera;
 
 	float m_flSizeQualityFactor;
 

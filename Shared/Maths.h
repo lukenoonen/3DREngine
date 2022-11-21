@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <TextReader/TextReader.h>
 
 static const glm::vec3 g_vec3Up = glm::vec3( 0.0f, 0.0f, 1.0f );
 static const glm::vec3 g_vec3Down = glm::vec3( 0.0f, 0.0f, -1.0f );
@@ -32,5 +33,24 @@ static const glm::quat g_qZero = glm::quat( glm::vec3( 0.0f, 0.0f, 0.0f ) );
 
 #define M_SQRT2		1.41421356237f
 #define M_PI		3.14159265359f
+
+template <class T> inline T UTIL_max( T a, T b )
+{
+	return a > b ? a : b;
+}
+
+template <class T> inline T UTIL_min( T a, T b )
+{
+	return a < b ? a : b;
+}
+
+// TODO: Maybe find a better place to put these?
+bool UTIL_GetValue( const CTextItem *pTextItem, glm::vec2 &vecValue );
+bool UTIL_GetValue( const CTextItem *pTextItem, glm::vec3 &vecValue );
+bool UTIL_GetValue( const CTextItem *pTextItem, glm::vec4 &vecValue );
+bool UTIL_GetValue( const CTextItem *pTextItem, glm::ivec2 &vecValue );
+bool UTIL_GetValue( const CTextItem *pTextItem, glm::ivec3 &vecValue );
+bool UTIL_GetValue( const CTextItem *pTextItem, glm::ivec4 &vecValue );
+bool UTIL_GetValue( const CTextItem *pTextItem, glm::quat &qValue );
 
 #endif // MATH_H
