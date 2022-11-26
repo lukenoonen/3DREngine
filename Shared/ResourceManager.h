@@ -45,6 +45,9 @@ private:
 	bool LoadSkeletonResource( SSkeletonNode *&pSkeletonNode, unsigned int &uiSkeletonBonesCount );
 	bool LoadTextureResource( unsigned char *&pData, GLsizei &glWidth, GLsizei &glHeight, GLenum &tInternalFormat, GLenum &tFormat, bool &bFiltered, GLint &tTextureWrap, glm::vec4 &vec4BorderColor );
 
+public:
+	bool ProcessModel();
+
 private:
 	std::vector<CAnimationResource *> m_pAnimationResources;
 	std::vector<CCubemapResource *> m_pCubemapResources;

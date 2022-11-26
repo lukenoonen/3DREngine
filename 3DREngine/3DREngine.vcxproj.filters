@@ -108,11 +108,11 @@
     <Filter Include="Source Files\Misc">
       <UniqueIdentifier>{00f63a27-ca07-4543-97b3-0ed85099e94f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Resources">
-      <UniqueIdentifier>{22a4aee4-212f-425f-abd5-b3214c3beed2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Resources">
+    <Filter Include="Source Files\Resource">
       <UniqueIdentifier>{73222ac1-5726-4654-a4f4-6d3e628a2eb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Resource">
+      <UniqueIdentifier>{22a4aee4-212f-425f-abd5-b3214c3beed2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -290,24 +290,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="BaseResource.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationResource.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GeometryResource.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonResource.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureResource.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="CubemapResource.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files\Entity\Asset</Filter>
     </ClCompile>
@@ -331,6 +313,24 @@
     </ClCompile>
     <ClCompile Include="..\Shared\FileManager.cpp">
       <Filter>Source Files\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\AnimationResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\BaseResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\CubemapResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\SkeletonResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\GeometryResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\TextureResource.cpp">
+      <Filter>Source Files\Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -505,24 +505,6 @@
     <ClInclude Include="UniformBufferObjects.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="BaseResource.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationResource.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="GeometryResource.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonResource.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureResource.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="CubemapResource.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>Header Files\Entity\Asset</Filter>
     </ClInclude>
@@ -552,6 +534,24 @@
     </ClInclude>
     <ClInclude Include="..\Shared\Strings.h">
       <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\AnimationResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\BaseResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\CubemapResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\GeometryResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\SkeletonResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\TextureResource.h">
+      <Filter>Header Files\Resource</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

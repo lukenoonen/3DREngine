@@ -22,7 +22,7 @@ public:
 	DECLARE_CLASS( CAnimationResource, CBaseResource )
 
 	CAnimationResource( float flTime, const std::vector<SAnimationChannel *> &pAnimationChannels, const char *sName );
-	~CAnimationResource();
+	virtual ~CAnimationResource();
 
 	float GetTime( void ) const;
 

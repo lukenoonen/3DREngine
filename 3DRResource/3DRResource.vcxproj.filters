@@ -25,6 +25,15 @@
     <Filter Include="Source Files\Manager">
       <UniqueIdentifier>{0e4b0074-d03f-4e32-8406-3aa6165cd924}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Resource">
+      <UniqueIdentifier>{b89ed63b-d8f2-487d-9071-48380f2029bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Resource">
+      <UniqueIdentifier>{81cb490a-9341-4a17-a056-26f01ba83ed2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{ddbc35f7-7425-486c-b8c8-d4ccb845d945}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Global.h">
@@ -45,6 +54,24 @@
     <ClInclude Include="..\Shared\Maths.h">
       <Filter>Header Files\Global</Filter>
     </ClInclude>
+    <ClInclude Include="..\Shared\AnimationResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\BaseResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\GeometryResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\CubemapResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\SkeletonResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\TextureResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Global.cpp">
@@ -61,6 +88,27 @@
     </ClCompile>
     <ClCompile Include="..\Shared\Maths.cpp">
       <Filter>Source Files\Global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\AnimationResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\BaseResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\CubemapResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\GeometryResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\SkeletonResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\TextureResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>Include</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

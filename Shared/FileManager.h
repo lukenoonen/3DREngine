@@ -13,13 +13,14 @@ enum class EFileType : EBaseEnum
 	t_fragmentshader,
 	t_headershader,
 
+	t_text,
+
 	t_animation,
 	t_cubemap,
 	t_geometry,
 	t_skeleton,
 	t_texture,
 
-	t_entitytext,
 	t_entity,
 
 	t_map,
@@ -37,13 +38,14 @@ static const char *g_sFileTypeExtensions[] =
 	".fs",
 	".sh",
 
+	".txt",
+
 	".ani",
 	".cub",
 	".geo",
 	".ske",
 	".tex",
 
-	".txt", // TODO: clean this up
 	".ent",
 
 	".map",
@@ -58,13 +60,14 @@ static const char *g_sFileTypePrePaths[] =
 	"resources/shaders/",
 	"resources/shaders/",
 
+	"resources/text/",
+
 	"resources/animations/",
 	"resources/cubemaps/",
 	"resources/geometry/",
 	"resources/skeletons/",
 	"resources/textures/",
 
-	"resources/entities/", // TODO: clean this up
 	"resources/entities/",
 
 	"resources/maps/",
@@ -80,12 +83,12 @@ static int g_iFileTypeFlags[] =
 	std::ios::in,
 
 	std::ios::in,
-	std::ios::in,
-	std::ios::in,
-	std::ios::in,
-	std::ios::in,
 
-	std::ios::in,
+	std::ios::in | std::ios::binary,
+	std::ios::in | std::ios::binary,
+	std::ios::in | std::ios::binary,
+	std::ios::in | std::ios::binary,
+	std::ios::in | std::ios::binary,
 	 
 	std::ios::in | std::ios::binary,
 
@@ -101,6 +104,7 @@ public:
 	~CFileManager();
 
 	bool Open( const char *sFileName, EFileType eFileType );
+	bool Open( const char *sFilePath, int iFlags );
 	bool Close( void );
 
 	bool Buffer( char *&sBuffer );

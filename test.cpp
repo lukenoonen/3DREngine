@@ -1,12 +1,12 @@
-#include "Global.h"
-
 #include <iostream>
 #include <fstream>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-#include <stb_image/stb_image.h>
-
+#include "stb_image.h"
+#include "SharedGlobal.h"
+#include "TextReader.h"
+#include "SharedAsset.h"
 
 bool g_bDebug = false;
 bool g_bHelp = false;
@@ -14,10 +14,10 @@ const char *g_sFilePath = NULL;
 
 static inline glm::mat4 mat4_cast( const aiMatrix4x4 &m ) { return glm::transpose( glm::make_mat4( &m.a1 ) ); }
 
-bool CreateModel( const char *sRootPath, const char *sName, CTextBlock *pTextInformation )
+bool CreateModel( const char *sRootPath, const char *sName, CTextInformation *pTextInformation )
 {
 	const char *sModel;
-	if (!pTextInformation->GetValue( sModel, 1, "model" ))
+	if (!pTextInformation->GetString( "model", sModel ))
 	{
 		if (g_bDebug)
 			std::cout << "ERROR: model not found.\n";
@@ -26,7 +26,7 @@ bool CreateModel( const char *sRootPath, const char *sName, CTextBlock *pTextInf
 	}
 
 	bool bFlipUV;
-	if (!pTextInformation->GetValue( bFlipUV, 1, "flipuv" ))
+	if (!pTextInformation->GetBool( "flipuv", bFlipUV ))
 	{
 		if (g_bDebug)
 			std::cout << "ERROR: flipuv not found.\n";
@@ -170,10 +170,10 @@ bool CreateModel( const char *sRootPath, const char *sName, CTextBlock *pTextInf
 
 	unsigned int uiSkeletonBoneCount = (unsigned int)matBoneOffsets.size();
 	UTIL_Write( fSkeletonOutput, &uiSkeletonBoneCount, 1, unsigned int );
-
+	
 	for (unsigned int i = 0; i < uiSkeletonBoneCount; i++)
 		UTIL_Write( fSkeletonOutput, &matBoneOffsets[i], 1, glm::mat4 );
-
+	
 	std::vector<aiNode *> pNodes;
 	std::unordered_map<std::string, unsigned int> g_uiNodeMapping;
 	pNodes.push_back( pScene->mRootNode );

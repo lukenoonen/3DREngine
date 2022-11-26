@@ -15,11 +15,18 @@ bool CFileManager::Open( const char *sFileName, EFileType eFileType )
 	char *sFileNameAndExtension = UTIL_stradd( sFileName, g_sFileTypeExtensions[(EBaseEnum)eFileType] );
 	char *sFilePath = UTIL_stradd( g_sFileTypePrePaths[(EBaseEnum)eFileType], sFileNameAndExtension );
 
-	m_fFileReaders.emplace();
-	bool bSuccess = m_fFileReaders.top().ReadFile( sFilePath, g_iFileTypeFlags[(EBaseEnum)eFileType] );
+	bool bSuccess = Open( sFilePath, g_iFileTypeFlags[(EBaseEnum)eFileType] );
 
 	delete[] sFilePath;
 	delete[] sFileNameAndExtension;
+
+	return bSuccess;
+}
+
+bool CFileManager::Open( const char *sFilePath, int iFlags )
+{
+	m_fFileReaders.emplace();
+	bool bSuccess = m_fFileReaders.top().ReadFile( sFilePath, iFlags );
 
 	if (!bSuccess)
 		m_fFileReaders.pop();
