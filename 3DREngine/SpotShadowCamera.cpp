@@ -19,7 +19,7 @@ CSpotShadowCamera::CSpotShadowCamera()
 	m_flNear = 0.1f;
 	m_flFar = 1000.0f;
 	m_flOuterCutoff = 0.7071f;
-	m_flBlurRadius = 0.0f;
+	m_flBlurRadius = 0.05f;
 
 	SetSizeRatio( 1.0f );
 }

@@ -50,23 +50,7 @@ bool UTIL_ProcessCubemap( CTextBlock *pTextBlock )
 		return false;
 	}
 
-	if (!pTextBlock->GetValue( sImage[2], 1, "front" ))
-	{
-		if (g_bDebug)
-			std::cout << "ERROR: front not found.\n";
-
-		return false;
-	}
-
-	if (!pTextBlock->GetValue( sImage[3], 1, "back" ))
-	{
-		if (g_bDebug)
-			std::cout << "ERROR: back not found.\n";
-
-		return false;
-	}
-
-	if (!pTextBlock->GetValue( sImage[4], 1, "top" ))
+	if (!pTextBlock->GetValue( sImage[2], 1, "top" ))
 	{
 		if (g_bDebug)
 			std::cout << "ERROR: front not top.\n";
@@ -74,10 +58,26 @@ bool UTIL_ProcessCubemap( CTextBlock *pTextBlock )
 		return false;
 	}
 
-	if (!pTextBlock->GetValue( sImage[5], 1, "bottom" ))
+	if (!pTextBlock->GetValue( sImage[3], 1, "bottom" ))
 	{
 		if (g_bDebug)
 			std::cout << "ERROR: bottom not found.\n";
+
+		return false;
+	}
+
+	if (!pTextBlock->GetValue( sImage[4], 1, "front" ))
+	{
+		if (g_bDebug)
+			std::cout << "ERROR: front not found.\n";
+
+		return false;
+	}
+
+	if (!pTextBlock->GetValue( sImage[5], 1, "back" ))
+	{
+		if (g_bDebug)
+			std::cout << "ERROR: back not found.\n";
 
 		return false;
 	}

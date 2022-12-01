@@ -18,7 +18,7 @@ CDirShadowCamera::CDirShadowCamera()
 	m_flHeight = 16.0f;
 	m_flNear = -16.0f;
 	m_flFar = 16.0f;
-	m_flBlurRadius = 0.0f;
+	m_flBlurRadius = 0.05f;
 }
 
 bool CDirShadowCamera::Init( void )

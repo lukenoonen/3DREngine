@@ -23,7 +23,7 @@ CCSMShadowCamera::CCSMShadowCamera()
 	m_flInitialDistance = 6.0f;
 	m_flNearError = -60.0f;
 	m_flFarError = 60.0f;
-	m_flBlurRadius = 0.0f;
+	m_flBlurRadius = 0.05f;
 
 	SetSizeRatio( 4.0f );
 }

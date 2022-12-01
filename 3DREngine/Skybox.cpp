@@ -1,42 +1,31 @@
 #include "Skybox.h"
 #include "RenderManager.h"
-/*
+
+DEFINE_DATADESC( CSkybox )
+
+	DEFINE_FIELD( LinkedDataField, CHandle<CSkyboxMaterial>, m_hSkyboxMaterial, "skyboxmaterial", FL_REQUIRED )
+	DEFINE_FIELD( LinkedDataField, CHandle<CGeometry>, m_hGeometry, "geometry", FL_REQUIRED )
+
+END_DATADESC()
+
+DEFINE_LINKED_CLASS( CSkybox, skybox )
+
 CSkybox::CSkybox()
 {
-	m_pMaterial = NULL;
 
-	m_pGeometry = pAssetManager->GetGeometry( "inversecube.3gm" );
-	m_pGeometry->Activate();
-}
-
-bool CSkybox::Init( void )
-{
-	if (!BaseClass::Init())
-		return false;
-
-	if (!m_pMaterial)
-		return false;
-
-	if (!m_pGeometry)
-		return false;
 }
 
 void CSkybox::PreDraw( void )
 {
-	m_pMaterial->Apply();
+	m_hSkyboxMaterial->Apply();
 }
 
 void CSkybox::Draw( void )
 {
-	m_pGeometry->Draw();
+	m_hGeometry->Draw();
 }
 
 bool CSkybox::ShouldDraw( void ) const
 {
-	return BaseClass::ShouldDraw() && m_pMaterial != NULL && m_pMaterial->ShouldApply();
+	return BaseClass::ShouldDraw() && m_hSkyboxMaterial->ShouldApply();
 }
-
-void CSkybox::SetMaterial( CBaseMaterial *pMaterial )
-{
-	m_pMaterial = pMaterial;
-}*/
