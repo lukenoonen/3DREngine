@@ -65,6 +65,8 @@ bool CC_R_ShaderQuality( const CTextLine *pCommand )
 }
 CConCommand cc_r_shaderquality( "r_shaderquality", CC_R_ShaderQuality );
 
+#include <iostream>
+
 CRenderManager::CRenderManager()
 {
 	glfwInit();
@@ -98,9 +100,13 @@ CRenderManager::CRenderManager()
 	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderPreprocessor::i_count; i++)
 		m_eShaderPreprocessors[i] = (EBaseEnum)0;
 
+	std::cout << "compiling shaders...\n";
+
 	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderType::i_count; i++)
 	{
 		m_pShaders[i] = new CShader( g_sShaderTypeNames[i] );
+
+		std::cout << "compiled " << g_sShaderTypeNames[i] << " (" << (int)i << '/' << (int)EShaderType::i_count  << ")\n";
 
 		if (!m_pShaders[i]->Success())
 		{
