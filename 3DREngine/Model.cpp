@@ -8,7 +8,7 @@ DEFINE_DATADESC( CModel )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( CModel, model )
+DEFINE_LINKED_CLASS( CModel, asset_model )
 
 CModel::CModel()
 {

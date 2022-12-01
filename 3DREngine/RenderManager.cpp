@@ -104,7 +104,7 @@ CRenderManager::CRenderManager()
 
 		if (!m_pShaders[i]->Success())
 		{
-			// TODO: What should happen on failure?
+			// What to do when failed?
 		}
 	}
 

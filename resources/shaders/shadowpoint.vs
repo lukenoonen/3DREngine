@@ -6,8 +6,8 @@ layout (location = 0) in vec3 a_vecPos;
 layout (location = 5) in ivec4 a_vecBoneIDs;
 layout (location = 6) in vec4 a_vecWeights;
 
-#include "modelBuffer.sh"
-#include "bonesBuffer.sh"
+#include "modelBuffer"
+#include "bonesBuffer"
 
 void main()
 {

@@ -148,14 +148,14 @@ CShader::CShader( const char *sShaderName )
 
 	char *sGeometryCode;
 	std::vector<unsigned int> uiGeometryIndices[(EBaseEnum)EShaderPreprocessor::i_count];
-	if (!pFileManager->Open( sShaderName, EFileType::t_vertexshader ) || !LoadShader( sGeometryCode, uiGeometryIndices ))
+	if (!pFileManager->Open( sShaderName, EFileType::t_geometryshader ) || !LoadShader( sGeometryCode, uiGeometryIndices ))
 		sGeometryCode = NULL;
 	else
 		pFileManager->Close();
 
 	char *sFragmentCode;
 	std::vector<unsigned int> uiFragmentIndices[(EBaseEnum)EShaderPreprocessor::i_count];
-	if (!pFileManager->Open( sShaderName, EFileType::t_vertexshader ) || !LoadShader( sFragmentCode, uiFragmentIndices ))
+	if (!pFileManager->Open( sShaderName, EFileType::t_fragmentshader ) || !LoadShader( sFragmentCode, uiFragmentIndices ))
 	{
 		delete[] sVertexCode;
 
@@ -277,7 +277,7 @@ bool CShader::LoadShader( char *&sSource )
 		{
 			const char *sPreProcessorChar = sReadChar + 1;
 			int iPreProcessorSize = (int)(UTIL_strpbrk( sPreProcessorChar, " \t\n" ) - sPreProcessorChar);
-			if (UTIL_strneq( "include", sPreProcessorChar, UTIL_min( (int)sizeof( "include" ), iPreProcessorSize ) - 1 ))
+			if (UTIL_strneq( "include", sPreProcessorChar, UTIL_min( (int)sizeof( "include" ), iPreProcessorSize ) ))
 			{
 				sPreProcessorChar = UTIL_strchr( sPreProcessorChar + iPreProcessorSize, '\"' ) + 1;
 				int iPathSize = (int)(UTIL_strchr( sPreProcessorChar, '\"' ) - sPreProcessorChar);

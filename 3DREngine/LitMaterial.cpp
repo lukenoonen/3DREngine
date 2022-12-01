@@ -16,7 +16,7 @@ DEFINE_DATADESC( CLitMaterial )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( CLitMaterial, material_lit )
+DEFINE_LINKED_CLASS( CLitMaterial, asset_material_lit )
 
 CLitMaterial::CLitMaterial()
 {
@@ -71,6 +71,8 @@ EShaderType CLitMaterial::GetShaderType( void )
 	return BaseClass::GetShaderType();
 }
 
+#include <iostream>
+
 void CLitMaterial::Apply( void )
 {
 	switch (pRenderManager->GetRenderPass())
@@ -115,7 +117,7 @@ void CLitMaterial::Apply( void )
 
 		if (bDisplayCamera)
 		{
-			pRenderManager->SetUniform( "u_sCamera", m_hCamera->Bind() ); // TODO: add these to shaders
+			pRenderManager->SetUniform( "u_sCamera", m_hCamera->Bind() ); // TODO: add these to shaders, verify it works
 			pRenderManager->SetUniform( "u_sCameraTexture", pTextureCamera->BindTexture() );
 		}
 
@@ -123,7 +125,7 @@ void CLitMaterial::Apply( void )
 
 		if (bDisplayShadow)
 		{
-			pRenderManager->SetUniform( "u_sShadow", pShadowCamera->BindTexture() ); // TODO: make this u_sShadow instead of u_sShadowMap in the shaders
+			pRenderManager->SetUniform( "u_sShadow", pShadowCamera->BindTexture() );
 		}
 
 		break;

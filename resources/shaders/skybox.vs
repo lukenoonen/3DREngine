@@ -2,7 +2,7 @@
 
 layout (location = 0) in vec3 a_vecPos;
 
-#include "viewBuffer.sh"
+#include "viewBuffer"
 
 out vec3 v_vecTexCoords;
 

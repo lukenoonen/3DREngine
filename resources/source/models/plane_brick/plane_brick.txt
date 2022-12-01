@@ -1,3 +1,0 @@
-type model;
-name plane_brick;
-meshes	{ index 0; name plane_brick.3ms; };

@@ -93,13 +93,13 @@ bool CBaseHandle::Verify( CBaseEntity *pEntity )
 bool UTIL_Write( CFile *pFile, CBaseHandle &hData )
 {
 	unsigned int uiIndex = pEntityManager->GetEntityIndex( hData.Get() );
-	return UTIL_Write( pFile, uiIndex );
+	return pFile->Write( uiIndex );
 }
 
 bool UTIL_Read( CFile *pFile, CBaseHandle &hData )
 {
 	unsigned int uiIndex;
-	if (!UTIL_Read( pFile, uiIndex ))
+	if (!pFile->Read( uiIndex ))
 		return false;
 
 	hData.SetIndex( uiIndex );
@@ -109,7 +109,7 @@ bool UTIL_Read( CFile *pFile, CBaseHandle &hData )
 bool UTIL_GetValue( const CTextItem *pTextItem, CBaseHandle &hValue )
 {
 	const char *sName;
-	if (!UTIL_GetValue( pTextItem, sName ))
+	if (!pTextItem->GetValue( sName ))
 		return false;
 
 	if (UTIL_streq( sName, "NULL" )) // TODO: remove this test

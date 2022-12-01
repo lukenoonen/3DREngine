@@ -1,0 +1,6 @@
+model
+{
+	name plane;
+	flipuv false;
+	model plane.obj;
+};

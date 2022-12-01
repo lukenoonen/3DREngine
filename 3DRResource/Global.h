@@ -5,13 +5,11 @@
 
 #include "SharedGlobal.h"
 
-class CResourceManager;
 class CFileManager;
 
 void CreateGlobals( void );
 void DestroyGlobals( void );
 
-extern CResourceManager *pResourceManager;
 extern CFileManager *pFileManager;
 
 #endif // GLOBAL_H

@@ -1,4 +1,0 @@
-type mesh;
-name testcharacter;
-geometry testcharacter.3gm;
-material testcharacter.3mt;

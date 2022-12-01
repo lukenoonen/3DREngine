@@ -1,7 +1,11 @@
 #version 330 core
 
 #subshader QUALITY
+#subshader SPECULAR
+#subshader NORMAL
+#subshader CAMERA
 #subshader SHADOW
+#subshader REFLECTION
 
 #if QUALITY_LOW
 #define SHADOW_SAMPLES 4
@@ -24,37 +28,60 @@ in vec3 v_vecNormal;
 in vec3 v_vecTangentLightPos;
 in vec3 v_vecTangentViewPos;
 in vec3 v_vecTangentFragPos;
+#if SHADOW_TRUE
 in float v_flShadowMapFactor;
 in vec2 v_vecShadowMapCoords;
+#endif // SHADOW_TRUE
+#if REFLECTION_TRUE
+in float v_flReflectionMapFactor;
+in vec2 v_vecReflectionMapCoords;
+#endif // REFLECTION_TRUE
 
-#include "lightBuffer.sh"
-#include "lightPositionBuffer.sh"
-#include "lightDirectionBuffer.sh"
-#include "lightMaxDistance.sh"
-#include "lightPointBuffer.sh"
-#include "lightSpotBuffer.sh"
-#include "shadowBlurBuffer.sh"
-#include "shadowFadeBuffer.sh"
-#include "vogelSample.sh"
-#include "bias.sh"
+#include "lightBuffer"
+#include "lightPositionBuffer"
+#include "lightDirectionBuffer"
+#include "lightMaxDistance"
+#include "lightPointBuffer"
+#include "lightSpotBuffer"
+#if SHADOW_TRUE
+#include "shadowBlurBuffer"
+#include "shadowFadeBuffer"
+#include "vogelSample"
+#include "bias"
+#endif // SHADOW_TRUE
 
 uniform sampler2D u_sDiffuse;
 #if !QUALITY_LOW
-uniform bool u_bUseSpecular;
+#if SPECULAR_TRUE
 uniform sampler2D u_sSpecular;
-#endif // !QUALITY_LOW
-uniform bool u_bUseNormal;
-uniform sampler2D u_sNormal;
 uniform float u_flShininess;
+#endif // SPECULAR_TRUE
+#if NORMAL_TRUE
+uniform sampler2D u_sNormal;
+#endif // NORMAL_TRUE
+#endif // !QUALITY_LOW
+#if CAMERA_TRUE
+uniform sampler2D u_sCamera;
+uniform sampler2D u_sCameraTexture;
+#endif // CAMERA_TRUE
 #if SHADOW_TRUE
-uniform sampler2DShadow u_sShadowMap;
+uniform sampler2DShadow u_sShadow;
 #endif // SHADOW_TRUE
 
 out vec4 v_vecFragColor;
 
 void main()
 {
+#if CAMERA_TRUE
+	vec3 vecCameraSample = texture(u_sCamera, v_vecTexCoords).xyz;
+#if REFLECTION_TRUE
+	vec3 vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz * (1.0f - vecCameraSample.r) + texture(u_sCameraTexture, (v_vecReflectionMapCoords / v_flReflectionMapFactor) * 0.5f + 0.5f).xyz * vecCameraSample.r;
+#else // REFLECTION_TRUE
+	vec3 vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz * (1.0f - vecCameraSample.r) + texture(u_sCameraTexture, v_vecTexCoords).xyz * vecCameraSample.r;
+#endif // REFLECTION_TRUE
+#else // CAMERA_TRUE
 	vec3 vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz;
+#endif // CAMERA_TRUE
 	vec3 vecDelta = u_vecLightPosition - v_vecFragPos;
 	float flDistance = length(vecDelta);
 	vec3 vecNormalizedDelta = vecDelta / flDistance;
@@ -83,13 +110,18 @@ void main()
 		return;
 	}
 	
-	vec3 vecNormal = u_bUseNormal ? normalize((texture(u_sNormal, v_vecTexCoords).rgb * 2.0f - 1.0f) * vec3(1.0f, -1.0f, 1.0f)) : vec3(0.0f, 0.0f, 1.0f);
+	
+#if !QUALITY_LOW && NORMAL_TRUE
+	vec3 vecNormal = normalize((texture(u_sNormal, v_vecTexCoords).rgb * 2.0f - 1.0f) * vec3(1.0f, -1.0f, 1.0f));
+#else // !QUALITY_LOW && NORMAL_TRUE
+	vec3 vecNormal = vec3(0.0f, 0.0f, 1.0f);
+#endif // !QUALITY_LOW && NORMAL_TRUE
 	vec3 vecLightDirection = normalize(v_vecTangentLightPos - v_vecTangentFragPos);
 	
 	vec3 vecDiffuseLight = u_vecLightDiffuse * max(dot(vecNormal, vecLightDirection), 0.0f) * vecDiffuseSample * flAttenuation;
-#if !QUALITY_LOW
-	vec3 vecSpecularLight = u_bUseSpecular ? u_vecLightSpecular * pow(max(dot(vecNormal, (vecLightDirection + normalize(v_vecTangentViewPos - v_vecTangentFragPos)) * 0.5f), 0.0f), u_flShininess) * texture(u_sSpecular, v_vecTexCoords).xyz * flAttenuation : vec3(0.0f);
-#endif // !QUALITY_LOW
+#if !QUALITY_LOW && SPECULAR_TRUE
+	vec3 vecSpecularLight = u_vecLightSpecular * pow(max(dot(vecNormal, (vecLightDirection + normalize(v_vecTangentViewPos - v_vecTangentFragPos)) * 0.5f), 0.0f), u_flShininess) * texture(u_sSpecular, v_vecTexCoords).xyz * flAttenuation;
+#endif // !QUALITY_LOW && SPECULAR_TRUE
 
 	float flShadow = 1.0f;
 #if SHADOW_TRUE
@@ -104,7 +136,7 @@ void main()
 		float flAdjustedShadowMapDepth = flDistance / u_flLightMaxDistance - bias(flNormalDirectionDot);
 		flShadow = 0.0f;
 		for (int i = 0; i < SHADOW_SAMPLES; i++)
-			flShadow += texture(u_sShadowMap, vec3(vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepth));
+			flShadow += texture(u_sShadow, vec3(vecAdjustedShadowMapCoords + VogelDiskSample(i, SHADOW_SAMPLES, u_flShadowBlurScale, flPhi), flAdjustedShadowMapDepth));
 		
 		flShadow *= SHADOW_SAMPLES_INV_F;
 		
@@ -113,9 +145,9 @@ void main()
 	}
 #endif // SHADOW_TRUE
 	
-#if QUALITY_LOW
-    v_vecFragColor = vec4(vecAmbientLight + flShadow * (vecDiffuseLight), 1.0f);
-#else // QUALITY_LOW
+#if !QUALITY_LOW && SPECULAR_TRUE
     v_vecFragColor = vec4(vecAmbientLight + flShadow * (vecDiffuseLight + vecSpecularLight), 1.0f);
-#endif // QUALITY_LOW
+#else // !QUALITY_LOW && SPECULAR_TRUE
+    v_vecFragColor = vec4(vecAmbientLight + flShadow * vecDiffuseLight, 1.0f);
+#endif // !QUALITY_LOW && SPECULAR_TRUE
 }

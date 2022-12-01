@@ -142,6 +142,7 @@ bool CTestPlayer::Init( void )
 		return false;
 
 	CBasePlayerCamera *pCamera = GetCamera();
+
 	pCamera->SetParent( this );
 	pCamera->SetPosition( GetPosition() );
 	pCamera->SetRotation( GetRotation() );

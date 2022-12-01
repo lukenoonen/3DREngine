@@ -1,4 +1,0 @@
-type geometry;
-name plane;
-model plane.obj;
-flipuv 0;

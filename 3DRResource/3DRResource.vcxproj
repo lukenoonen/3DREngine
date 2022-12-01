@@ -145,29 +145,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Shared\AnimationResource.h" />
-    <ClInclude Include="..\Shared\BaseResource.h" />
-    <ClInclude Include="..\Shared\CubemapResource.h" />
+    <ClInclude Include="..\Shared\AnimationResourceData.h" />
+    <ClInclude Include="..\Shared\CubemapResourceData.h" />
     <ClInclude Include="..\Shared\FileManager.h" />
-    <ClInclude Include="..\Shared\GeometryResource.h" />
+    <ClInclude Include="..\Shared\GeometryResourceData.h" />
     <ClInclude Include="..\Shared\Maths.h" />
-    <ClInclude Include="..\Shared\ResourceManager.h" />
     <ClInclude Include="..\Shared\SharedGlobal.h" />
-    <ClInclude Include="..\Shared\SkeletonResource.h" />
+    <ClInclude Include="..\Shared\SkeletonResourceData.h" />
     <ClInclude Include="..\Shared\Strings.h" />
-    <ClInclude Include="..\Shared\TextureResource.h" />
+    <ClInclude Include="..\Shared\TextureResourceData.h" />
+    <ClInclude Include="FileType.h" />
     <ClInclude Include="Global.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Shared\AnimationResource.cpp" />
-    <ClCompile Include="..\Shared\BaseResource.cpp" />
-    <ClCompile Include="..\Shared\CubemapResource.cpp" />
+    <ClCompile Include="..\Shared\AnimationResourceData.cpp" />
+    <ClCompile Include="..\Shared\CubemapResourceData.cpp" />
     <ClCompile Include="..\Shared\FileManager.cpp" />
-    <ClCompile Include="..\Shared\GeometryResource.cpp" />
+    <ClCompile Include="..\Shared\GeometryResourceData.cpp" />
     <ClCompile Include="..\Shared\Maths.cpp" />
-    <ClCompile Include="..\Shared\ResourceManager.cpp" />
-    <ClCompile Include="..\Shared\SkeletonResource.cpp" />
-    <ClCompile Include="..\Shared\TextureResource.cpp" />
+    <ClCompile Include="..\Shared\SkeletonResourceData.cpp" />
+    <ClCompile Include="..\Shared\TextureResourceData.cpp" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="stb_image.cpp" />

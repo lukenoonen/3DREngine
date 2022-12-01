@@ -1,0 +1,119 @@
+texture
+{
+	name body;
+	filtered true;
+	texturewrap repeat;
+	image body.png;
+};
+
+texture
+{
+	name body_norm;
+	filtered true;
+	texturewrap repeat;
+	image body_norm.png;
+};
+
+texture
+{
+	name body_spec;
+	filtered true;
+	texturewrap repeat;
+	image body_spec.png;
+};
+
+texture
+{
+	name face;
+	filtered true;
+	texturewrap repeat;
+	image face.png;
+};
+
+texture
+{
+	name face_norm;
+	filtered true;
+	texturewrap repeat;
+	image face_norm.png;
+};
+
+texture
+{
+	name face_spec;
+	filtered true;
+	texturewrap repeat;
+	image face_spec.png;
+};
+
+texture
+{
+	name grill;
+	filtered true;
+	texturewrap repeat;
+	image grill.png;
+};
+
+texture
+{
+	name grill_norm;
+	filtered true;
+	texturewrap repeat;
+	image grill_norm.png;
+};
+
+texture
+{
+	name grill_spec;
+	filtered true;
+	texturewrap repeat;
+	image grill_spec.png;
+};
+
+texture
+{
+	name helmet;
+	filtered true;
+	texturewrap repeat;
+	image helmet.png;
+};
+
+texture
+{
+	name helmet_norm;
+	filtered true;
+	texturewrap repeat;
+	image helmet_norm.png;
+};
+
+texture
+{
+	name helmet_spec;
+	filtered true;
+	texturewrap repeat;
+	image helmet_spec.png;
+};
+
+texture
+{
+	name rgrill;
+	filtered true;
+	texturewrap repeat;
+	image rgrill.png;
+};
+
+texture
+{
+	name rgrill_norm;
+	filtered true;
+	texturewrap repeat;
+	image rgrill_norm.png;
+};
+
+texture
+{
+	name rgrill_spec;
+	filtered true;
+	texturewrap repeat;
+	image rgrill_spec.png;
+};

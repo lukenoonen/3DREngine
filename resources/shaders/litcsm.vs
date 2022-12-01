@@ -13,18 +13,18 @@ layout (location = 4) in vec2 a_vecTexCoords;
 layout (location = 5) in ivec4 a_vecBoneIDs;
 layout (location = 6) in vec4 a_vecWeights;
 
-#include "viewBuffer.sh"
-#include "modelBuffer.sh"
-#include "bonesBuffer.sh"
-#include "lightDirectionBuffer.sh"
+#include "viewBuffer"
+#include "modelBuffer"
+#include "bonesBuffer"
+#include "lightDirectionBuffer"
 #if SHADOW_TRUE
-#include "shadowBuffer.sh"
+#include "shadowBuffer"
 #endif // SHADOW_TRUE
 #if CLIP_TRUE
-#include "clipBuffer.sh"
+#include "clipBuffer"
 #endif // CLIP_TRUE
 #if REFLECTION_TRUE
-#include "reflectionBuffer.sh"
+#include "reflectionBuffer"
 #endif // REFLECTION_TRUE
 
 uniform vec2 u_vecTextureScale;

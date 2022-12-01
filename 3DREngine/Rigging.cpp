@@ -7,7 +7,7 @@ DEFINE_DATADESC( CRigging )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( CRigging, rigging )
+DEFINE_LINKED_CLASS( CRigging, asset_rigging )
 
 CRigging::CRigging()
 {

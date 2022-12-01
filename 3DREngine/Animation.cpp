@@ -6,7 +6,7 @@ DEFINE_DATADESC( CAnimation )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( CAnimation, animation )
+DEFINE_LINKED_CLASS( CAnimation, asset_animation )
 
 CAnimation::CAnimation()
 {

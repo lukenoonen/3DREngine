@@ -1,7 +1,6 @@
 #version 330 core
 
 #subshader QUALITY
-
 #subshader SPECULAR
 #subshader NORMAL
 #subshader CAMERA
@@ -39,15 +38,15 @@ in float v_flReflectionMapFactor;
 in vec2 v_vecReflectionMapCoords;
 #endif // REFLECTION_TRUE
 
-#include "lightBuffer.sh"
-#include "lightPositionBuffer.sh"
-#include "lightDirectionBuffer.sh"
+#include "lightBuffer"
+#include "lightPositionBuffer"
+#include "lightDirectionBuffer"
 #if SHADOW_TRUE
-#include "shadowCascadeFadeBuffer.sh"
-#include "shadowBlurBuffer.sh"
-#include "shadowFadeBuffer.sh"
-#include "vogelSample.sh"
-#include "bias.sh"
+#include "shadowCascadeFadeBuffer"
+#include "shadowBlurBuffer"
+#include "shadowFadeBuffer"
+#include "vogelSample"
+#include "bias"
 #endif // SHADOW_TRUE
 
 uniform sampler2D u_sDiffuse;

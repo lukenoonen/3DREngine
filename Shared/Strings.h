@@ -1,7 +1,7 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
-// TODO: find a better solution than this
+// TODO: verify all of these work
 #pragma warning(disable:4996)
 
 #include <string>
@@ -88,6 +88,86 @@ inline const char *UTIL_strskip( const char *str1, const char *str2 )
 	return *out ? out : NULL;
 }
 
+inline const char *UTIL_strchrl( const char *str1, int character )
+{
+	const char *out = NULL;
+	const char *next = str1;
+	while (next = strchr( str1, character ))
+		out = next++;
+
+	return out;
+}
+
+inline char *UTIL_strchrl( char *str1, int character )
+{
+	char *out = NULL;
+	char *next = str1;
+	while (next = strchr( str1, character ))
+		out = next++;
+
+	return out;
+}
+
+inline const char *UTIL_strstrl( const char *str1, const char *str2 )
+{
+	const char *out = NULL;
+	const char *next = str1;
+	while (next = strstr( next, str2 ))
+		out = next++;
+
+	return out;
+}
+
+inline char *UTIL_strstrl( char *str1, const char *str2 )
+{
+	char *out = NULL;
+	char *next = str1;
+	while (next = strstr( next, str2 ))
+		out = next++;
+
+	return out;
+}
+
+inline const char *UTIL_strpbrkl( const char *str1, const char *str2 )
+{
+	const char *out = NULL;
+	const char *next = str1;
+	while (next = strpbrk( next, str2 ))
+		out = next++;
+
+	return out;
+}
+
+inline char *UTIL_strpbrkl( char *str1, const char *str2 )
+{
+	char *out = NULL;
+	char *next = str1;
+	while (next = strpbrk( next, str2 ))
+		out = next++;
+
+	return out;
+}
+
+inline const char *UTIL_strskipl( const char *str1, const char *str2 )
+{
+	const char *out = NULL;
+	const char *next = str1;
+	while (next = UTIL_strskip( next, str2 ))
+		out = next++;
+
+	return out;
+}
+
+inline char *UTIL_strskipl( char *str1, const char *str2 )
+{
+	char *out = NULL;
+	char *next = str1;
+	while (next = UTIL_strskip( next, str2 ))
+		out = next++;
+
+	return out;
+}
+
 inline char *UTIL_strdup( const char *str1 )
 {
 	size_t num = strlen( str1 );
@@ -141,7 +221,5 @@ inline char *UTIL_extn( char *str1 )
 	char *out = strchr( str1, '.' );
 	return out ? out + 1 : NULL;
 }
-
-#undef _CRT_NONSTDC_NO_DEPRECATE
 
 #endif // STRINGS_H

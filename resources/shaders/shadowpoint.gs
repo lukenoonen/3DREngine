@@ -3,7 +3,7 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices=18) out;
 
-#include "shadowBuffer.sh"
+#include "shadowBuffer"
 
 out vec4 v_vecFragPos;
 

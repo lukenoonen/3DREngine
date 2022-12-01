@@ -6,7 +6,7 @@ DEFINE_DATADESC( CCubemap )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( CCubemap, cubemap )
+DEFINE_LINKED_CLASS( CCubemap, asset_cubemap )
 
 CCubemap::CCubemap()
 {

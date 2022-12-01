@@ -3,9 +3,9 @@
 
 DEFINE_DATADESC( CBaseTransform )
 
-	DEFINE_FIELD( DataField, glm::vec3, m_vec3Position, "position", FL_REQUIRED )
-	DEFINE_FIELD( DataField, glm::quat, m_qRotation, "rotation", FL_REQUIRED )
-	DEFINE_FIELD( DataField, glm::vec3, m_vec3Scale, "scale", FL_REQUIRED )
+	DEFINE_FIELD( DataField, glm::vec3, m_vec3Position, "position", 0 )
+	DEFINE_FIELD( DataField, glm::quat, m_qRotation, "rotation", 0 )
+	DEFINE_FIELD( DataField, glm::vec3, m_vec3Scale, "scale", 0 )
 	DEFINE_FIELD( LinkedDataField, CHandle<CBaseTransform>, m_hParent, "parent", 0 )
 	DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseTransform>, m_hChildren, "children", 0 )
 
@@ -14,6 +14,10 @@ END_DATADESC()
 CBaseTransform::CBaseTransform()
 {
 	AddFlags( FL_PARENTPOSITION | FL_PARENTROTATION | FL_PARENTSCALE );
+
+	m_vec3Position = g_vec3Zero;
+	m_qRotation = g_vec3Zero;
+	m_vec3Scale = g_vec3One;
 	
 	m_ulLastFramePositionUpdated = 0;
 	m_ulLastFrameRotationUpdated = 0;

@@ -6,7 +6,7 @@ DEFINE_DATADESC( CTexture )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( CTexture, texture )
+DEFINE_LINKED_CLASS( CTexture, asset_texture )
 
 CTexture::CTexture()
 {

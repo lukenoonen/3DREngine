@@ -6,7 +6,7 @@ DEFINE_DATADESC( CSkeleton )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( CSkeleton, skeleton )
+DEFINE_LINKED_CLASS( CSkeleton, asset_skeleton )
 
 CSkeleton::CSkeleton()
 {

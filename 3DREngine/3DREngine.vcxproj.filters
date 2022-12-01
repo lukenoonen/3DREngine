@@ -114,6 +114,12 @@
     <Filter Include="Header Files\Resource">
       <UniqueIdentifier>{22a4aee4-212f-425f-abd5-b3214c3beed2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Resource\Data">
+      <UniqueIdentifier>{83569b3f-3059-463c-b090-ee36bf4a87e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Resource\Data">
+      <UniqueIdentifier>{aa0654db-2020-4ed8-b924-08668ebb65c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Global.cpp">
@@ -308,29 +314,44 @@
     <ClCompile Include="..\Shared\Maths.cpp">
       <Filter>Source Files\Global</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\ResourceManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="..\Shared\FileManager.cpp">
       <Filter>Source Files\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\AnimationResource.cpp">
+    <ClCompile Include="..\Shared\AnimationResourceData.cpp">
+      <Filter>Source Files\Resource\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\CubemapResourceData.cpp">
+      <Filter>Source Files\Resource\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\GeometryResourceData.cpp">
+      <Filter>Source Files\Resource\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\SkeletonResourceData.cpp">
+      <Filter>Source Files\Resource\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\TextureResourceData.cpp">
+      <Filter>Source Files\Resource\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationResource.cpp">
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\BaseResource.cpp">
+    <ClCompile Include="CubemapResource.cpp">
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\CubemapResource.cpp">
+    <ClCompile Include="GeometryResource.cpp">
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\SkeletonResource.cpp">
+    <ClCompile Include="SkeletonResource.cpp">
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\GeometryResource.cpp">
+    <ClCompile Include="TextureResource.cpp">
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\TextureResource.cpp">
+    <ClCompile Include="BaseResource.cpp">
       <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Source Files\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -526,32 +547,50 @@
     <ClInclude Include="..\Shared\Maths.h">
       <Filter>Header Files\Global</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\ResourceManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="..\Shared\FileManager.h">
       <Filter>Header Files\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Strings.h">
       <Filter>Header Files\Global</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\AnimationResource.h">
+    <ClInclude Include="..\Shared\AnimationResourceData.h">
+      <Filter>Header Files\Resource\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\CubemapResourceData.h">
+      <Filter>Header Files\Resource\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\GeometryResourceData.h">
+      <Filter>Header Files\Resource\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\SkeletonResourceData.h">
+      <Filter>Header Files\Resource\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\TextureResourceData.h">
+      <Filter>Header Files\Resource\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationResource.h">
       <Filter>Header Files\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\BaseResource.h">
+    <ClInclude Include="CubemapResource.h">
       <Filter>Header Files\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\CubemapResource.h">
+    <ClInclude Include="GeometryResource.h">
       <Filter>Header Files\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\GeometryResource.h">
+    <ClInclude Include="SkeletonResource.h">
       <Filter>Header Files\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\SkeletonResource.h">
+    <ClInclude Include="TextureResource.h">
       <Filter>Header Files\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\TextureResource.h">
+    <ClInclude Include="BaseResource.h">
       <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Header Files\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="FileType.h">
+      <Filter>Header Files\Misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

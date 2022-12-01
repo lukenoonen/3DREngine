@@ -6,7 +6,7 @@ DEFINE_DATADESC( CGeometry )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( CGeometry, geometry )
+DEFINE_LINKED_CLASS( CGeometry, asset_geometry )
 
 CGeometry::CGeometry()
 {

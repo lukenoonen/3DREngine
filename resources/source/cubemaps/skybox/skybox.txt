@@ -1,0 +1,11 @@
+cubemap
+{
+	name skybox;
+	filtered true;
+	right right.jpg;
+	left left.jpg;
+	front front.jpg;
+	back back.jpg;
+	top top.jpg;
+	bottom bottom.jpg;
+};

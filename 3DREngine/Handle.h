@@ -118,17 +118,17 @@ template<class T> T *CHandle<T>::operator -> () const
 
 template <class T> bool UTIL_Write( CFile *pFile, CHandle<T> &hData )
 {
-	return UTIL_Write( pFile, (CBaseHandle &)hData );
+	return pFile->Write( (CBaseHandle &)hData );
 }
 
 template <class T> bool UTIL_Read( CFile *pFile, CHandle<T> &hData )
 {
-	return UTIL_Read( pFile, (CBaseHandle &)hData );
+	return pFile->Read( (CBaseHandle &)hData );
 }
 
 template <class T> bool UTIL_GetValue( const CTextItem *pTextItem, CHandle<T> &hValue )
 {
-	return UTIL_GetValue( pTextItem, (CBaseHandle &)hValue );
+	return pTextItem->GetValue( (CBaseHandle &)hValue );
 }
 
 #endif // HANDLE_H

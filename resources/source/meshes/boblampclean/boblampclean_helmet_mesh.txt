@@ -1,4 +1,0 @@
-type mesh;
-name boblampclean_helmet;
-geometry boblampclean2.3gm;
-material helmet.3mt;

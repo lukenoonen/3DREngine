@@ -1,3 +1,0 @@
-type image;
-name front;
-image front.jpg;

@@ -1,5 +1,0 @@
-type texture;
-name brick_norm;
-wrap repeat;
-filter true;
-image brick_norm.3im;

@@ -1,0 +1,39 @@
+#ifndef TEXTURERESOURCEDATA_H
+#define TEXTURERESOURCEDATA_H
+
+#include "Global.h"
+
+enum class ETextureWrap : EBaseEnum
+{
+	t_repeat = 0,
+	t_mirrored,
+	t_edge,
+	t_border,
+
+	i_count,
+	i_invalid = i_count,
+};
+
+bool UTIL_GetValue( const CTextItem *pTextItem, ETextureWrap &eValue );
+
+struct STextureResourceData
+{
+	bool bFiltered;
+	ETextureWrap eTextureWrap;
+	glm::vec4 vec4BorderColor;
+	int iWidth;
+	int iHeight;
+	unsigned char ucChannels;
+	unsigned char *pData;
+};
+
+#ifdef PROJECT_ENGINE
+bool UTIL_Read( CFile *pFile, STextureResourceData &dData );
+#endif // PROJECT_ENGINE
+
+#ifdef PROJECT_RESOURCE
+bool UTIL_Write( CFile *pFile, STextureResourceData &dData );
+bool UTIL_GetValue( const CTextItem *pTextItem, STextureResourceData &dValue );
+#endif // PROJECT_RESOURCE
+
+#endif // TEXTURERESOURCEDATA_H

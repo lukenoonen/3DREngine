@@ -1,5 +1,0 @@
-type texture;
-name skybox;
-filter true;
-cubemap true;
-image { right right.3im; left left.3im; top top.3im; bottom bottom.3im; front front.3im; back back.3im; };

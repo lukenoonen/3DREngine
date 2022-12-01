@@ -7,11 +7,11 @@ layout (location = 0) in vec3 a_vecPos;
 layout (location = 5) in ivec4 a_vecBoneIDs;
 layout (location = 6) in vec4 a_vecWeights;
 
-#include "viewBuffer.sh"
-#include "modelBuffer.sh"
-#include "bonesBuffer.sh"
+#include "viewBuffer"
+#include "modelBuffer"
+#include "bonesBuffer"
 #if CLIP_TRUE
-#include "clipBuffer.sh"
+#include "clipBuffer"
 out float gl_ClipDistance[1];
 #endif // CLIP_TRUE
 

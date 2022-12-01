@@ -233,19 +233,16 @@ DEFINE_FIELDTYPE_NOBASE( T, VectorDataField )
 
 	DEFINE_FIELDTYPE_LOAD( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, CBaseDataField::m_uiOffset, std::vector<T> );
-
 		unsigned int uiSize;
 		if (!pFileManager->Read( uiSize ))
 			return false;
 
+		std::vector<T> &vecData = GET_DATA( pData, CBaseDataField::m_uiOffset, std::vector<T> );
+		vecData.resize( uiSize );
 		for (unsigned int i = 0; i < uiSize; i++)
 		{
-			T tData;
-			if (!pFileManager->Read( tData ))
+			if (!pFileManager->Read( vecData[i] ))
 				return false;
-
-			vecData.push_back( tData );
 		}
 
 		return true;
@@ -261,14 +258,11 @@ DEFINE_FIELDTYPE_NOBASE( T, VectorDataField )
 			return false;
 
 		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
-
-		for (unsigned int i = 0; i < pTextLine->GetTextItemCount(); i++)
+		vecData.resize( pTextLine->GetTextItemCount() );
+		for (unsigned int i = 0; i < vecData.size(); i++)
 		{
-			T tData;
-			if (!pTextLine->GetValue( tData, i ))
+			if (!pTextLine->GetValue( vecData[i], i ))
 				return false;
-
-			vecData.push_back( tData );
 		}
 
 		return true;
@@ -286,8 +280,7 @@ DEFINE_FIELDTYPE( T, LinkedVectorDataField, VectorDataField<T> )
 
 		for (unsigned int i = 0; i < vecData.size(); i++)
 		{
-			T &tData = vecData[i];
-			if (!tData.Link())
+			if (!vecData[i].Link())
 				return false;
 		}
 
@@ -301,7 +294,6 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 	DEFINE_FIELDTYPE_SAVE( pData )
 	{
 		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
-
 		unsigned int uiSize = (unsigned int)vecData.size();
 		if (!pFileManager->Write( uiSize ))
 			return false;
@@ -317,19 +309,16 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 
 	DEFINE_FIELDTYPE_LOAD( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
-
 		unsigned int uiSize;
 		if (!pFileManager->Read( uiSize ))
 			return false;
 
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
+		vecData.resize( uiSize );
 		for (unsigned int i = 0; i < uiSize; i++)
 		{
-			T tData;
-			if (!UTIL_LoadData( &tData ))
+			if (!UTIL_LoadData( &vecData[i] ))
 				return false;
-
-			vecData.push_back( tData );
 		}
 
 		return true;
@@ -345,18 +334,15 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 			return false;
 
 		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
-
-		for (unsigned int i = 0; i < pTextLine->GetTextItemCount(); i++)
+		vecData.resize( pTextLine->GetTextItemCount() );
+		for (unsigned int i = 0; i < vecData.size(); i++)
 		{
 			CTextBlock *pEmbeddedTextBlock;
 			if (!pTextLine->GetValue( pEmbeddedTextBlock, i ))
 				return false;
 
-			T tData;
-			if (!UTIL_LoadData( &tData, pEmbeddedTextBlock ))
+			if (!UTIL_LoadData( &vecData[i], pEmbeddedTextBlock ))
 				return false;
-
-			vecData.push_back( tData );
 		}
 
 		return true;

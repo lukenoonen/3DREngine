@@ -1,4 +1,0 @@
-type geometry;
-name boblampclean;
-model boblampclean.md5mesh;
-flipuv true;

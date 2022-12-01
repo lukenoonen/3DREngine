@@ -1,0 +1,6 @@
+model
+{
+	name inversecube;
+	flipuv false;
+	model inversecube.obj;
+};

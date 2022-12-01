@@ -1,5 +1,23 @@
-type texture;
-name brick;
-wrap repeat;
-filter true;
-image brick.3im;
+texture
+{
+	filtered true;
+	texturewrap repeat;
+	image brick.jpg;
+	name brick;
+};
+
+texture
+{
+	filtered true;
+	texturewrap repeat;
+	image brick_norm.jpg;
+	name brick_norm;
+};
+
+texture
+{
+	filtered true;
+	texturewrap repeat;
+	image brick_spec.jpg;
+	name brick_spec;
+};

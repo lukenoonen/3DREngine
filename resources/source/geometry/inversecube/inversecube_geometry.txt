@@ -1,4 +1,0 @@
-type geometry;
-name inversecube;
-model inversecube.obj;
-flipuv 0;

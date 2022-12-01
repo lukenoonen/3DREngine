@@ -124,7 +124,7 @@ CConFloat::CConFloat( float flDefaultValue, const char *sName, FnCommandCallback
 bool CConFloat::Dispatch( CTextLine *pTextLine )
 {
 	float flPrevValue = m_flValue;
-	if (!pTextLine->GetValue( flPrevValue, 1 ))
+	if (!pTextLine->GetValue( m_flValue, 1 ))
 		return false;
 
 	if (!BaseClass::Dispatch( pTextLine ))
@@ -500,7 +500,7 @@ void CCommandManager::ProcessCommand( const char *sCommand )
 
 	CTextReader trCommand;
 	if (!trCommand.ReadText( sCommand ))
-		return;
+		return; // What to do upon failure?
 
 	CTextBlock *pTextBlock = trCommand.GetTextBlock();
 

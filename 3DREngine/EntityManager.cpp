@@ -54,8 +54,6 @@ void CEntityManager::OnLoop( void )
 				m_pLightEntities.push_back( (CBaseLight *)pEntity );
 			if (pEntity->IsPlayer())
 				m_pPlayerEntities.push_back( (CBasePlayer *)pEntity );
-
-			pEntity->Init(); // TODO: What to do when this return false?
 		}
 
 		for (unsigned int i = m_uiEntityCount; i < m_pEntities.size(); i++)
@@ -121,6 +119,35 @@ void CEntityManager::DrawUnlitEntities( void )
 
 void CEntityManager::DrawLitEntities( void )
 {
+	pRenderManager->SetBlend( false );
+
+	bool bFirstDraw = true;
+
+	for (unsigned int i = 0; i < m_pLightEntities.size(); i++)
+	{
+		CBaseLight *pLight = m_pLightEntities[i];
+		if (pLight->ShouldDraw())
+		{
+			pLight->ActivateLight();
+			for (unsigned int i = 0; i < m_pDrawableEntities.size(); i++)
+			{
+				CBaseDrawable *pDrawable = m_pDrawableEntities[i];
+				if (pDrawable->ShouldDraw())
+				{
+					pDrawable->PreDraw();
+					pDrawable->Draw();
+					pDrawable->PostDraw();
+				}
+			}
+
+			pRenderManager->SetBlend( true );
+		}
+	}
+
+	pRenderManager->SetBlend( false );
+
+	/*
+
 	for (unsigned int i = 0; i < m_pDrawableEntities.size(); i++)
 	{
 		CBaseDrawable *pDrawable = m_pDrawableEntities[i];
@@ -130,7 +157,7 @@ void CEntityManager::DrawLitEntities( void )
 
 			pDrawable->PreDraw();
 
-			// TODO: check to see if this works compared to u iDrawCount
+			// TODO: check to see if this works compared to uiDrawCount
 			bool bFirstDraw = true;
 			for (unsigned int j = 0; j < m_pLightEntities.size(); j++)
 			{
@@ -152,10 +179,7 @@ void CEntityManager::DrawLitEntities( void )
 		}
 	}
 
-	pRenderManager->SetBlend( false );
-
-	SetTextureCamera( NULL );
-	SetShadowCamera( NULL );
+	pRenderManager->SetBlend( false );*/
 }
 
 void CEntityManager::AddEntity( CBaseEntity *pEntity )

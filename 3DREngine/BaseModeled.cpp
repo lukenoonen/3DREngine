@@ -4,7 +4,7 @@
 
 DEFINE_DATADESC( CBaseModeled )
 
-	DEFINE_FIELD( LinkedDataField, CHandle<CModel>, m_hModel, "shadowcamera", FL_REQUIRED )
+	DEFINE_FIELD( LinkedDataField, CHandle<CModel>, m_hModel, "model", FL_REQUIRED )
 
 END_DATADESC()
 

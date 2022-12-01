@@ -7,7 +7,7 @@ DEFINE_DATADESC( CUnlitMaterial )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( CUnlitMaterial, material_unlit )
+DEFINE_LINKED_CLASS( CUnlitMaterial, asset_material_unlit )
 
 CUnlitMaterial::CUnlitMaterial()
 {

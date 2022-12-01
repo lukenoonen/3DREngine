@@ -7,7 +7,7 @@ DEFINE_DATADESC( CSkyboxMaterial )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( CSkyboxMaterial, material_skybox )
+DEFINE_LINKED_CLASS( CSkyboxMaterial, asset_material_skybox )
 
 CSkyboxMaterial::CSkyboxMaterial()
 {

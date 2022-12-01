@@ -1,8 +1,0 @@
-type material;
-material lit;
-name brick;
-diffuse brick.3tx;
-specular brick_spec.3tx;
-shininess 4.0;
-normal brick_norm.3tx;
-scale [32 32];

@@ -1,7 +1,7 @@
 #version 330 core
 
-#include "lightPositionBuffer.sh"
-#include "lightMaxDistance.sh"
+#include "lightPositionBuffer"
+#include "lightMaxDistance"
 
 in vec3 v_vecFragPos;
 
