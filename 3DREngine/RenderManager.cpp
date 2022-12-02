@@ -106,7 +106,7 @@ CRenderManager::CRenderManager()
 	{
 		m_pShaders[i] = new CShader( g_sShaderTypeNames[i] );
 
-		std::cout << "compiled " << g_sShaderTypeNames[i] << " (" << (int)i << '/' << (int)EShaderType::i_count  << ")\n";
+		std::cout << "compiled " << g_sShaderTypeNames[i] << " (" << (int)(i + 1) << '/' << (int)EShaderType::i_count  << ")\n";
 
 		if (!m_pShaders[i]->Success())
 		{

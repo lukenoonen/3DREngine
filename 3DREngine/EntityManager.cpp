@@ -94,8 +94,8 @@ void CEntityManager::OnLoop( void )
 
 void CEntityManager::DrawEntities( void )
 {
-	pRenderManager->SetRenderPass( ERenderPass::t_depth );
-	DrawUnlitEntities();
+	//pRenderManager->SetRenderPass( ERenderPass::t_depth );
+	//DrawUnlitEntities();
 
 	pRenderManager->SetRenderPass( ERenderPass::t_unlit );
 	DrawUnlitEntities();
