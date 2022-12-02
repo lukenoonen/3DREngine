@@ -94,10 +94,11 @@ void CEntityManager::OnLoop( void )
 
 void CEntityManager::DrawEntities( void )
 {
-	//pRenderManager->SetRenderPass( ERenderPass::t_depth );
-	//DrawUnlitEntities();
+	glDepthMask( GL_FALSE );
+	pRenderManager->SetRenderPass( ERenderPass::t_depth );
+	DrawUnlitEntities();
 
-	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+	glDepthMask( GL_TRUE );
 
 	pRenderManager->SetRenderPass( ERenderPass::t_unlit );
 	DrawUnlitEntities();
