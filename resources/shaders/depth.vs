@@ -12,7 +12,6 @@ layout (location = 6) in vec4 a_vecWeights;
 #include "bonesBuffer"
 #if CLIP_TRUE
 #include "clipBuffer"
-out float gl_ClipDistance[1];
 #endif // CLIP_TRUE
 
 void main()

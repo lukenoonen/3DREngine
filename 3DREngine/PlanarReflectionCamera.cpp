@@ -91,9 +91,10 @@ void CPlanarReflectionCamera::PostThink( void )
 
 void CPlanarReflectionCamera::Render( void )
 {
-	//pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_clip, (EBaseEnum)EShaderPreprocessorClip::t_true );
+	pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_clip, (EBaseEnum)EShaderPreprocessorClip::t_true );
+	glEnable( GL_CLIP_DISTANCE0 );
+
 	pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_reflection, (EBaseEnum)EShaderPreprocessorReflection::t_false );
-	//glEnable( GL_CLIP_DISTANCE0 );
 
 	pEntityManager->SetTextureCamera( this );
 
@@ -122,9 +123,9 @@ void CPlanarReflectionCamera::Render( void )
 
 	pEntityManager->SetTextureCamera( this );
 
-	//glDisable( GL_CLIP_DISTANCE0 );
+	pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_clip, (EBaseEnum)EShaderPreprocessorClip::t_false );
+	glDisable( GL_CLIP_DISTANCE0 );
 
-	//pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_clip, (EBaseEnum)EShaderPreprocessorClip::t_false );
 	pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_reflection, (EBaseEnum)EShaderPreprocessorReflection::t_true );
 }
 
