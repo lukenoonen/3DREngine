@@ -163,7 +163,7 @@ void CRenderManager::SetFrameBuffer( GLuint glFrameBuffer )
 	{
 		m_glFrameBuffer = glFrameBuffer;
 		glBindFramebuffer( GL_FRAMEBUFFER, glFrameBuffer );
-		glClear( GL_DEPTH_BUFFER_BIT );
+		glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 	}
 }
 

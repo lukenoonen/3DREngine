@@ -436,8 +436,20 @@ void CreateLevel( void )
 	
 }*/
 
+#include <iostream>
+
 int main()
 {
+	int n = 1;
+	// little endian if true
+	if (*(char *)&n == 1) 
+	{
+		std::cout << "little\n";
+	}
+	else
+	{
+		std::cout << "big\n";
+	}
 	CreateGlobals();
 
 	pCommandManager->ProcessCommand( "exec autoexec;" );
