@@ -4,6 +4,7 @@
 #include "Global.h"
 #include "BaseMaterial.h"
 #include "Texture.h"
+#include "BaseCamera.h"
 
 class CLitMaterial : public CBaseMaterial
 {
@@ -31,6 +32,7 @@ private:
 	CHandle<CTexture> m_hNormal;
 
 	CHandle<CTexture> m_hCamera;
+	CHandle<CBaseCamera> m_hTextureCamera;
 
 	glm::vec2 m_vec2TextureScale;
 

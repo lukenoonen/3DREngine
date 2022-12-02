@@ -1,9 +1,6 @@
 #version 330 core
 
 #subshader QUALITY
-#subshader SPECULAR
-#subshader NORMAL
-#subshader CAMERA
 #subshader SHADOW
 #subshader REFLECTION
 
@@ -46,18 +43,15 @@ in vec2 v_vecReflectionMapCoords;
 
 uniform sampler2D u_sDiffuse;
 #if !QUALITY_LOW
-#if SPECULAR_TRUE
+uniform bool u_bUseSpecular;
 uniform sampler2D u_sSpecular;
 uniform float u_flShininess;
-#endif // SPECULAR_TRUE
-#if NORMAL_TRUE
+uniform bool u_bUseNormal;
 uniform sampler2D u_sNormal;
-#endif // NORMAL_TRUE
 #endif // !QUALITY_LOW
-#if CAMERA_TRUE
+uniform bool u_bUseCamera;
 uniform sampler2D u_sCamera;
 uniform sampler2D u_sCameraTexture;
-#endif // CAMERA_TRUE
 #if SHADOW_TRUE
 uniform samplerCubeShadow u_sShadow;
 #endif // SHADOW_TRUE
@@ -74,16 +68,20 @@ vec3 ToDirection(vec2 vecPolar)
 
 void main()
 {
-#if CAMERA_TRUE
-	vec3 vecCameraSample = texture(u_sCamera, v_vecTexCoords).xyz;
+	vec3 vecDiffuseSample;
+	if (u_bUseCamera)
+	{
+		vec3 vecCameraSample = texture(u_sCamera, v_vecTexCoords).xyz;
 #if REFLECTION_TRUE
-	vec3 vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz * (1.0f - vecCameraSample.r) + texture(u_sCameraTexture, (v_vecReflectionMapCoords / v_flReflectionMapFactor) * 0.5f + 0.5f).xyz * vecCameraSample.r;
+		vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz * (1.0f - vecCameraSample.r) + texture(u_sCameraTexture, (v_vecReflectionMapCoords / v_flReflectionMapFactor) * 0.5f + 0.5f).xyz * vecCameraSample.r;
 #else // REFLECTION_TRUE
-	vec3 vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz * (1.0f - vecCameraSample.r) + texture(u_sCameraTexture, v_vecTexCoords).xyz * vecCameraSample.r;
+		vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz * (1.0f - vecCameraSample.r) + texture(u_sCameraTexture, v_vecTexCoords).xyz * vecCameraSample.r;
 #endif // REFLECTION_TRUE
-#else // CAMERA_TRUE
-	vec3 vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz;
-#endif // CAMERA_TRUE
+	}
+	else
+	{
+		vecDiffuseSample = texture(u_sDiffuse, v_vecTexCoords).xyz;
+	}
 	vec3 vecDelta = u_vecLightPosition - v_vecFragPos;
 	float flDistance = length(vecDelta);
 	vec3 vecNormalizedDelta = vecDelta / flDistance;
@@ -104,17 +102,17 @@ void main()
 		return;
 	}
 	
-#if !QUALITY_LOW && NORMAL_TRUE
-	vec3 vecNormal = normalize((texture(u_sNormal, v_vecTexCoords).rgb * 2.0f - 1.0f) * vec3(1.0f, -1.0f, 1.0f));
-#else // !QUALITY_LOW && NORMAL_TRUE
+#if !QUALITY_LOW
+	vec3 vecNormal = u_bUseNormal ? normalize((texture(u_sNormal, v_vecTexCoords).rgb * 2.0f - 1.0f) * vec3(1.0f, -1.0f, 1.0f)) : vec3(0.0f, 0.0f, 1.0f);
+#else // !QUALITY_LOW
 	vec3 vecNormal = vec3(0.0f, 0.0f, 1.0f);
-#endif // !QUALITY_LOW && NORMAL_TRUE
+#endif // !QUALITY_LOW
 	vec3 vecLightDirection = normalize(v_vecTangentLightPos - v_vecTangentFragPos);
 	
 	vec3 vecDiffuseLight = u_vecLightDiffuse * max(dot(vecNormal, vecLightDirection), 0.0f) * vecDiffuseSample * flAttenuation;
-#if !QUALITY_LOW && SPECULAR_TRUE
-	vec3 vecSpecularLight = u_vecLightSpecular * pow(max(dot(vecNormal, (vecLightDirection + normalize(v_vecTangentViewPos - v_vecTangentFragPos)) * 0.5f), 0.0f), u_flShininess) * texture(u_sSpecular, v_vecTexCoords).xyz * flAttenuation;
-#endif // !QUALITY_LOW && SPECULAR_TRUE
+#if !QUALITY_LOW
+	vec3 vecSpecularLight = u_bUseSpecular ? u_vecLightSpecular * pow(max(dot(vecNormal, (vecLightDirection + normalize(v_vecTangentViewPos - v_vecTangentFragPos)) * 0.5f), 0.0f), u_flShininess) * texture(u_sSpecular, v_vecTexCoords).xyz * flAttenuation : vec3(0.0f);
+#endif // !QUALITY_LOW
 
 	float flShadow = 1.0f;
 #if SHADOW_TRUE
@@ -138,9 +136,9 @@ void main()
 	}
 #endif // SHADOW_TRUE
 
-#if !QUALITY_LOW && SPECULAR_TRUE
+#if !QUALITY_LOW
     v_vecFragColor = vec4(vecAmbientLight + flShadow * (vecDiffuseLight + vecSpecularLight), 1.0f);
-#else // !QUALITY_LOW && SPECULAR_TRUE
+#else // !QUALITY_LOW
     v_vecFragColor = vec4(vecAmbientLight + flShadow * vecDiffuseLight, 1.0f);
-#endif // !QUALITY_LOW && SPECULAR_TRUE
+#endif // !QUALITY_LOW
 }

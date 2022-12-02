@@ -1,0 +1,7 @@
+texture
+{
+	filtered true;
+	texturewrap repeat;
+	image white.png;
+	name white;
+};

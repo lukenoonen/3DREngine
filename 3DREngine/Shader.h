@@ -100,51 +100,6 @@ static const char *g_sShaderReflectionDefines[] =
 	"#define REFLECTION_TRUE 0\n",
 };
 
-enum class EShaderPreprocessorSpecular : EBaseEnum
-{
-	t_false = 0,
-	t_true,
-
-	i_count,
-	i_invalid = i_count,
-};
-
-static const char *g_sShaderSpecularDefines[] =
-{
-	"#define SPECULAR_FALSE 0\n",
-	"#define SPECULAR_TRUE 0\n",
-};
-
-enum class EShaderPreprocessorNormal : EBaseEnum
-{
-	t_false = 0,
-	t_true,
-
-	i_count,
-	i_invalid = i_count,
-};
-
-static const char *g_sShaderNormalDefines[] =
-{
-	"#define NORMAL_FALSE 0\n",
-	"#define NORMAL_TRUE 0\n",
-};
-
-enum class EShaderPreprocessorCamera : EBaseEnum
-{
-	t_false = 0,
-	t_true,
-
-	i_count,
-	i_invalid = i_count,
-};
-
-static const char *g_sShaderCameraDefines[] =
-{
-	"#define CAMERA_FALSE 0\n",
-	"#define CAMERA_TRUE 0\n",
-};
-
 enum class EShaderPreprocessorShadow : EBaseEnum
 {
 	t_false = 0,
@@ -166,10 +121,6 @@ enum class EShaderPreprocessor : EBaseEnum
 	t_animate,
 	t_clip,
 	t_reflection,
-
-	t_specular,
-	t_normal,
-	t_camera,
 	t_shadow,
 
 	i_count,
@@ -182,10 +133,6 @@ static const char *g_sShaderPreprocessorNames[] =
 	"ANIMATE",
 	"CLIP",
 	"REFLECTION",
-
-	"SPECULAR",
-	"NORMAL",
-	"CAMERA",
 	"SHADOW",
 };
 
@@ -195,10 +142,6 @@ static const char **g_pShaderPreprocessorDefines[] =
 	g_sShaderAnimateDefines,
 	g_sShaderClipDefines,
 	g_sShaderReflectionDefines,
-
-	g_sShaderSpecularDefines,
-	g_sShaderNormalDefines,
-	g_sShaderCameraDefines,
 	g_sShaderShadowDefines,
 };
 
@@ -208,10 +151,6 @@ static const EBaseEnum g_eShaderPreprocessorCount[] =
 	(EBaseEnum)EShaderPreprocessorAnimate::i_count,
 	(EBaseEnum)EShaderPreprocessorClip::i_count,
 	(EBaseEnum)EShaderPreprocessorReflection::i_count,
-
-	(EBaseEnum)EShaderPreprocessorSpecular::i_count,
-	(EBaseEnum)EShaderPreprocessorNormal::i_count,
-	(EBaseEnum)EShaderPreprocessorCamera::i_count,
 	(EBaseEnum)EShaderPreprocessorShadow::i_count,
 };
 

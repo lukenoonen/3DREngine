@@ -30,7 +30,9 @@ bool CPointLight::Init( void )
 
 	CalculateMaxRadius();
 
-	((CPointShadowCamera *)pShadowCamera)->SetFar( m_flMaxRadius );
+	if (pShadowCamera)
+		((CPointShadowCamera *)pShadowCamera)->SetFar( m_flMaxRadius );
+
 	return true;
 }
 

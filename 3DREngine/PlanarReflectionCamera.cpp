@@ -55,7 +55,7 @@ void CPlanarReflectionCamera::PostThink( void )
 	if (PositionUpdated() || RotationUpdated())
 	{
 		glm::vec3 vec3Normal = GetRotation() * g_vec3Front;
-		m_vec4Plane = glm::vec4( vec3Normal, glm::dot( vec3Normal, GetPosition() ) );
+		m_vec4Plane = glm::vec4( vec3Normal, -glm::dot( vec3Normal, GetPosition() ) );
 		m_matReflection = glm::mat4(
 			-2.0f * m_vec4Plane.x * m_vec4Plane.x + 1.0f, -2.0f * m_vec4Plane.y * m_vec4Plane.x, -2.0f * m_vec4Plane.z * m_vec4Plane.x, 0.0f,
 			-2.0f * m_vec4Plane.x * m_vec4Plane.y, -2.0f * m_vec4Plane.y * m_vec4Plane.y + 1.0f, -2.0f * m_vec4Plane.z * m_vec4Plane.y, 0.0f,

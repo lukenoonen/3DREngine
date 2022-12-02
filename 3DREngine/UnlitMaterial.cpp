@@ -3,6 +3,8 @@
 DEFINE_DATADESC( CUnlitMaterial )
 
 	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hDiffuse, "diffuse", FL_REQUIRED )
+	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hCamera, "camera", 0 )
+	DEFINE_FIELD( LinkedDataField, CHandle<CBaseCamera>, m_hTextureCamera, "texturecamera", 0 )
 	DEFINE_FIELD( DataField, glm::vec2, m_vec2TextureScale, "texturescale", 0 )
 
 END_DATADESC()
@@ -12,6 +14,14 @@ DEFINE_LINKED_CLASS( CUnlitMaterial, asset_material_unlit )
 CUnlitMaterial::CUnlitMaterial()
 {
 	m_vec2TextureScale = g_vec2One;
+}
+
+void CUnlitMaterial::PostThink( void )
+{
+	m_hCamera.Check();
+	m_hTextureCamera.Check();
+
+	BaseClass::PostThink();
 }
 
 EShaderType CUnlitMaterial::GetShaderType( void )
@@ -29,9 +39,31 @@ EShaderType CUnlitMaterial::GetShaderType( void )
 
 void CUnlitMaterial::Apply( void )
 {
-	BaseClass::Apply();
+	switch (pRenderManager->GetRenderPass())
+	{
+	case ERenderPass::t_unlit:
+	{
+		bool bDisplayCamera = m_hTextureCamera != NULL && m_hCamera != NULL;
+
+		BaseClass::Apply();
+
+		pRenderManager->SetUniform( "u_sDiffuse", m_hDiffuse->Bind() );
+
+		pRenderManager->SetUniform( "u_bUseCamera", bDisplayCamera );
+		if (bDisplayCamera)
+		{
+			pRenderManager->SetUniform( "u_sCamera", m_hCamera->Bind() );
+			pRenderManager->SetUniform( "u_sCameraTexture", m_hTextureCamera->BindTexture() );
+		}
+		break;
+	}
+	default:
+	{
+		BaseClass::Apply();
+		break;
+	}
+	}
 
 	pRenderManager->SetUniform( "u_vecTextureScale", m_vec2TextureScale );
 
-	pRenderManager->SetUniform( "u_sDiffuse", m_hDiffuse->Bind() );
 }
