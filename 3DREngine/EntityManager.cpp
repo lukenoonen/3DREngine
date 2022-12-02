@@ -97,6 +97,8 @@ void CEntityManager::DrawEntities( void )
 	//pRenderManager->SetRenderPass( ERenderPass::t_depth );
 	//DrawUnlitEntities();
 
+	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+
 	pRenderManager->SetRenderPass( ERenderPass::t_unlit );
 	DrawUnlitEntities();
 
