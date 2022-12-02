@@ -89,7 +89,7 @@ CRenderManager::CRenderManager()
 	m_ivec2ViewportSize = g_vec2Zero;
 	m_ivec2ViewportOffset = g_vec2Zero;
 
-	glEnable( GL_DEPTH_TEST );
+	// glEnable( GL_DEPTH_TEST );
 	glDepthFunc( GL_LEQUAL );
 	glEnable( GL_CULL_FACE );
 	glCullFace( GL_BACK );
