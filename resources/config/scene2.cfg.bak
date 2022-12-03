@@ -29,7 +29,7 @@ createentity light_csm {name csmlight; rotation [-70 60 0]; diffuse [0.8 0.8 0.8
 
 createentity skybox {name skybox; skyboxmaterial skybox_material_skybox; geometry inversecube_geometry;};
 
-createentity camera_portal {name portal_camera; position [0 -15 0]; rotation [0 0 0]; displayposition [0 15 0]; displayrotation [0 0 0]; targetcamera playercamera;};
+createentity camera_reflection_planar {name portal_camera; position [0 15 0]; rotation [0 0 180]; targetcamera playercamera;};
 createentity prop_static {name mirror; position [0 15 0]; rotation [90 0 0]; scale [35.5555556 20 1]; model mirror_model;};
 
 createentity camera_player_perspective {name playercamera;};

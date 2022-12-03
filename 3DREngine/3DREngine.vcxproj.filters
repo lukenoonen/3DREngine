@@ -353,6 +353,9 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Source Files\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="PortalCamera.cpp">
+      <Filter>Source Files\Entity\Camera\Copy\Reflection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Global.h">
@@ -591,6 +594,9 @@
     </ClInclude>
     <ClInclude Include="FileType.h">
       <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="PortalCamera.h">
+      <Filter>Header Files\Entity\Camera\Copy\Reflection</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

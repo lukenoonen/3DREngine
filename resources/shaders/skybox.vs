@@ -17,6 +17,6 @@ void main()
 	vec4 vecPos = u_matProjectionViewLocked * vec4(a_vecPos, 1.0f);
 	gl_Position = vecPos.xyww;
 #if CLIP_TRUE
-    gl_ClipDistance[0] = dot(u_matProjectionViewLocked * vec4(a_vecPos, 1.0f), u_vecClipPlane);
+    gl_ClipDistance[0] = 1.0f; // dot(u_matProjectionViewLocked * vec4(a_vecPos, 1.0f), u_vecClipPlane);
 #endif // CLIP_TRUE
 }

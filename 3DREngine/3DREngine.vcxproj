@@ -209,6 +209,7 @@
     <ClCompile Include="PlanarReflectionCamera.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="PointShadowCamera.cpp" />
+    <ClCompile Include="PortalCamera.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Rigging.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="PlanarReflectionCamera.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="PointShadowCamera.h" />
+    <ClInclude Include="PortalCamera.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Rigging.h" />
