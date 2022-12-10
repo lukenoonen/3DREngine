@@ -23,7 +23,7 @@ bool CPortalCamera::Init( void )
 
 	glm::vec3 vec3Normal = GetRotation() * g_vec3Front;
 	m_vec4Plane = glm::vec4( vec3Normal, -glm::dot( vec3Normal, GetPosition() + vec3Normal * 0.0001f ) );
-	m_matReflection = glm::translate( g_matIdentity, m_vec3DisplayPosition + g_vec3Back * 30.0f ); // glm::inverse(glm::translate( g_matIdentity, m_vec3DisplayPosition ) * glm::toMat4( m_qDisplayRotation )) * (glm::translate( g_matIdentity, GetPosition() ) * glm::toMat4( GetRotation() ));
+	m_matReflection = glm::translate( g_matIdentity, m_vec3DisplayPosition - g_vec3Front * 40.0f + g_vec3Up * 10.0f ); // glm::inverse(glm::translate( g_matIdentity, m_vec3DisplayPosition ) * glm::toMat4( m_qDisplayRotation )) * (glm::translate( g_matIdentity, GetPosition() ) * glm::toMat4( GetRotation() ));
 
 	CBaseCamera *pTargetCamera = GetTargetCamera();
 
@@ -38,6 +38,8 @@ bool CPortalCamera::Init( void )
 
 	return true;
 }
+
+#include <iostream>
 
 void CPortalCamera::PostThink( void )
 {
@@ -57,7 +59,7 @@ void CPortalCamera::PostThink( void )
 	{
 		glm::vec3 vec3Normal = GetRotation() * g_vec3Front;
 		m_vec4Plane = glm::vec4( vec3Normal, -glm::dot( vec3Normal, GetPosition() ) );
-		m_matReflection = glm::inverse( glm::translate( g_matIdentity, m_vec3DisplayPosition ) * glm::toMat4( m_qDisplayRotation ) ) * glm::translate( g_matIdentity, GetPosition() ) * glm::toMat4( GetRotation() );
+		m_matReflection = glm::translate( g_matIdentity, glm::vec3(0.0f, 1.0f, 0.0f) );  // m_matReflection = glm::inverse( glm::translate( g_matIdentity, m_vec3DisplayPosition ) * glm::toMat4( m_qDisplayRotation ) ) * glm::translate( g_matIdentity, GetPosition() ) * glm::toMat4( GetRotation() );
 
 		bUpdateView = true;
 	}
@@ -67,11 +69,15 @@ void CPortalCamera::PostThink( void )
 		const glm::vec3 &vec3TargetPosition = pTargetCamera->GetPosition();
 		const glm::quat &qTargetRotation = pTargetCamera->GetRotation();
 
-		glm::vec3 vec3Position = glm::vec3( m_matReflection * glm::vec4( vec3TargetPosition, 1.0f ) );
-		glm::vec3 vec3Target = glm::vec3( m_matReflection * glm::vec4( (vec3TargetPosition + qTargetRotation * g_vec3Front), 1.0f ) );
-		glm::vec3 vec3Up = glm::vec3( m_matReflection * glm::vec4( vec3TargetPosition + qTargetRotation * g_vec3Up, 1.0f ) ) - vec3Position;
+		glm::mat4 matTransform = glm::inverse( glm::translate( g_matIdentity, m_vec3DisplayPosition - vec3TargetPosition ) );
+
+		glm::vec3 vec3Position = glm::vec3( matTransform * glm::vec4( GetPosition(), 1.0f ));
+		glm::vec3 vec3Target = glm::vec3( matTransform * glm::vec4( (GetPosition() + qTargetRotation * g_vec3Front), 1.0f));
+		glm::vec3 vec3Up = glm::vec3( matTransform * glm::vec4( GetPosition() + qTargetRotation * g_vec3Up, 1.0f ) ) - vec3Position;
 
 		m_matView = glm::lookAt( vec3Position, vec3Target, vec3Up );
+
+		std::cout << vec3Position.x << ' ' << vec3Position.y << ' ' << vec3Position.z << " vs " << vec3TargetPosition.x << ' ' << vec3TargetPosition.y << ' ' << vec3TargetPosition.z << '\n';
 
 		bUpdateTotal = true;
 	}

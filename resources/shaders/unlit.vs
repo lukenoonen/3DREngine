@@ -51,7 +51,7 @@ void main()
     gl_ClipDistance[0] = dot(u_matModel * vec4(a_vecPos, 1.0), u_vecClipPlane);
 #endif // CLIP_TRUE
 #if REFLECTION_TRUE
-	vec4 vecFragPosReflectionSpace = u_matReflectionMatrix * vec4((u_matModel * vec4(a_vecPos, 1.0)).xyz, 1.0f);
+	vec4 vecFragPosReflectionSpace = u_matProjectionView * vec4((u_matModel * vec4(a_vecPos, 1.0)).xyz, 1.0f);
 	v_flReflectionMapFactor = vecFragPosReflectionSpace.w;
 	v_vecReflectionMapCoords = vecFragPosReflectionSpace.xy;
 #endif // REFLECTION_TRUE
