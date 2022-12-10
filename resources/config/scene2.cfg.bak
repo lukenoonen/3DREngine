@@ -23,7 +23,7 @@ createentity prop_static {name cubebrick; position [0 0 0]; model cubebrick_mode
 createentity prop_static {name planebrick; position [0 0 -5]; scale [25 25 1]; model planebrick_model;};
 
 createentity camera_shadow_csm {name csmshadowcam; rotation [-30 10 0];};
-createentity light_csm {name csmlight; rotation [-30 10 0]; diffuse [0.8 0.8 0.8]; specular [0.4 0.4 0.4]; shadowcamera csmshadowcam;};
+createentity light_csm {name csmlight; rotation [-30 10 0]; diffuse [0.8 0.8 0.8]; specular [0.02 0.02 0.02]; shadowcamera csmshadowcam;};
 
 createentity skybox {name skybox; skyboxmaterial skybox_material_skybox; geometry inversecube_geometry;};
 
