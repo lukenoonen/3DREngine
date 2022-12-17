@@ -11,7 +11,7 @@ createentity asset_texture {name white; textureresource white;};
 
 createentity asset_material_skybox {name skybox_material_skybox; cubemap skybox_cubemap;};
 
-createentity asset_material_lit {name brick_material_lit; diffuse brick_diffuse; specular brick_spec; shininess 4.0; normal brick_norm; texturescale [8 8];};
+createentity asset_material_lit {name brick_material_lit; diffuse brick_diffuse; specular brick_spec; shininess 4.0; normal brick_norm;};
 createentity asset_material_unlit {name mirror_material_unlit; diffuse white; camera white; texturecamera portal_camera;};
 
 createentity asset_model {name cubebrick_model; geometry [cube_geometry]; materials [brick_material_lit]; rigging NULL;};
@@ -20,15 +20,15 @@ createentity asset_model {name mirror_model; geometry [plane_geometry]; material
 
 createentity prop_static {name cubebrick; position [0 0 0]; model cubebrick_model;};
 
-createentity prop_static {name planebrick; position [0 0 -5]; scale [25 25 1]; model planebrick_model;};
+createentity prop_static {name planebrick; position [0 0 -5]; rotation [-90 0 0]; scale [25 1 25]; model planebrick_model;};
 
-createentity camera_shadow_csm {name csmshadowcam; rotation [-30 10 0];};
-createentity light_csm {name csmlight; rotation [-30 10 0]; diffuse [0.8 0.8 0.8]; specular [0.02 0.02 0.02]; shadowcamera csmshadowcam;};
+createentity camera_shadow_csm {name csmshadowcam; rotation [-70 60 0];};
+createentity light_csm {name csmlight; rotation [-70 60 0]; diffuse [0.8 0.8 0.8]; specular [0.02 0.02 0.02]; shadowcamera csmshadowcam;};
 
 createentity skybox {name skybox; skyboxmaterial skybox_material_skybox; geometry inversecube_geometry;};
 
-createentity camera_portal {name portal_camera; position [0 -15 0]; rotation [0 0 0]; displayposition [0 15 0]; displayrotation [0 0 180]; targetcamera playercamera;};
-createentity prop_static {name mirror; position [0 15 0]; rotation [90 0 0]; scale [35.5555556 20 1]; model mirror_model;};
+createentity camera_portal {name portal_camera; position [15 -15 0]; rotation [0 0 90]; display mirror; targetcamera playercamera;};
+createentity prop_static {name mirror; position [0 15 0]; rotation [0 0 45]; scale [10 1 10]; model mirror_model;};
 
 createentity camera_player_perspective {name playercamera;};
 createentity player_test {name player; position [0 -3 0]; camera playercamera;};

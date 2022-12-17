@@ -190,8 +190,13 @@ CShader::CShader( const char *sShaderName, bool bCreateFromText )
 	}
 	else
 	{
-		if (!CreateShaderFromBinary( sShaderName ) && !CreateShaderFromText( sShaderName ))
-			return;
+		if (!CreateShaderFromBinary( sShaderName ))
+		{
+			DeleteSubShaders();
+
+			if (!CreateShaderFromText( sShaderName ))
+				return;
+		}
 	}
 
 	m_bSuccess = true;
@@ -199,8 +204,7 @@ CShader::CShader( const char *sShaderName, bool bCreateFromText )
 
 CShader::~CShader()
 {
-	for (std::pair<unsigned int, CSubShader *> itSubShaders : m_mapSubShaders)
-		delete itSubShaders.second;
+	DeleteSubShaders();
 }
 
 bool CShader::CreateShaderFromBinary( const char *sShaderName )
@@ -238,8 +242,14 @@ bool CShader::CreateShaderFromBinary( const char *sShaderName )
 		if (!pFileManager->ReadBytes( pData, glProgramSize ))
 			return false;
 
-		m_mapSubShaders.emplace( uiIndex, new CSubShader( glProgramSize, glBinaryFormat, pData ) );
+		CSubShader *pSubShader = new CSubShader( glProgramSize, glBinaryFormat, pData );
+		if (!pSubShader->Success())
+			return false;
+
+		m_mapSubShaders.emplace( uiIndex, pSubShader );
 	}
+
+	return true;
 }
 
 bool CShader::CreateShaderFromText( const char *sShaderName )
@@ -496,4 +506,10 @@ void CShader::CreateSubShadersFromText( char *sVertexCode, char *sGeometryCode, 
 		if (!uiFragmentIndices[eIndex].empty())
 			sFragmentCode[uiFragmentIndices[eIndex][i]] = '0';
 	}
+}
+
+void CShader::DeleteSubShaders( void )
+{
+	for (std::pair<unsigned int, CSubShader *> itSubShaders : m_mapSubShaders)
+		delete itSubShaders.second;
 }

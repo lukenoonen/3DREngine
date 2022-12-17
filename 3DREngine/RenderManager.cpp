@@ -353,13 +353,17 @@ void CRenderManager::CompileShaders( bool bCompileFromText )
 
 	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderType::i_count; i++)
 	{
+		std::cout << "compiling " << g_sShaderTypeNames[i] << " (" << (int)(i + 1) << '/' << (int)EShaderType::i_count << ")\n";
+
 		m_pShaders[i] = new CShader( g_sShaderTypeNames[i], bCompileFromText );
-
-		std::cout << "compiled " << g_sShaderTypeNames[i] << " (" << (int)(i + 1) << '/' << (int)EShaderType::i_count << ")\n";
-
+		
 		if (!m_pShaders[i]->Success())
 		{
-			// What to do when failed?
+			std::cout << "failed\n";
+		}
+		else
+		{
+			std::cout << "success\n";
 		}
 	}
 }

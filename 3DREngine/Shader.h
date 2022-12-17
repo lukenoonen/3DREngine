@@ -202,6 +202,8 @@ private:
 
 	void CreateSubShadersFromText( char *sVertexCode, char *sGeometryCode, char *sFragmentCode, std::vector<unsigned int> *uiVertexIndices, std::vector<unsigned int> *uiGeometryIndices, std::vector<unsigned int> *uiFragmentIndices, EBaseEnum eIndex, unsigned int uiIndex, unsigned int uiPreviousCount );
 
+	void DeleteSubShaders( void );
+
 private:
 	bool m_bSuccess;
 	bool m_bHasPreprocessor[(EBaseEnum)EShaderPreprocessor::i_count];
