@@ -2,12 +2,12 @@
 #define PORTALCAMERA_H
 
 #include "Global.h"
-#include "BaseReflectionCamera.h"
+#include "BasePortalCamera.h"
 
-class CPortalCamera : public CBaseReflectionCamera
+class CPortalCamera : public CBasePortalCamera
 {
 public:
-	DECLARE_CLASS( CPortalCamera, CBaseReflectionCamera )
+	DECLARE_CLASS( CPortalCamera, CBasePortalCamera )
 
 	DECLARE_DATADESC()
 
@@ -15,30 +15,14 @@ public:
 
 	CPortalCamera();
 
-	virtual bool Init( void );
-
-	virtual void PostThink( void );
-
-	virtual void Render( void );
-
 	virtual int BindTexture( void );
 
 protected:
-	virtual void CreateTextureBuffers( void );
-	virtual void DestroyTextureBuffers( void );
+	virtual bool ShouldUpdateTransform( void );
+	virtual void UpdateTransform( void );
 
 private:
 	CHandle<CBaseTransform> m_hDisplay;
-	glm::vec4 m_vec4Plane;
-
-	glm::mat4 m_matTransform;
-	glm::mat4 m_matProjection;
-	glm::mat4 m_matView;
-	glm::mat4 m_matTotal;
-	glm::mat4 m_matTotalLocked;
-
-	GLuint m_glTextureFBO;
-	GLuint m_glTexture;
 };
 
 #endif // PORTALCAMERA_H

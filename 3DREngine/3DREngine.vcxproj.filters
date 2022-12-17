@@ -87,9 +87,6 @@
     <Filter Include="Source Files\Entity\Camera\Uniform">
       <UniqueIdentifier>{67d7a79f-a510-437a-8d07-9572b007a1ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Entity\Camera\Copy\Reflection">
-      <UniqueIdentifier>{d8143242-9d9a-4555-85e0-d131ead0cc2d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Entity\Camera\Variable\Shadow">
       <UniqueIdentifier>{3376ad33-a6cd-4ce9-a623-c01c26e57d17}</UniqueIdentifier>
     </Filter>
@@ -119,6 +116,9 @@
     </Filter>
     <Filter Include="Source Files\Resource\Data">
       <UniqueIdentifier>{aa0654db-2020-4ed8-b924-08668ebb65c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity\Camera\Copy\Portal">
+      <UniqueIdentifier>{d8143242-9d9a-4555-85e0-d131ead0cc2d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -209,8 +209,8 @@
     <ClCompile Include="BasePlayerCamera.cpp">
       <Filter>Source Files\Entity\Camera\Uniform\Player</Filter>
     </ClCompile>
-    <ClCompile Include="BaseReflectionCamera.cpp">
-      <Filter>Source Files\Entity\Camera\Copy\Reflection</Filter>
+    <ClCompile Include="BasePortalCamera.cpp">
+      <Filter>Source Files\Entity\Camera\Copy\Portal</Filter>
     </ClCompile>
     <ClCompile Include="BaseShadowCamera.cpp">
       <Filter>Source Files\Entity\Camera\Variable\Shadow</Filter>
@@ -243,7 +243,7 @@
       <Filter>Source Files\Entity\Camera\Variable\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="PlanarReflectionCamera.cpp">
-      <Filter>Source Files\Entity\Camera\Copy\Reflection</Filter>
+      <Filter>Source Files\Entity\Camera\Copy\Portal</Filter>
     </ClCompile>
     <ClCompile Include="PerspectiveWorldCamera.cpp">
       <Filter>Source Files\Entity\Camera\Variable\World</Filter>
@@ -354,7 +354,7 @@
       <Filter>Source Files\Manager</Filter>
     </ClCompile>
     <ClCompile Include="PortalCamera.cpp">
-      <Filter>Source Files\Entity\Camera\Copy\Reflection</Filter>
+      <Filter>Source Files\Entity\Camera\Copy\Portal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -460,7 +460,7 @@
     <ClInclude Include="BaseShadowCamera.h">
       <Filter>Header Files\Entity\Camera\Variable\Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="BaseReflectionCamera.h">
+    <ClInclude Include="BasePortalCamera.h">
       <Filter>Header Files\Entity\Camera\Copy\Reflection</Filter>
     </ClInclude>
     <ClInclude Include="BasePlayerCamera.h">

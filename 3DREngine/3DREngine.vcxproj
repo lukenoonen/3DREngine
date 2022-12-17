@@ -171,7 +171,7 @@
     <ClCompile Include="BaseMSAACamera.cpp" />
     <ClCompile Include="BasePlayer.cpp" />
     <ClCompile Include="BasePlayerCamera.cpp" />
-    <ClCompile Include="BaseReflectionCamera.cpp" />
+    <ClCompile Include="BasePortalCamera.cpp" />
     <ClCompile Include="BaseResource.cpp" />
     <ClCompile Include="BaseShadowCamera.cpp" />
     <ClCompile Include="BaseSizeCamera.cpp" />
@@ -253,7 +253,7 @@
     <ClInclude Include="BaseMSAACamera.h" />
     <ClInclude Include="BasePlayer.h" />
     <ClInclude Include="BasePlayerCamera.h" />
-    <ClInclude Include="BaseReflectionCamera.h" />
+    <ClInclude Include="BasePortalCamera.h" />
     <ClInclude Include="BaseResource.h" />
     <ClInclude Include="BaseShadowCamera.h" />
     <ClInclude Include="BaseSizeCamera.h" />
