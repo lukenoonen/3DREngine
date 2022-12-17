@@ -159,16 +159,22 @@ class CSubShader
 public:
 	DECLARE_CLASS_NOBASE( CSubShader )
 
+	CSubShader( GLsizei glProgramSize, GLenum glBinaryFormat, char *pData );
 	CSubShader( const char *sVertexCode, const char *sGeometryCode, const char *sFragmentCode );
 	~CSubShader();
 
+	bool Success( void ) const;
+
 	void Use( void ) const;
+	GLint GetID( void ) const;
 	GLint GetLocation( const char *sName );
 
 private:
-	void CheckCompileErrorsShader( GLuint glShader );
+	void Link( void );
+	bool CheckCompileErrorsShader( GLuint glShader );
 
 private:
+	bool m_bSuccess;
 	GLuint m_glID;
 	std::vector<GLint> m_iUniformLocations;
 	std::vector<char *> m_sUniformNames;
@@ -180,8 +186,11 @@ class CShader
 public:
 	DECLARE_CLASS_NOBASE( CShader )
 
-	CShader( const char *sShaderName );
+	CShader( const char *sShaderName, bool bCreateFromText );
 	~CShader();
+
+	bool CreateShaderFromBinary( const char *sShaderName );
+	bool CreateShaderFromText( const char *sShaderName );
 
 	bool Success( void ) const;
 
@@ -191,14 +200,12 @@ private:
 	bool LoadShader( char *&sSource, std::vector<unsigned int> *uiIndices );
 	bool LoadShader( char *&sSource );
 
-	void CreateSubShaders( char *sVertexCode, char *sGeometryCode, char *sFragmentCode, std::vector<unsigned int> *uiVertexIndices, std::vector<unsigned int> *uiGeometryIndices, std::vector<unsigned int> *uiFragmentIndices, EBaseEnum eIndex, unsigned int uiIndex, unsigned int uiPreviousCount );
+	void CreateSubShadersFromText( char *sVertexCode, char *sGeometryCode, char *sFragmentCode, std::vector<unsigned int> *uiVertexIndices, std::vector<unsigned int> *uiGeometryIndices, std::vector<unsigned int> *uiFragmentIndices, EBaseEnum eIndex, unsigned int uiIndex, unsigned int uiPreviousCount );
 
 private:
 	bool m_bSuccess;
 	bool m_bHasPreprocessor[(EBaseEnum)EShaderPreprocessor::i_count];
-	CSubShader *m_pSubShader[(EBaseEnum)EShaderPreprocessorQuality::i_count][(EBaseEnum)EShaderPreprocessorAnimate::i_count][(EBaseEnum)EShaderPreprocessorShadow::i_count];
 	std::unordered_map<unsigned int, CSubShader *> m_mapSubShaders;
-
 };
 
 #endif // SHADER_H

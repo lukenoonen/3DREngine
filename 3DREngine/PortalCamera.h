@@ -28,11 +28,10 @@ protected:
 	virtual void DestroyTextureBuffers( void );
 
 private:
-	glm::vec3 m_vec3DisplayPosition;
-	glm::quat m_qDisplayRotation;
+	CHandle<CBaseTransform> m_hDisplay;
 	glm::vec4 m_vec4Plane;
 
-	glm::mat4 m_matReflection;
+	glm::mat4 m_matTransform;
 	glm::mat4 m_matProjection;
 	glm::mat4 m_matView;
 	glm::mat4 m_matTotal;

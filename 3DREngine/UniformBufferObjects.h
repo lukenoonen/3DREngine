@@ -249,17 +249,17 @@ static GLsizeiptr g_glUBOShadowCascadeFadeParamSizes[] =
 
 struct SReflectionBuffer
 {
-	glm::mat4 matReflectionMatrix;
+	unsigned int bFlipPortal;
 };
 
 static GLintptr g_glUBOReflectionParamOffsets[] =
 {
-	offsetof( SReflectionBuffer, matReflectionMatrix ),
+	offsetof( SReflectionBuffer, bFlipPortal ),
 };
 
 static GLsizeiptr g_glUBOReflectionParamSizes[] =
 {
-	sizeof( SReflectionBuffer().matReflectionMatrix ),
+	sizeof( SReflectionBuffer().bFlipPortal ),
 };
 
 static GLsizeiptr g_glUBOSizes[] =

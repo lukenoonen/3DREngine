@@ -65,6 +65,13 @@ bool CC_R_ShaderQuality( const CTextLine *pCommand )
 }
 CConCommand cc_r_shaderquality( "r_shaderquality", CC_R_ShaderQuality );
 
+bool CC_R_RecompileShaders( void )
+{
+	pRenderManager->RecompileShaders();
+	return true;
+}
+CConCommand cc_r_recompileshaders( "r_recompileshaders", CC_R_RecompileShaders );
+
 #include <iostream>
 
 CRenderManager::CRenderManager()
@@ -95,24 +102,12 @@ CRenderManager::CRenderManager()
 	glCullFace( GL_BACK );
 	glBlendFunc( GL_ONE, GL_ONE );
 
+	CompileShaders( false );
+
 	m_pActiveSubShader = NULL;
 
 	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderPreprocessor::i_count; i++)
 		m_eShaderPreprocessors[i] = (EBaseEnum)0;
-
-	std::cout << "compiling shaders...\n";
-
-	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderType::i_count; i++)
-	{
-		m_pShaders[i] = new CShader( g_sShaderTypeNames[i] );
-
-		std::cout << "compiled " << g_sShaderTypeNames[i] << " (" << (int)(i + 1) << '/' << (int)EShaderType::i_count  << ")\n";
-
-		if (!m_pShaders[i]->Success())
-		{
-			// What to do when failed?
-		}
-	}
 
 	glGenBuffers( (EBaseEnum)EUniformBufferObjects::i_count, m_glUBOs );
 	for (EBaseEnum i = 0; i < (EBaseEnum)EUniformBufferObjects::i_count; i++)
@@ -140,6 +135,14 @@ CRenderManager::~CRenderManager()
 
 	glfwDestroyWindow( m_pWindow );
 	glfwTerminate();
+}
+
+void CRenderManager::RecompileShaders( void )
+{
+	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderType::i_count; i++)
+		delete m_pShaders[i];
+
+	CompileShaders( true );
 }
 
 void CRenderManager::OnLoop( void )
@@ -342,4 +345,21 @@ void CRenderManager::UnbindAllTextures( void )
 	m_mapTextureIDToIndex.clear();
 	m_mapIndexToTextureID.clear();
 	m_glTextureIndex = 0;
+}
+
+void CRenderManager::CompileShaders( bool bCompileFromText )
+{
+	std::cout << "compiling shaders...\n";
+
+	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderType::i_count; i++)
+	{
+		m_pShaders[i] = new CShader( g_sShaderTypeNames[i], bCompileFromText );
+
+		std::cout << "compiled " << g_sShaderTypeNames[i] << " (" << (int)(i + 1) << '/' << (int)EShaderType::i_count << ")\n";
+
+		if (!m_pShaders[i]->Success())
+		{
+			// What to do when failed?
+		}
+	}
 }

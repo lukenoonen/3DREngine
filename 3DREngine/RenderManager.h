@@ -43,6 +43,8 @@ public:
 	CRenderManager();
 	~CRenderManager();
 
+	void RecompileShaders( void );
+
 	void OnLoop( void );
 
 	GLFWmonitor *GetMonitor( void );
@@ -81,6 +83,9 @@ public:
 	GLint BindTexture( GLuint glTextureID, GLenum glTextureType );
 	void UnbindTexture( GLuint glTextureID );
 	void UnbindAllTextures( void );
+
+private:
+	void CompileShaders( bool bCompileFromText );
 
 private:
 	ERenderPass m_eRenderPass;
