@@ -12,6 +12,8 @@ enum class EFileType : EBaseEnum
 	t_geometryshader,
 	t_fragmentshader,
 	t_headershader,
+	t_compiledshaderin,
+	t_compiledshaderout,
 
 	t_text,
 
@@ -37,6 +39,8 @@ static const char *g_sFileTypeExtensions[] =
 	".gs",
 	".fs",
 	".sh",
+	".csh",
+	".csh",
 
 	".txt",
 
@@ -55,6 +59,8 @@ static const char *g_sFileTypePrePaths[] =
 {
 	"resources/config/",
 
+	"resources/shaders/",
+	"resources/shaders/",
 	"resources/shaders/",
 	"resources/shaders/",
 	"resources/shaders/",
@@ -81,6 +87,8 @@ static int g_iFileTypeFlags[] =
 	std::ios::in,
 	std::ios::in,
 	std::ios::in,
+	std::ios::in | std::ios::binary,
+	std::ios::out | std::ios::binary,
 
 	std::ios::in,
 

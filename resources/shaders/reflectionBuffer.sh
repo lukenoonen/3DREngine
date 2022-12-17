@@ -1,4 +1,4 @@
 layout (std140) uniform reflectionBuffer
 {
-	mat4 u_matReflectionMatrix;
+	bool u_bFlipPortal;
 };

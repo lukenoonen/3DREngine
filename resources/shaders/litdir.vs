@@ -76,9 +76,9 @@ void main()
 	v_vecTangentFragPos = matTBN * v_vecFragPos;
 	
 #if REFLECTION_TRUE
-	vec4 vecFragPosReflectionSpace = u_matReflectionMatrix * vec4(v_vecFragPos, 1.0f);
+	vec4 vecFragPosReflectionSpace = u_matProjectionView * vec4(v_vecFragPos, 1.0f);
 	v_flReflectionMapFactor = vecFragPosReflectionSpace.w;
-	v_vecReflectionMapCoords = vecFragPosReflectionSpace.xy;
+	v_vecReflectionMapCoords = u_bFlipPortal ? vecFragPosReflectionSpace.xy * vec2(-1.0f, 1.0f) : vecFragPosReflectionSpace.xy;
 #endif // REFLECTION_TRUE
 	
 #if SHADOW_TRUE

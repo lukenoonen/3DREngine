@@ -41,9 +41,9 @@ void main()
     gl_ClipDistance[0] = dot(u_matModel * matBoneTransform * vec4(a_vecPos, 1.0), u_vecClipPlane);
 #endif // CLIP_TRUE
 #if REFLECTION_TRUE
-	vec4 vecFragPosReflectionSpace = u_matReflectionMatrix * vec4((u_matModel * matBoneTransform * vec4(a_vecPos, 1.0)).xyz, 1.0f);
+	vec4 vecFragPosReflectionSpace = u_matProjectionView * vec4((u_matModel * matBoneTransform * vec4(a_vecPos, 1.0)).xyz, 1.0f);
 	v_flReflectionMapFactor = vecFragPosReflectionSpace.w;
-	v_vecReflectionMapCoords = vecFragPosReflectionSpace.xy;
+	v_vecReflectionMapCoords = u_bFlipPortal ? vecFragPosReflectionSpace.xy * vec2(-1.0f, 1.0f) : vecFragPosReflectionSpace.xy;
 #endif // REFLECTION_TRUE
 #else // ANIMATE_TRUE
 	gl_Position = u_matProjectionView * u_matModel * vec4(a_vecPos, 1.0);
@@ -53,7 +53,7 @@ void main()
 #if REFLECTION_TRUE
 	vec4 vecFragPosReflectionSpace = u_matProjectionView * vec4((u_matModel * vec4(a_vecPos, 1.0)).xyz, 1.0f);
 	v_flReflectionMapFactor = vecFragPosReflectionSpace.w;
-	v_vecReflectionMapCoords = vecFragPosReflectionSpace.xy;
+	v_vecReflectionMapCoords = u_bFlipPortal ? vecFragPosReflectionSpace.xy * vec2(-1.0f, 1.0f) : vecFragPosReflectionSpace.xy;
 #endif // REFLECTION_TRUE
 #endif // ANIMATE_TRUE
 }

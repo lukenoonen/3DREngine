@@ -75,7 +75,7 @@ void CPlanarReflectionCamera::PostThink( void )
 		glm::vec3 vec3Target = glm::vec3( m_matReflection * glm::vec4( (vec3TargetPosition + qTargetRotation * g_vec3Front), 1.0f ) );
 		glm::vec3 vec3Up = glm::vec3( m_matReflection * glm::vec4( vec3TargetPosition + qTargetRotation * g_vec3Up, 1.0f ) ) - vec3Position;
 
-		m_matView = glm::lookAt( glm::vec3( m_matReflection * glm::vec4( vec3TargetPosition, 1.0f ) ), glm::vec3( m_matReflection * glm::vec4( (vec3TargetPosition + qTargetRotation * g_vec3Front), 1.0f ) ), vec3Up );
+		m_matView = glm::lookAt( vec3Position, vec3Target, vec3Up );
 
 		bUpdateTotal = true;
 	}
@@ -110,7 +110,8 @@ void CPlanarReflectionCamera::Render( void )
 
 	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_clip, 0, &m_vec4Plane );
 
-	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_reflection, 0, &m_matTotal );
+	bool bFlipPortal = true;
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_reflection, 0, &bFlipPortal );
 
 	pEntityManager->DrawEntities();
 
