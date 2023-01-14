@@ -222,8 +222,12 @@
     <ClCompile Include="SpotShadowCamera.cpp" />
     <ClCompile Include="StaticProp.cpp" />
     <ClCompile Include="TestPlayer.cpp" />
+    <ClCompile Include="TextBlock.cpp" />
+    <ClCompile Include="TextChar.cpp" />
+    <ClCompile Include="TextLine.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureResource.cpp" />
+    <ClCompile Include="TextWord.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="UnlitMaterial.cpp" />
   </ItemGroup>
@@ -303,8 +307,12 @@
     <ClInclude Include="SpotShadowCamera.h" />
     <ClInclude Include="StaticProp.h" />
     <ClInclude Include="TestPlayer.h" />
+    <ClInclude Include="TextBlock.h" />
+    <ClInclude Include="TextChar.h" />
+    <ClInclude Include="TextLine.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureResource.h" />
+    <ClInclude Include="TextWord.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="UniformBufferObjects.h" />
     <ClInclude Include="UnlitMaterial.h" />

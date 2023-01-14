@@ -120,6 +120,12 @@
     <Filter Include="Source Files\Entity\Camera\Copy\Portal">
       <UniqueIdentifier>{d8143242-9d9a-4555-85e0-d131ead0cc2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Text">
+      <UniqueIdentifier>{dbd6714b-abd4-4806-b87d-84579e419dc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Text">
+      <UniqueIdentifier>{05e6ae53-604b-4dc5-9544-7bc93372dfa9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Global.cpp">
@@ -355,6 +361,18 @@
     </ClCompile>
     <ClCompile Include="PortalCamera.cpp">
       <Filter>Source Files\Entity\Camera\Copy\Portal</Filter>
+    </ClCompile>
+    <ClCompile Include="TextChar.cpp">
+      <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="TextWord.cpp">
+      <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="TextLine.cpp">
+      <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="TextBlock.cpp">
+      <Filter>Source Files\Text</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -597,6 +615,18 @@
     </ClInclude>
     <ClInclude Include="PortalCamera.h">
       <Filter>Header Files\Entity\Camera\Copy\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="TextChar.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="TextWord.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="TextLine.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="TextBlock.h">
+      <Filter>Header Files\Text</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
