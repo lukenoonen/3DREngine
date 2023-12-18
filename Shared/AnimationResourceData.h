@@ -27,7 +27,6 @@ bool UTIL_Read( CFile *pFile, SAnimationResourceData &dData );
 
 #ifdef PROJECT_RESOURCE
 bool UTIL_Write( CFile *pFile, SAnimationResourceData &dData );
-bool UTIL_GetValue( const CTextItem *pTextItem, SAnimationResourceData &dValue );
 #endif // PROJECT_RESOURCE
 
 #endif // ANIMATIONRESOURCEDATA_H

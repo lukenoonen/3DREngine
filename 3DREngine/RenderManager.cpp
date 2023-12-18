@@ -31,7 +31,7 @@ bool CB_R_VSync( void )
 
 CConFloat cf_r_fov( 90.0f, "r_fov" );
 
-CConFloat cf_r_height( 16.0f, "r_height" );
+CConFloat cf_r_width( 1.0f, "r_width" );
 
 CConFloat cf_r_near( 0.1f, "r_near" );
 
@@ -91,8 +91,10 @@ CRenderManager::CRenderManager()
 	glfwMakeContextCurrent( m_pWindow );
 	gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress );
 
-	m_glFrameBuffer = 0;
+	m_pActiveFramebuffer = NULL;
+
 	m_bBlend = false;
+	m_glFramebuffer = 0;
 	m_ivec2ViewportSize = g_vec2Zero;
 	m_ivec2ViewportOffset = g_vec2Zero;
 
@@ -160,14 +162,24 @@ GLFWwindow *CRenderManager::GetWindow( void )
 	return m_pWindow;
 }
 
-void CRenderManager::SetFrameBuffer( GLuint glFrameBuffer )
+void CRenderManager::SetFramebuffer( CBaseFramebuffer *pFramebuffer )
 {
-	if (m_glFrameBuffer = glFrameBuffer)
+	if (!m_pActiveFramebuffer)
 	{
-		m_glFrameBuffer = glFrameBuffer;
-		glBindFramebuffer( GL_FRAMEBUFFER, glFrameBuffer );
-		glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+		if (!pFramebuffer)
+			pFramebuffer = ; // TODO: put default framebuffer here
+
+		m_pActiveFramebuffer = pFramebuffer;
+		SetViewportSize( m_pActiveFramebuffer->GetSize() );
+		SetFramebuffer( m_pActiveFramebuffer->GetFramebuffer() );
+		glClear( GL_DEPTH_BUFFER_BIT );
 	}
+}
+
+void CRenderManager::ClearFramebuffer( void )
+{
+	m_pActiveFramebuffer->Blit();
+	m_pActiveFramebuffer = NULL;
 }
 
 void CRenderManager::SetBlend( bool bBlend )
@@ -182,12 +194,21 @@ void CRenderManager::SetBlend( bool bBlend )
 	}
 }
 
+void CRenderManager::SetFramebuffer( GLuint glFrameBuffer )
+{
+	if (m_glFramebuffer != glFrameBuffer)
+	{
+		m_glFramebuffer = glFrameBuffer;
+		glBindFramebuffer( GL_FRAMEBUFFER, m_glFramebuffer );
+	}
+}
+
 void CRenderManager::SetViewportSize( const glm::ivec2 &ivec2ViewportSize )
 {
 	if (m_ivec2ViewportSize != ivec2ViewportSize)
 	{
 		m_ivec2ViewportSize = ivec2ViewportSize;
-		glViewport( m_ivec2ViewportOffset.x, m_ivec2ViewportOffset.y, ivec2ViewportSize.x, ivec2ViewportSize.y );
+		glViewport( m_ivec2ViewportOffset.x, m_ivec2ViewportOffset.y, m_ivec2ViewportSize.x, m_ivec2ViewportSize.y );
 	}
 }
 
@@ -196,7 +217,7 @@ void CRenderManager::SetViewportOffset( const glm::ivec2 &ivec2ViewportOffset )
 	if (m_ivec2ViewportOffset != ivec2ViewportOffset)
 	{
 		m_ivec2ViewportOffset = ivec2ViewportOffset;
-		glViewport( ivec2ViewportOffset.x, ivec2ViewportOffset.y, m_ivec2ViewportSize.x, m_ivec2ViewportSize.y );
+		glViewport( m_ivec2ViewportOffset.x, m_ivec2ViewportOffset.y, m_ivec2ViewportSize.x, m_ivec2ViewportSize.y );
 	}
 }
 

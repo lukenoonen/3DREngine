@@ -4,9 +4,9 @@
 #include "Global.h"
 #include "BaseDrawable.h"
 
-#define FL_PARENTPOSITION	(1<<1)
-#define FL_PARENTROTATION	(1<<2)
-#define FL_PARENTSCALE		(1<<3)
+DEFINE_ENTITY_FLAG( fl_parentposition, 1 )
+DEFINE_ENTITY_FLAG( fl_parentrotation, 2 )
+DEFINE_ENTITY_FLAG( fl_parentscale, 3 )
 
 class CBaseTransform : public CBaseDrawable
 {
@@ -17,6 +17,8 @@ public:
 
 	CBaseTransform();
 
+	virtual bool Init( void );
+
 	virtual void PostThink( void );
 
 	void SetPosition( const glm::vec3 &vec3Position );
@@ -26,7 +28,7 @@ public:
 	void AddPosition( const glm::vec3 &vec3Position );
 	void AddRotation( const glm::quat &qRotation );
 	void AddScale( const glm::vec3 &vec3Scale );
-	
+
 	const glm::vec3 &GetPosition( void ) const;
 	const glm::quat &GetRotation( void ) const;
 	const glm::vec3 &GetScale( void ) const;
@@ -38,6 +40,11 @@ public:
 	bool PositionUpdated( void ) const;
 	bool RotationUpdated( void ) const;
 	bool ScaleUpdated( void ) const;
+
+private:
+	void MarkPositionUpdated( void );
+	void MarkRotationUpdated( void );
+	void MarkScaleUpdated( void );
 
 private:
 	glm::vec3 m_vec3Position;

@@ -14,7 +14,7 @@ public:
 
 	virtual EShaderType GetShaderType( void );
 
-	virtual bool ShouldApply( void );
+	bool ShouldApply( void );
 	virtual void Apply( void );
 };
 

@@ -1,25 +1,5 @@
 #include "TextureResourceData.h"
 
-bool UTIL_GetValue( const CTextItem *pTextItem, ETextureWrap &eValue )
-{
-	const char *sName;
-	if (!pTextItem->GetValue( sName ))
-		return false;
-
-	if (UTIL_streq( sName, "repeat" ))
-		eValue = ETextureWrap::t_repeat;
-	else if (UTIL_streq( sName, "mirrored" ))
-		eValue = ETextureWrap::t_mirrored;
-	else if (UTIL_streq( sName, "edge" ))
-		eValue = ETextureWrap::t_edge;
-	else if (UTIL_streq( sName, "border" ))
-		eValue = ETextureWrap::t_border;
-	else
-		return false;
-
-	return true;
-}
-
 #ifdef PROJECT_ENGINE
 bool UTIL_Read( CFile *pFile, STextureResourceData &dData )
 {
@@ -86,10 +66,5 @@ bool UTIL_Write( CFile *pFile, STextureResourceData &dData )
 		return false;
 
 	return true;
-}
-
-bool UTIL_GetValue( const CTextItem *pTextItem, STextureResourceData &dValue )
-{
-
 }
 #endif // PROJECT_RESOURCE

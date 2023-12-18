@@ -104,9 +104,4 @@ bool UTIL_Write( CFile *pFile, SSkeletonResourceData &dData )
 
 	return UTIL_WriteInternal( pFile, dData.pSkeletonNode );
 }
-
-bool UTIL_GetValue( const CTextItem *pTextItem, SSkeletonResourceData &dValue )
-{
-
-}
 #endif // PROJECT_RESOURCE

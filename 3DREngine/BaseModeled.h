@@ -2,13 +2,13 @@
 #define BASEMODELED_H
 
 #include "Global.h"
-#include "BaseWorld.h"
+#include "BaseWorld3D.h"
 #include "Model.h"
 
-class CBaseModeled : public CBaseWorld
+class CBaseModeled : public CBaseWorld3D
 {
 public:
-	DECLARE_CLASS( CBaseModeled, CBaseWorld )
+	DECLARE_CLASS( CBaseModeled, CBaseWorld3D )
 
 	DECLARE_DATADESC()
 

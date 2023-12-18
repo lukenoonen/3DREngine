@@ -49,6 +49,10 @@ public:
 	CTextBlock *GetTextBlock( void ) const;
 
 private:
+	// TODO: change to go through original const char *sText and modified char *sText so there's no conflict with overwriting expected text
+	bool ProcessText( char *sText );
+
+private:
 	char *m_sText;
 	CTextBlock *m_pTextBlock;
 };
@@ -59,10 +63,11 @@ private:
 class CTextBlock
 {
 public:
-	CTextBlock( char *sTextBlock );
+	CTextBlock();
+
 	~CTextBlock();
 
-	bool Success( void ) const;
+	void AddTextLine( CTextLine *pTextLine );
 
 	unsigned int GetTextLineCount( void ) const;
 	CTextLine *GetTextLine( unsigned int uiIndex ) const;
@@ -72,7 +77,6 @@ public:
 	template <class T> bool GetValue( T &tValue, unsigned int uiIndex, const char *sKey ) const;
 
 private:
-	bool m_bSuccess;
 	std::vector<CTextLine *> m_pTextLines;
 };
 
@@ -82,10 +86,11 @@ private:
 class CTextLine
 {
 public:
-	CTextLine( char *sTextLine );
+	CTextLine();
+
 	~CTextLine();
 
-	bool Success( void ) const;
+	void AddTextItem( CTextItem *pTextItem );
 
 	unsigned int GetTextItemCount( void ) const;
 	CTextItem *GetTextItem( unsigned int uiIndex ) const;
@@ -104,10 +109,13 @@ private:
 class CTextItem
 {
 public:
-	CTextItem( char *sTextItem, unsigned char ucActiveData );
-	~CTextItem();
+	CTextItem( CTextBlock *pTextBlock );
+	CTextItem( CTextLine *pTextLine );
+	CTextItem( const char *sString );
 
-	bool Success( void ) const;
+	//CTextItem( char *&sTextItem, char &cResult, char cExpecting );
+
+	~CTextItem();
 
 	CTextBlock *GetTextBlock( void ) const;
 	CTextLine *GetTextLine( void ) const;

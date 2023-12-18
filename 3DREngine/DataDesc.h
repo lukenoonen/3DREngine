@@ -3,9 +3,11 @@
 
 #include "Global.h"
 #include "FileManager.h"
+#include "EntityManager.h"
 
 // TODO: clean this up, maybe split into multiple files
 
+// TODO: Consider adding FL_NONE (0)
 #define FL_REQUIRED	(1<<0)
 #define FL_SAVED	(1<<1)
 
@@ -53,27 +55,22 @@ private:
 	CDataMap *m_pBaseMap;
 };
 
-template <typename T> void UTIL_DataMapAccess( CDataMap **p ) // TODO: what should/should not be inline?
-{
-	*p = &T::m_dmDataMap;
-}
-
-template <typename T> bool UTIL_SaveData( T *pData )
+template <class T> bool UTIL_SaveData( T *pData )
 {
 	return pData->GetDataMap()->Save( pData );
 }
 
-template <typename T> bool UTIL_LoadData( T *pData )
+template <class T> bool UTIL_LoadData( T *pData )
 {
 	return pData->GetDataMap()->Load( pData );
 }
 
-template <typename T> bool UTIL_LoadTextData( T *pData, const CTextBlock *pTextBlock )
+template <class T> bool UTIL_LoadTextData( T *pData, const CTextBlock *pTextBlock )
 {
 	return pData->GetDataMap()->LoadText( pData, pTextBlock );
 }
 
-template <typename T> bool UTIL_LinkData( T *pData )
+template <class T> bool UTIL_LinkData( T *pData )
 {
 	return pData->GetDataMap()->Link( pData );
 }
@@ -110,12 +107,12 @@ template <typename T> bool UTIL_LinkData( T *pData )
 	static CDataMap m_dmDataMap; \
 	static CDataMap *GetBaseMap( void ); \
 	virtual CDataMap *GetDataMap( void ); \
-	template <typename T> friend void UTIL_DataMapAccess( CDataMap **p ); \
-	template <typename T> friend CDataMap *DataMapInit( T * );
+	friend CDataMap *DataMapAccess( ThisClass * ); \
+	friend CDataMap *DataMapInit( ThisClass * );
 
 #define DEFINE_DATADESC( className ) \
 	CDataMap className::m_dmDataMap; \
-	CDataMap *className::GetBaseMap( void ) { CDataMap *pResult; UTIL_DataMapAccess<BaseClass>( &pResult ); return pResult; } \
+	CDataMap *className::GetBaseMap( void ) { return DataMapAccess( (className::BaseClass *)NULL ); } \
 	CDataMap *className::GetDataMap( void ) { return &m_dmDataMap; } \
 	DEFINE_DATADESC_GUTS( className )
 
@@ -126,14 +123,18 @@ template <typename T> bool UTIL_LinkData( T *pData )
 	DEFINE_DATADESC_GUTS( className )
 
 #define DEFINE_DATADESC_GUTS( className ) \
-	template <typename T> CDataMap *DataMapInit( T * ); \
-	template <> CDataMap *DataMapInit<className>( className * ); \
+	CDataMap *DataMapAccess( className * ); \
+	CDataMap *DataMapInit( className * ); \
 	namespace className##_DataDescInit \
 	{ \
 		CDataMap *g_pDataMapHolder = DataMapInit( (className *)NULL ); \
 	} \
 	\
-	template <> CDataMap *DataMapInit<className>( className * ) \
+	CDataMap *DataMapAccess( className * ) \
+	{ \
+		return &className::m_dmDataMap; \
+	} \
+	CDataMap *DataMapInit( className * ) \
 	{ \
 		typedef className classNameTypedef; \
 		className::m_dmDataMap.SetBaseMap( className::GetBaseMap() ); \
@@ -180,12 +181,12 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedDataField )
 
 	DEFINE_FIELDTYPE_SAVE( pData )
 	{
-		return UTIL_SaveData( GET_DATA_ADDRESS( pData, m_uiOffset, T ) );
+		return UTIL_SaveData( GET_DATA( pData, m_uiOffset, T * ) );
 	}
 
 	DEFINE_FIELDTYPE_LOAD( pData )
 	{
-		return UTIL_LoadData( GET_DATA_ADDRESS( pData, m_uiOffset, T ) );
+		return UTIL_LoadData( GET_DATA( pData, m_uiOffset, T * ) );
 	}
 
 	DEFINE_FIELDTYPE_LOAD_TEXT( pData, pTextBlock )
@@ -197,7 +198,7 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedDataField )
 		if (!pTextBlock->GetValue( pEmbeddedTextBlock, 1, m_sName ))
 			return false;
 
-		return UTIL_LoadTextData( GET_DATA_ADDRESS( pData, m_uiOffset, T ), pEmbeddedTextBlock );
+		return UTIL_LoadTextData( GET_DATA( pData, m_uiOffset, T * ), pEmbeddedTextBlock);
 	}
 
 END_FIELDTYPE()
@@ -206,8 +207,7 @@ DEFINE_FIELDTYPE( T, LinkedEmbeddedDataField, EmbeddedDataField<T> )
 
 	DEFINE_FIELDTYPE_LINK( pData )
 	{
-		T &tData = GET_DATA( pData, CBaseDataField::m_uiOffset, T );
-		return tData.Link();
+		return GET_DATA( pData, CBaseDataField::m_uiOffset, T * )->Link();
 	}
 
 END_FIELDTYPE()
@@ -293,14 +293,14 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 
 	DEFINE_FIELDTYPE_SAVE( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
+		std::vector<T *> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T *> );
 		unsigned int uiSize = (unsigned int)vecData.size();
 		if (!pFileManager->Write( uiSize ))
 			return false;
 
 		for (unsigned int i = 0; i < uiSize; i++)
 		{
-			if (!UTIL_SaveData( &vecData[i] ))
+			if (!UTIL_SaveData( vecData[i] ))
 				return false;
 		}
 
@@ -313,11 +313,11 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 		if (!pFileManager->Read( uiSize ))
 			return false;
 
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
+		std::vector<T *> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T *> );
 		vecData.resize( uiSize );
 		for (unsigned int i = 0; i < uiSize; i++)
 		{
-			if (!UTIL_LoadData( &vecData[i] ))
+			if (!UTIL_LoadData( vecData[i] ))
 				return false;
 		}
 
@@ -333,7 +333,7 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 		if (!pTextBlock->GetValue( pTextLine, 1, m_sName ))
 			return false;
 
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
+		std::vector<T *> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T *> );
 		vecData.resize( pTextLine->GetTextItemCount() );
 		for (unsigned int i = 0; i < vecData.size(); i++)
 		{
@@ -341,7 +341,7 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 			if (!pTextLine->GetValue( pEmbeddedTextBlock, i ))
 				return false;
 
-			if (!UTIL_LoadData( &vecData[i], pEmbeddedTextBlock ))
+			if (!UTIL_LoadData( vecData[i], pEmbeddedTextBlock ))
 				return false;
 		}
 
@@ -354,16 +354,67 @@ DEFINE_FIELDTYPE( T, LinkedEmbeddedVectorDataField, EmbeddedVectorDataField<T> )
 
 	DEFINE_FIELDTYPE_LINK( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, CBaseDataField::m_uiOffset, std::vector<T> );
+		std::vector<T *> &vecData = GET_DATA( pData, CBaseDataField::m_uiOffset, std::vector<T *> );
 		if (vecData.empty())
 			return false;
 
 		for (unsigned int i = 0; i < vecData.size(); i++)
 		{
-			if (!vecData[i].Link())
+			if (!vecData[i]->Link())
 				return false;
 		}
 
+		return true;
+	}
+
+END_FIELDTYPE()
+
+DEFINE_FIELDTYPE_NOBASE( T, FlagDataField )
+
+	DEFINE_FIELDTYPE_SAVE( pData )
+	{
+		return pFileManager->Write( GET_DATA( pData, m_uiOffset, T ) );
+	}
+
+	DEFINE_FIELDTYPE_LOAD( pData )
+	{
+		return pFileManager->Read( GET_DATA( pData, m_uiOffset, T ) );
+	}
+
+	DEFINE_FIELDTYPE_LOAD_TEXT( pData, pTextBlock )
+	{
+		if (!m_sName)
+			return false;
+
+		CTextLine *pTextLine;
+		if (!pTextBlock->GetValue( pTextLine, 1, m_sName ))
+			return false;
+
+		T &tData = GET_DATA( pData, m_uiOffset, T );
+
+		for (unsigned int i = 0; i < pTextLine->GetTextItemCount(); i++)
+		{
+			const char *sKey;
+			if (!pTextLine->GetValue( sKey, i ))
+				return false;
+
+			bool bNot = false;
+			if (*sKey == '!')
+			{
+				bNot = true;
+				sKey++;
+			}
+
+			int iFlag = pEntityManager->GetFlag( sKey );
+			if (iFlag == -1)
+				return false;
+
+			if (bNot)
+				tData &= ~iFlag;
+			else
+				tData |= iFlag;
+		}
+		
 		return true;
 	}
 

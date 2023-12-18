@@ -2,13 +2,13 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 
-DEFINE_LINKED_CLASS( CPortalCamera, camera_portal )
-
 DEFINE_DATADESC( CPortalCamera )
 
 	DEFINE_FIELD( LinkedDataField, CHandle<CBaseTransform>, m_hDisplay, "display", FL_REQUIRED )
 
 END_DATADESC()
+
+DEFINE_LINKED_CLASS( CPortalCamera, camera_portal )
 
 CPortalCamera::CPortalCamera()
 {
@@ -27,6 +27,7 @@ bool CPortalCamera::ShouldUpdateTransform( void )
 
 void CPortalCamera::UpdateTransform( void )
 {
+	BaseClass::UpdateTransform();
 	glm::mat4 matRotation = glm::toMat4( glm::inverse( m_hDisplay->GetRotation() ) * GetRotation() );
 	m_matTransform = glm::translate( g_matIdentity, GetPosition() - glm::vec3( matRotation * glm::vec4( m_hDisplay->GetPosition(), 1.0f ) ) ) * matRotation;
 }

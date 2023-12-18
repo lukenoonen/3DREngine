@@ -500,21 +500,28 @@ void CCommandManager::ProcessCommand( const char *sCommand )
 
 	CTextReader trCommand;
 	if (!trCommand.ReadText( sCommand ))
-		return; // What to do upon failure?
+		return; // TODO: What to do on fail? SOLUTION: print error to console
 
 	CTextBlock *pTextBlock = trCommand.GetTextBlock();
 
 	for (unsigned int i = 0; i < pTextBlock->GetTextLineCount(); i++)
 	{
+		bool bFoundCommand = false;
 		CTextLine *pTextLine = pTextBlock->GetTextLine( i );
 		for (unsigned int j = 0; j < m_pCommands->size(); j++)
 		{
 			CBaseConCommand *pBaseConCommand = (*m_pCommands)[j];
 			if (pTextLine->IsKey( pBaseConCommand->GetName() ))
 			{
+				bFoundCommand = true;
 				pBaseConCommand->Dispatch( pTextLine );
 				break;
 			}
+		}
+
+		if (!bFoundCommand)
+		{
+			// TODO: print error to console
 		}
 	}
 }

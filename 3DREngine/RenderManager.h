@@ -5,12 +5,13 @@
 #include "CommandManager.h"
 #include "Shader.h"
 #include "UniformBufferObjects.h"
+#include "BaseFramebuffer.h"
 
 extern CConIVec2 cv_r_windowsize;
 extern CConBool cb_r_fullscreen;
 extern CConBool cb_r_vsync;
 extern CConFloat cf_r_fov;
-extern CConFloat cf_r_height;
+extern CConFloat cf_r_width;
 extern CConFloat cf_r_near;
 extern CConFloat cf_r_far;
 extern CConInt ci_r_msaalevel;
@@ -50,8 +51,11 @@ public:
 	GLFWmonitor *GetMonitor( void );
 	GLFWwindow *GetWindow( void );
 
-	void SetFrameBuffer( GLuint glFrameBuffer );
+	void SetFramebuffer( CBaseFramebuffer *pFramebuffer );
+	void ClearFramebuffer( void );
+
 	void SetBlend( bool bBlend );
+	void SetFramebuffer( GLuint glFrameBuffer );
 	void SetViewportSize( const glm::ivec2 &ivec2ViewportSize );
 	void SetViewportOffset( const glm::ivec2 &ivec2ViewportOffset );
 
@@ -93,8 +97,10 @@ private:
 	GLFWmonitor *m_pMonitor;
 	GLFWwindow *m_pWindow;
 
-	GLuint m_glFrameBuffer;
+	CBaseFramebuffer *m_pActiveFramebuffer;
+
 	bool m_bBlend;
+	GLuint m_glFramebuffer;
 	glm::ivec2 m_ivec2ViewportSize;
 	glm::ivec2 m_ivec2ViewportOffset;
 

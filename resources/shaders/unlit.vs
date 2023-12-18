@@ -38,7 +38,7 @@ void main()
 	mat4 matBoneTransform = u_matBones[a_vecBoneIDs.w] * a_vecWeights.w + u_matBones[a_vecBoneIDs.x] * a_vecWeights.x + u_matBones[a_vecBoneIDs.y] * a_vecWeights.y + u_matBones[a_vecBoneIDs.z] * a_vecWeights.z;
 	gl_Position = u_matProjectionView * u_matModel * matBoneTransform * vec4(a_vecPos, 1.0);
 #if CLIP_TRUE
-    gl_ClipDistance[0] = dot(u_matModel * matBoneTransform * vec4(a_vecPos, 1.0), u_vecClipPlane);
+    gl_ClipDistance[0] = dot(u_matModel * matBoneTransform * vec4(a_vecPos, 1.0f), u_vecClipPlane);
 #endif // CLIP_TRUE
 #if REFLECTION_TRUE
 	vec4 vecFragPosReflectionSpace = u_matProjectionView * vec4((u_matModel * matBoneTransform * vec4(a_vecPos, 1.0)).xyz, 1.0f);

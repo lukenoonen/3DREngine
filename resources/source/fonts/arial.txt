@@ -1,0 +1,8 @@
+font
+{
+	name airal;
+	fontname arial.ttf;
+	fontsize 80;
+	width 512;
+	padding 4;
+};

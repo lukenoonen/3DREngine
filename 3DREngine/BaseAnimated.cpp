@@ -30,7 +30,7 @@ bool CBaseAnimated::Init( void )
 
 void CBaseAnimated::PostThink( void )
 {
-	if (HasFlags( FL_ANIMATE | FL_UPDATEANIMATION ))
+	if (HasFlags( fl_animate.GetFlag() | fl_updateanimation.GetFlag() ))
 	{
 		CModel *pModel = GetModel();
 
@@ -70,7 +70,7 @@ void CBaseAnimated::PostThink( void )
 
 void CBaseAnimated::PreDraw( void )
 {
-	if (HasFlags( FL_ANIMATE ))
+	if (HasFlags( fl_animate.GetFlag() ))
 	{
 		pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_animate, (EBaseEnum)EShaderPreprocessorAnimate::t_true );
 		pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_bones, 0, 0, UTIL_min( (int)m_matBoneTransforms.size(), 64 ), &m_matBoneTransforms[0] );
@@ -81,7 +81,7 @@ void CBaseAnimated::PreDraw( void )
 
 void CBaseAnimated::PostDraw( void )
 {
-	if (HasFlags( FL_ANIMATE ))
+	if (HasFlags( fl_animate.GetFlag() ))
 		pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_animate, (EBaseEnum)EShaderPreprocessorAnimate::t_false );
 
 	BaseClass::PostDraw();

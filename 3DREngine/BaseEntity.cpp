@@ -4,19 +4,17 @@
 DEFINE_DATADESC_NOBASE( CBaseEntity )
 
 	DEFINE_FIELD( DataField, char *, m_sName, "name", FL_REQUIRED )
-	// DEFINE_FIELD( DataField, int, m_iFlags, "flags" ) // TODO: how should flags work?
+	DEFINE_FIELD( FlagDataField, int, m_iFlags, "flags", 0 )
 
 END_DATADESC()
 
 CBaseEntity::CBaseEntity()
 {
-	// m_sName = NULL;
 	m_sFileName = NULL;
 
 	m_iFlags = 0;
 
 	m_bRemoved = false;
-	m_uiReferences = 0;
 }
 
 CBaseEntity::~CBaseEntity()
@@ -28,8 +26,11 @@ CBaseEntity::~CBaseEntity()
 		delete[] m_sFileName;
 }
 
+#include <iostream>
+
 bool CBaseEntity::Init( void )
 {
+	std::cout << m_sName << ": " << m_iFlags << '\n';
 	return true;
 }
 
@@ -106,19 +107,4 @@ void CBaseEntity::Remove( void )
 bool CBaseEntity::IsRemoved( void ) const
 {
 	return m_bRemoved;
-}
-
-void CBaseEntity::Reference( void )
-{
-	m_uiReferences++;
-}
-
-void CBaseEntity::Unreference( void )
-{
-	m_uiReferences--;
-}
-
-bool CBaseEntity::IsReferenced( void ) const
-{
-	return m_uiReferences != 0;
 }

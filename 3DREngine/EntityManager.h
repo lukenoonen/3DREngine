@@ -2,12 +2,14 @@
 #define ENTITYMANAGER_H
 
 #include "Global.h"
-#include "BaseEntity.h"
-#include "BasePlayer.h"
-#include "BaseDrawable.h"
-#include "BaseLight.h"
-#include "BaseCamera.h"
 #include "EntityFactory.h"
+#include "EntityFlag.h"
+
+class CBaseEntity;
+class CBasePlayer;
+class CBaseDrawable;
+class CBaseLight;
+class CBaseCamera;
 
 class CEntityManager
 {
@@ -37,11 +39,8 @@ public:
 	CBaseEntity *GetEntityByIndex( unsigned int uiIndex );
 	unsigned int GetEntityIndex( CBaseEntity *pEntity );
 
-	void SetShadowCamera( CBaseCamera *pShadowCamera ); // TODO: clean up everything relating to this function and...
-	void SetTextureCamera( CBaseCamera *pTextureCamera ); // TODO ... this function, as well as their related member variables
-
-	CBaseCamera *GetShadowCamera( void ) const;
-	CBaseCamera *GetTextureCamera( void ) const;
+	CBaseCamera *GetCurrentCamera( void ) const;
+	CBaseLight *GetCurrentLight( void ) const;
 
 	// TODO: figure out a better solution to this
 	CBasePlayer *GetPlayer( unsigned int uiIndex );
@@ -50,7 +49,16 @@ public:
 
 	bool AddEntityTest( const char *sMapName, const CTextBlock *pTextBlock );
 
+	static void AddFlag( CEntityFlag *pEntityFlag );
+
+	int GetFlag( const char *sKey ) const;
+
 private:
+	void AddCamera( CBaseCamera *pCamera );
+	void AddDrawable( CBaseDrawable *pDrawable );
+	void AddLight( CBaseLight *pLight );
+	void AddPlayer( CBasePlayer *pPlayer );
+
 	CBaseEntity *CreateEntity( const char *sMapName );
 	CBaseEntity *CreateEntity( unsigned int uiEntityIndex );
 
@@ -68,11 +76,14 @@ private:
 	std::vector<CBaseLight *> m_pLightEntities;
 	std::vector<CBasePlayer *> m_pPlayerEntities;
 
-	CBaseCamera *m_pShadowCamera; // TODO: see if this should be a CBaseShadowCamera or something
-	CBaseCamera *m_pTextureCamera; // TODO: figure out a better naming scheme for this, see if this should be a different base class or something
+	CBaseCamera *m_pCurrentCamera;
+	CBaseLight *m_pCurrentLight;
 
 	static std::vector<CBaseEntityFactory *> *s_pEntityFactories;
 	std::vector<CBaseEntityFactory *> *m_pEntityFactories;
+
+	static std::vector<CEntityFlag *> *s_pEntityFlags; // TODO: optimise the use of vector vs other things (not just this)
+	std::vector<CEntityFlag *> *m_pEntityFlags;
 };
 
 #endif // ENTITYMANAGER_H

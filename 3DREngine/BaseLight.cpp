@@ -38,8 +38,6 @@ void CBaseLight::ActivateLight( void )
 
 	if (m_hShadowCamera)
 		m_hShadowCamera->ActivateLight();
-
-	pEntityManager->SetShadowCamera( m_hShadowCamera );
 }
 
 void CBaseLight::SetAmbient( const glm::vec3 &vec3Ambient )
@@ -58,6 +56,11 @@ void CBaseLight::SetSpecular( const glm::vec3 &vec3Specular )
 	m_vec3Specular = vec3Specular;
 }
 
+CBaseShadowCamera *CBaseLight::GetShadowCamera( void ) const
+{
+	return m_hShadowCamera;
+}
+
 void CBaseLight::CalculateMaxRadius( void )
 {
 
@@ -66,9 +69,4 @@ void CBaseLight::CalculateMaxRadius( void )
 float CBaseLight::GetMaxDiffuse( void ) const
 {
 	return std::fmaxf( std::fmaxf( m_vec3Diffuse.r, m_vec3Diffuse.g ), m_vec3Diffuse.b );
-}
-
-CBaseShadowCamera *CBaseLight::GetShadowCamera( void ) const
-{
-	return m_hShadowCamera;
 }

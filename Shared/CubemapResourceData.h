@@ -18,7 +18,6 @@ bool UTIL_Read( CFile *pFile, SCubemapResourceData &dData );
 
 #ifdef PROJECT_RESOURCE
 bool UTIL_Write( CFile *pFile, SCubemapResourceData &dData );
-bool UTIL_GetValue( const CTextItem *pTextItem, SCubemapResourceData &dValue );
 #endif // PROJECT_RESOURCE
 
 #endif // CUBEMAPRESOURCEDATA_H

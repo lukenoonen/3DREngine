@@ -16,6 +16,8 @@ enum class EShaderType : EBaseEnum
 	t_litspot,
 	t_litcsm,
 	t_skybox,
+	t_guitext,
+	t_guipanel,
 
 	i_count,
 	i_invalid = i_count,
@@ -34,6 +36,8 @@ static const char *g_sShaderTypeNames[] =
 	"litspot",
 	"litcsm",
 	"skybox",
+	"guitext",
+	"guipanel",
 };
 
 enum class EShaderPreprocessorQuality : EBaseEnum

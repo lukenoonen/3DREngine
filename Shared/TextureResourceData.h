@@ -14,7 +14,17 @@ enum class ETextureWrap : EBaseEnum
 	i_invalid = i_count,
 };
 
-bool UTIL_GetValue( const CTextItem *pTextItem, ETextureWrap &eValue );
+static const char *g_sTextureWrapNames[] =
+{
+	"repeat",
+	"mirrored",
+	"edge",
+	"border",
+};
+
+DEFINE_ENUM_NAMES( ETextureWrap, g_sTextureWrapNames )
+
+DEFINE_ENUM_GETVALUE( ETextureWrap )
 
 struct STextureResourceData
 {
@@ -33,7 +43,6 @@ bool UTIL_Read( CFile *pFile, STextureResourceData &dData );
 
 #ifdef PROJECT_RESOURCE
 bool UTIL_Write( CFile *pFile, STextureResourceData &dData );
-bool UTIL_GetValue( const CTextItem *pTextItem, STextureResourceData &dValue );
 #endif // PROJECT_RESOURCE
 
 #endif // TEXTURERESOURCEDATA_H

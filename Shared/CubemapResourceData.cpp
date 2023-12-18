@@ -56,9 +56,4 @@ bool UTIL_Write( CFile *pFile, SCubemapResourceData &dData )
 
 	return true;
 }
-
-bool UTIL_GetValue( const CTextItem *pTextItem, SCubemapResourceData &dValue )
-{
-
-}
 #endif // PROJECT_RESOURCE

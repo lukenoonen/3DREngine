@@ -24,12 +24,12 @@ public:
 	void SetDiffuse( const glm::vec3 &vec3Diffuse );
 	void SetSpecular( const glm::vec3 &vec3Specular );
 
+	CBaseShadowCamera *GetShadowCamera( void ) const;
+
 protected:
 	virtual void CalculateMaxRadius( void );
 
 	float GetMaxDiffuse( void ) const;
-
-	CBaseShadowCamera *GetShadowCamera( void ) const;
 
 private:
 	CHandle<CBaseShadowCamera> m_hShadowCamera;

@@ -2,6 +2,11 @@
 #include "TimeManager.h"
 #include "RenderManager.h"
 #include "FileManager.h"
+#include "BaseEntity.h"
+#include "BasePlayer.h"
+#include "BaseDrawable.h"
+#include "BaseLight.h"
+#include "BaseCamera.h"
 
 bool CC_CreateEntity( const CTextLine *pCommand )
 {
@@ -19,15 +24,20 @@ CConCommand cc_createentity( "createentity", CC_CreateEntity );
 
 std::vector<CBaseEntityFactory *> *CEntityManager::s_pEntityFactories = NULL;
 
+std::vector<CEntityFlag *> *CEntityManager::s_pEntityFlags = NULL;
+
 CEntityManager::CEntityManager()
 {
 	m_uiEntityCount = 0;
 
-	m_pShadowCamera = NULL;
-	m_pTextureCamera = NULL;
+	m_pCurrentCamera = NULL;
+	m_pCurrentLight = NULL;
 
 	m_pEntityFactories = s_pEntityFactories;
 	s_pEntityFactories = NULL;
+
+	m_pEntityFlags = s_pEntityFlags;
+	s_pEntityFlags = NULL;
 }
 
 CEntityManager::~CEntityManager()
@@ -35,6 +45,8 @@ CEntityManager::~CEntityManager()
 	ClearEntities();
 
 	delete m_pEntityFactories;
+
+	delete m_pEntityFlags;
 }
 
 void CEntityManager::OnLoop( void )
@@ -47,24 +59,20 @@ void CEntityManager::OnLoop( void )
 			CBaseEntity *pEntity = m_pEntities[i];
 
 			if (pEntity->IsCamera())
-				m_pCameraEntities.push_back( (CBaseCamera *)pEntity );
+				AddCamera( (CBaseCamera *)pEntity );
 			if (pEntity->IsDrawable())
-				m_pDrawableEntities.push_back( (CBaseDrawable *)pEntity );
+				AddDrawable( (CBaseDrawable *)pEntity );
 			if (pEntity->IsLight())
-				m_pLightEntities.push_back( (CBaseLight *)pEntity );
+				AddLight( (CBaseLight *)pEntity );
 			if (pEntity->IsPlayer())
-				m_pPlayerEntities.push_back( (CBasePlayer *)pEntity );
+				AddPlayer( (CBasePlayer *)pEntity );
 		}
 
 		for (unsigned int i = m_uiEntityCount; i < m_pEntities.size(); i++)
-		{
 			UTIL_LinkData( m_pEntities[i] );
-		}
 
 		for (unsigned int i = m_uiEntityCount; i < m_pEntities.size(); i++)
-		{
 			m_pEntities[i]->Init();
-		}
 
 		m_uiEntityCount = (unsigned int)m_pEntities.size();
 	}
@@ -80,8 +88,9 @@ void CEntityManager::OnLoop( void )
 
 	for (unsigned int i = 0; i < m_pCameraEntities.size(); i++)
 	{
-		if (m_pCameraEntities[i]->ShouldDraw())
-			m_pCameraEntities[i]->Render();
+		m_pCurrentCamera = m_pCameraEntities[i];
+		if (m_pCurrentCamera->ShouldDraw())
+			m_pCurrentCamera->Render();
 	}
 
 	for (unsigned int i = 0; i < m_pEntitiesToRemove.size(); i++)
@@ -121,14 +130,13 @@ void CEntityManager::DrawLitEntities( void )
 {
 	pRenderManager->SetBlend( false );
 
-	bool bFirstDraw = true;
-
 	for (unsigned int i = 0; i < m_pLightEntities.size(); i++)
 	{
-		CBaseLight *pLight = m_pLightEntities[i];
-		if (pLight->ShouldDraw())
+		m_pCurrentLight = m_pLightEntities[i];
+
+		if (m_pCurrentLight->ShouldDraw())
 		{
-			pLight->ActivateLight();
+			m_pCurrentLight->ActivateLight();
 			for (unsigned int i = 0; i < m_pDrawableEntities.size(); i++)
 			{
 				CBaseDrawable *pDrawable = m_pDrawableEntities[i];
@@ -144,42 +152,9 @@ void CEntityManager::DrawLitEntities( void )
 		}
 	}
 
+	m_pCurrentLight = NULL;
+
 	pRenderManager->SetBlend( false );
-
-	/*
-
-	for (unsigned int i = 0; i < m_pDrawableEntities.size(); i++)
-	{
-		CBaseDrawable *pDrawable = m_pDrawableEntities[i];
-		if (pDrawable->ShouldDraw())
-		{
-			pRenderManager->SetBlend( false );
-
-			pDrawable->PreDraw();
-
-			// TODO: check to see if this works compared to uiDrawCount
-			bool bFirstDraw = true;
-			for (unsigned int j = 0; j < m_pLightEntities.size(); j++)
-			{
-				CBaseLight *pLight = m_pLightEntities[j];
-				if (pLight->ShouldDraw())
-				{
-					pLight->ActivateLight();
-					pDrawable->Draw();
-
-					if (bFirstDraw)
-					{
-						pRenderManager->SetBlend( true );
-						bFirstDraw = false;
-					}
-				}
-			}
-
-			pDrawable->PostDraw();
-		}
-	}
-
-	pRenderManager->SetBlend( false );*/
 }
 
 void CEntityManager::AddEntity( CBaseEntity *pEntity )
@@ -314,24 +289,14 @@ unsigned int CEntityManager::GetEntityIndex( CBaseEntity *pEntity )
 	return 0;
 }
 
-void CEntityManager::SetShadowCamera( CBaseCamera *pShadowCamera )
+CBaseCamera *CEntityManager::GetCurrentCamera( void ) const
 {
-	m_pShadowCamera = pShadowCamera;
+	return m_pCurrentCamera;
 }
 
-void CEntityManager::SetTextureCamera( CBaseCamera *pTextureCamera )
+CBaseLight *CEntityManager::GetCurrentLight( void ) const
 {
-	m_pTextureCamera = pTextureCamera;
-}
-
-CBaseCamera *CEntityManager::GetShadowCamera( void ) const
-{
-	return m_pShadowCamera;
-}
-
-CBaseCamera *CEntityManager::GetTextureCamera( void ) const
-{
-	return m_pTextureCamera;
+	return m_pCurrentLight;
 }
 
 CBasePlayer *CEntityManager::GetPlayer( unsigned int uiIndex )
@@ -362,7 +327,7 @@ bool CEntityManager::AddEntityTest( const char *sMapName, const CTextBlock *pTex
 	if (!pEntity)
 		return false;
 
-	bool bResult = UTIL_LoadTextData( pEntity, pTextBlock ); // && UTIL_LinkData( pEntity ); // Figure out the right place to put this
+	bool bResult = UTIL_LoadTextData( pEntity, pTextBlock );
 	if (!bResult)
 	{
 		delete pEntity;
@@ -371,6 +336,62 @@ bool CEntityManager::AddEntityTest( const char *sMapName, const CTextBlock *pTex
 
 	AddEntity( pEntity );
 	return true;
+}
+
+
+void CEntityManager::AddFlag( CEntityFlag *pEntityFlag )
+{
+	if (!s_pEntityFlags)
+		s_pEntityFlags = new std::vector<CEntityFlag *>();
+
+	s_pEntityFlags->push_back( pEntityFlag );
+}
+
+int CEntityManager::GetFlag( const char *sKey ) const
+{
+	for (unsigned int i = 0; i < m_pEntityFlags->size(); i++)
+	{
+		CEntityFlag *pEntityFlag = m_pEntityFlags->at( i );
+		if (UTIL_streq( sKey, pEntityFlag->GetKey() ))
+			return pEntityFlag->GetFlag();
+	}
+
+	return -1;
+}
+
+#include <iostream>
+
+void CEntityManager::AddCamera( CBaseCamera *pCamera )
+{
+	std::cout << pCamera->GetMapName() << '\n';
+	int iCameraPriority = pCamera->GetPriority();
+	for (unsigned int i = 0; i < m_pCameraEntities.size(); i++)
+	{
+		if (iCameraPriority <= m_pCameraEntities[i]->GetPriority())
+		{
+			m_pCameraEntities.insert( m_pCameraEntities.begin() + i, pCamera );
+			std::cout << i << '\n';
+			return;
+		}
+	}
+
+	m_pCameraEntities.push_back( pCamera );
+	std::cout << m_pCameraEntities.size() << '\n';
+}
+
+void CEntityManager::AddDrawable( CBaseDrawable *pDrawable )
+{
+	m_pDrawableEntities.push_back( pDrawable );
+}
+
+void CEntityManager::AddLight( CBaseLight *pLight )
+{
+	m_pLightEntities.push_back( pLight );
+}
+
+void CEntityManager::AddPlayer( CBasePlayer *pPlayer )
+{
+	m_pPlayerEntities.push_back( pPlayer );
 }
 
 CBaseEntity *CEntityManager::CreateEntity( const char *sMapName )

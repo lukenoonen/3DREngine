@@ -78,6 +78,9 @@
     <ClInclude Include="FileType.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
+    <ClInclude Include="..\Shared\FontResourceData.h">
+      <Filter>Header Files\Resource\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Global.cpp">
@@ -108,6 +111,9 @@
       <Filter>Source Files\Resource\Data</Filter>
     </ClCompile>
     <ClCompile Include="..\Shared\TextureResourceData.cpp">
+      <Filter>Source Files\Resource\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\FontResourceData.cpp">
       <Filter>Source Files\Resource\Data</Filter>
     </ClCompile>
   </ItemGroup>

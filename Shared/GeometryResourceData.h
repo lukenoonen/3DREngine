@@ -26,7 +26,6 @@ bool UTIL_Read( CFile *pFile, SGeometryResourceData &dData );
 
 #ifdef PROJECT_RESOURCE
 bool UTIL_Write( CFile *pFile, SGeometryResourceData &dData );
-bool UTIL_GetValue( const CTextItem *pTextItem, SGeometryResourceData &dValue );
 #endif // PROJECT_RESOURCE
 
 #endif // GEOMETRYRESOURCEDATA_H

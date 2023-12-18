@@ -5,11 +5,13 @@
 #include "DataDesc.h"
 #include "Handle.h"
 #include "EntityFactory.h"
+#include "BaseReferenced.h"
+#include "EntityFlag.h"
 
-class CBaseEntity
+class CBaseEntity : public CBaseReferenced
 {
 public:
-	DECLARE_CLASS_NOBASE( CBaseEntity )
+	DECLARE_CLASS( CBaseEntity, CBaseReferenced )
 
 	DECLARE_DATADESC()
 
@@ -38,10 +40,6 @@ public:
 	void Remove( void );
 	bool IsRemoved( void ) const;
 
-	void Reference( void );
-	void Unreference( void );
-	bool IsReferenced( void ) const;
-
 private:
 	char *m_sName;
 	char *m_sFileName;
@@ -49,7 +47,6 @@ private:
 	int m_iFlags;
 
 	bool m_bRemoved;
-	unsigned int m_uiReferences;
 };
 
 #endif // BASEENTITY_H

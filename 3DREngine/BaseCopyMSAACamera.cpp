@@ -28,7 +28,7 @@ bool CBaseCopyMSAACamera::Init()
 
 		SetMSAALevel( (unsigned char)((float)m_hTargetCamera->GetMSAALevel() * m_flMSAALevelQualityFactor * cf_r_vcmsaalevelfactor.GetValue()) );
 		m_ucTargetCameraMSAALevel = m_hTargetCamera->GetMSAALevel();
-		m_bUpdateSize = false;
+		m_bUpdateMSAALevel = false;
 	}
 
 	return true;
@@ -49,7 +49,7 @@ void CBaseCopyMSAACamera::PostThink( void )
 		{
 			SetMSAALevel( (unsigned char)((float)m_hTargetCamera->GetMSAALevel() * m_flMSAALevelQualityFactor * cf_r_vcmsaalevelfactor.GetValue()) );
 			m_ucTargetCameraMSAALevel = m_hTargetCamera->GetMSAALevel();
-			m_bUpdateSize = false;
+			m_bUpdateMSAALevel = false;
 		}
 	}
 

@@ -2,7 +2,7 @@
 #define BASESPRITE_H
 
 #include "Global.h"
-#include "BaseWorld.h"
+#include "BaseWorld3D.h"
 #include "BaseMaterial.h"
 
 /*

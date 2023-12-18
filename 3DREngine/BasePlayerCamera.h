@@ -2,12 +2,12 @@
 #define BASEPLAYERCAMERA_H
 
 #include "Global.h"
-#include "BaseUniformMSAACamera.h"
+#include "BaseWorldCamera.h"
 
-class CBasePlayerCamera : public CBaseUniformMSAACamera
+class CBasePlayerCamera : public CBaseWorldCamera
 {
 public:
-	DECLARE_CLASS( CBasePlayerCamera, CBaseUniformMSAACamera )
+	DECLARE_CLASS( CBasePlayerCamera, CBaseWorldCamera )
 
 	CBasePlayerCamera();
 };

@@ -2,26 +2,22 @@
 #define BASERESOURCE_H
 
 #include "Global.h"
+#include "BaseReferenced.h"
 
-// TODO: make asset container classes for the resources
+// TODO: consider making Referenced container classes
 
-class CBaseResource
+class CBaseResource : public CBaseReferenced
 {
 public:
-	DECLARE_CLASS_NOBASE( CBaseResource )
+	DECLARE_CLASS( CBaseResource, CBaseReferenced )
 
 	CBaseResource( const char *sName );
 	virtual ~CBaseResource();
 
 	const char *GetName( void ) const;
 
-	void Reference( void );
-	void Unreference( void );
-	bool IsReferenced( void ) const;
-
 private:
 	char *m_sName;
-	unsigned int m_uiReferences;
 };
 
 #endif // BASERESOURCE_H

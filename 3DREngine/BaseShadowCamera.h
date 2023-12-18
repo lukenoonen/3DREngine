@@ -2,12 +2,12 @@
 #define BASESHADOWCAMERA_H
 
 #include "Global.h"
-#include "BaseVariableSizeCamera.h"
+#include "BaseCamera.h"
 
-class CBaseShadowCamera : public CBaseVariableSizeCamera
+class CBaseShadowCamera : public CBaseCamera
 {
 public:
-	DECLARE_CLASS( CBaseShadowCamera, CBaseVariableSizeCamera )
+	DECLARE_CLASS( CBaseShadowCamera, CBaseCamera )
 
 	DECLARE_DATADESC()
 
@@ -16,15 +16,12 @@ public:
 	virtual void ActivateLight( void );
 
 	void SetFadeNear( float flFadeNear );
-
 	void SetFadeFar( float flFadeFar );
-
 	void SetBlurScale( float flBlurScale );
 
 private:
 	float m_flFadeNear;
 	float m_flFadeFar;
-
 	float m_flBlurScale;
 };
 

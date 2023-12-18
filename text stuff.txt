@@ -1,0 +1,7 @@
+https://gist.github.com/pingpoli/b651433ad666a7f48ff2fad7a486e28d
+https://gist.github.com/pingpoli/7d53c5d6fb13cddfbb62ee391323f30c
+https://levelup.gitconnected.com/how-to-create-a-bitmap-font-with-freetype-58e8c31878a9
+https://learnopengl.com/code_viewer_gh.php?code=src/7.in_practice/2.text_rendering/text.vs
+https://learnopengl.com/code_viewer_gh.php?code=src/7.in_practice/2.text_rendering/text.fs
+https://learnopengl.com/code_viewer_gh.php?code=src/7.in_practice/2.text_rendering/text_rendering.cpp
+https://learnopengl.com/In-Practice/Text-Rendering

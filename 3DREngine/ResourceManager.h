@@ -4,6 +4,7 @@
 #include "Global.h"
 #include "AnimationResource.h"
 #include "CubemapResource.h"
+#include "FontResource.h"
 #include "GeometryResource.h"
 #include "SkeletonResource.h"
 #include "TextureResource.h"
@@ -17,6 +18,7 @@ public:
 
 	CAnimationResource *GetAnimationResource( const char *sName );
 	CCubemapResource *GetCubemapResource( const char *sName );
+	CFontResource *GetFontResource( const char *sName );
 	CGeometryResource *GetGeometryResource( const char *sName );
 	CSkeletonResource *GetSkeletonResource( const char *sName );
 	CTextureResource *GetTextureResource( const char *sName );
@@ -24,6 +26,7 @@ public:
 private:
 	std::vector<CAnimationResource *> m_pAnimationResources;
 	std::vector<CCubemapResource *> m_pCubemapResources;
+	std::vector<CFontResource *> m_pFontResources;
 	std::vector<CGeometryResource *> m_pGeometryResources;
 	std::vector<CSkeletonResource *> m_pSkeletonResources;
 	std::vector<CTextureResource *> m_pTextureResources;

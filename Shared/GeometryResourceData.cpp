@@ -86,9 +86,4 @@ bool UTIL_Write( CFile *pFile, SGeometryResourceData &dData )
 
 	return true;
 }
-
-bool UTIL_GetValue( const CTextItem *pTextItem, SGeometryResourceData &dValue )
-{
-
-}
 #endif // PROJECT_RESOURCE

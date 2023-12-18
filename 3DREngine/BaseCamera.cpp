@@ -1,15 +1,23 @@
 #include "BaseCamera.h"
 #include "RenderManager.h"
 
+DEFINE_DATADESC( CBaseCamera )
+
+	DEFINE_FIELD( DataField, int, m_iPriority, "priority", 0 )
+
+END_DATADESC()
+
 CBaseCamera::CBaseCamera()
 {
+	m_iPriority = 0;
 
+	m_pFramebuffer = NULL;
 }
 
 CBaseCamera::~CBaseCamera()
 {
-	DestroyTextureBuffers();
-	DestroyMSAABuffers();
+	if (m_pFramebuffer)
+		delete m_pFramebuffer;
 }
 
 bool CBaseCamera::Init( void )
@@ -17,32 +25,37 @@ bool CBaseCamera::Init( void )
 	if (!BaseClass::Init())
 		return false;
 
-	m_bUpdateTextureBuffers = false;
-	m_bUpdateMSAABuffers = false;
+	m_bUpdateProjection = false;
 
-	CreateTextureBuffers();
-	CreateMSAABuffers();
+	UpdateView();
+	UpdateProjection();
+	UpdateTotal();
 
 	return true;
 }
 
 void CBaseCamera::PostThink( void )
 {
-	if (m_bUpdateTextureBuffers)
-	{
-		DestroyTextureBuffers();
-		CreateTextureBuffers();
+	bool bUpdateTotal = false;
 
-		m_bUpdateTextureBuffers = false;
+	if (ShouldUpdateView())
+	{
+		UpdateView();
+		bUpdateTotal = true;
 	}
 
-	if (m_bUpdateMSAABuffers)
+	if (ShouldUpdateProjection())
 	{
-		DestroyMSAABuffers();
-		CreateMSAABuffers();
-
-		m_bUpdateMSAABuffers = false;
+		UpdateProjection();
+		bUpdateTotal = true;
 	}
+
+	if (bUpdateTotal)
+	{
+		UpdateTotal();
+	}
+
+	m_bUpdateProjection = false;
 
 	BaseClass::PostThink();
 }
@@ -54,40 +67,52 @@ bool CBaseCamera::IsCamera( void ) const
 
 void CBaseCamera::Render( void )
 {
-
+	pRenderManager->SetFramebuffer( m_pFramebuffer );
+	PerformRender();
+	pRenderManager->ClearFramebuffer();
 }
 
-int CBaseCamera::BindTexture( void )
+int CBaseCamera::Bind( void )
 {
-	return -1; // TODO: see if there is a better number than this
+	return m_pFramebuffer != NULL ? m_pFramebuffer->Bind() : -1; // TODO: see if there is a better default number than this
 }
 
-void CBaseCamera::SetUpdateTextureBuffers( bool bUpdateTextureBuffers )
+int CBaseCamera::GetPriority( void ) const
 {
-	m_bUpdateTextureBuffers = bUpdateTextureBuffers;
+	return m_iPriority;
 }
 
-void CBaseCamera::CreateTextureBuffers( void )
-{
-
-}
-
-void CBaseCamera::DestroyTextureBuffers( void )
+void CBaseCamera::PerformRender( void )
 {
 
 }
 
-void CBaseCamera::SetUpdateMSAABuffers( bool bUpdateMSAABuffers )
-{
-	m_bUpdateMSAABuffers = bUpdateMSAABuffers;
-}
-
-void CBaseCamera::CreateMSAABuffers( void )
+void CBaseCamera::UpdateView( void )
 {
 
 }
 
-void CBaseCamera::DestroyMSAABuffers( void )
+void CBaseCamera::UpdateProjection( void )
 {
 
+}
+
+void CBaseCamera::UpdateTotal( void )
+{
+
+}
+
+bool CBaseCamera::ShouldUpdateView( void )
+{
+	return PositionUpdated() || RotationUpdated();
+}
+
+bool CBaseCamera::ShouldUpdateProjection( void )
+{
+	return m_bUpdateProjection;
+}
+
+void CBaseCamera::MarkUpdateProjection( void )
+{
+	m_bUpdateProjection = true;
 }

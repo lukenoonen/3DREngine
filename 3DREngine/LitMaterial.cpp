@@ -1,6 +1,7 @@
 #include "LitMaterial.h"
 #include "EntityManager.h"
 #include "RenderManager.h"
+#include "BaseLight.h"
 
 DEFINE_DATADESC( CLitMaterial )
 
@@ -87,7 +88,8 @@ void CLitMaterial::Apply( void )
 
 		bool bDisplayCamera = m_hTextureCamera != NULL && m_hCamera != NULL;
 
-		CBaseCamera *pShadowCamera = pEntityManager->GetShadowCamera();
+		CBaseLight *pCurrentLight = pEntityManager->GetCurrentLight();
+		CBaseCamera *pShadowCamera = pCurrentLight ? pCurrentLight->GetShadowCamera() : NULL;
 		bool bDisplayShadow = m_bRecieveShadows && pShadowCamera != NULL;
 
 		pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_shadow, bDisplayShadow ? (EBaseEnum)EShaderPreprocessorShadow::t_true : (EBaseEnum)EShaderPreprocessorShadow::t_false );

@@ -85,8 +85,6 @@ void CBasePortalCamera::Render( void )
 
 	pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_reflection, (EBaseEnum)EShaderPreprocessorReflection::t_false );
 
-	pEntityManager->SetTextureCamera( this );
-
 	const glm::ivec2 &vec2Size = GetSize();
 	bool bMSAA = GetMSAALevel() != 0;
 
@@ -99,7 +97,7 @@ void CBasePortalCamera::Render( void )
 
 	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_clip, 0, &m_vec4Plane );
 
-	bool bFlipPortal = ShouldFlipPortal();
+	unsigned int bFlipPortal = ShouldFlipPortal();
 	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_reflection, 0, &bFlipPortal );
 
 	pEntityManager->DrawEntities();
@@ -108,10 +106,8 @@ void CBasePortalCamera::Render( void )
 	{
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, GetMSAAFBO() );
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_glTextureFBO );
-		glBlitFramebuffer( 0, 0, vec2Size.x, vec2Size.y, 0, 0, vec2Size.x, vec2Size.y, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+		glBlitFramebuffer( 0, 0, vec2Size.x, vec2Size.y, 0, 0, vec2Size.x, vec2Size.y, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST );
 	}
-
-	pEntityManager->SetTextureCamera( this );
 
 	pRenderManager->SetShaderPreprocessor( EShaderPreprocessor::t_clip, (EBaseEnum)EShaderPreprocessorClip::t_false );
 	glDisable( GL_CLIP_DISTANCE0 );
@@ -145,16 +141,20 @@ void CBasePortalCamera::CreateTextureBuffers( void )
 	const glm::ivec2 &vec2Size = GetSize();
 
 	glGenFramebuffers( 1, &m_glTextureFBO );
+	glGenRenderbuffers( 1, &m_glTextureRBO );
 	glGenTextures( 1, &m_glTexture );
 
 	glBindTexture( GL_TEXTURE_2D, m_glTexture );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, vec2Size.x, vec2Size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8, vec2Size.x, vec2Size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT );
 	glBindFramebuffer( GL_FRAMEBUFFER, m_glTextureFBO );
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_glTexture, 0 );
+	glBindRenderbuffer( GL_RENDERBUFFER, m_glTextureRBO );
+	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, vec2Size.x, vec2Size.y );
+	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_glTextureRBO );
 }
 
 void CBasePortalCamera::DestroyTextureBuffers( void )
@@ -162,5 +162,6 @@ void CBasePortalCamera::DestroyTextureBuffers( void )
 	pRenderManager->UnbindTexture( m_glTexture );
 
 	glDeleteFramebuffers( 1, &m_glTextureFBO );
+	glDeleteRenderbuffers( 1, &m_glTextureRBO );
 	glDeleteTextures( 1, &m_glTexture );
 }

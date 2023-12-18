@@ -19,32 +19,28 @@ public:
 
 	virtual void PostThink( void );
 
-	virtual void Render( void );
-
 	virtual void ActivateLight( void );
 
-	virtual int BindTexture( void );
-
 	void SetBlendDistance( float flBlendDistance );
-
 	void SetDistanceFactor( float flDistanceFactor );
-
 	void SetInitialDistance( float flInitialDistance );
-
 	void SetNearError( float flNearError );
-
 	void SetFarError( float flFarError );
-
 	void SetBlurRadius( float flBlurRadius );
 
 protected:
-	virtual void CreateTextureBuffers( void );
-	virtual void DestroyTextureBuffers( void );
+	virtual void PerformRender( void );
+	
+	virtual void UpdateView( void );
+	virtual void UpdateProjection( void );
+	virtual void UpdateTotal( void );
+
+	virtual bool ShouldUpdateView( void );
+	virtual bool ShouldUpdateProjection( void );
 
 private:
 	void CalculateCascade( void );
-	void CalculateRadius( void );
-	void CalculateTotal( void );
+	void CalculateRadius( void ); 
 	void CalculateNearFar( void );
 
 private:
@@ -55,7 +51,6 @@ private:
 	float m_flFarError;
 	float m_flBlurRadius;
 
-	glm::mat4 m_matTotal[4];
 	float m_flCascadeEnd[5];
 	float m_flCascadeEndNear[4];
 	float m_flRadius[4];
@@ -64,12 +59,8 @@ private:
 
 	bool m_bUpdateCascade;
 	bool m_bUpdateRadius;
-	bool m_bUpdateTotal;
 	bool m_bUpdateNearFar;
 	bool m_bUpdateBlurScale;
-
-	GLuint m_glTextureFBO;
-	GLuint m_glTexture;
 };
 
 #endif // CSMSHADOWCAMERA_H

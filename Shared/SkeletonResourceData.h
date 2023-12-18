@@ -47,7 +47,6 @@ bool UTIL_Read( CFile *pFile, SSkeletonResourceData &dData );
 
 #ifdef PROJECT_RESOURCE
 bool UTIL_Write( CFile *pFile, SSkeletonResourceData &dData );
-bool UTIL_GetValue( const CTextItem *pTextItem, SSkeletonResourceData &dValue );
 #endif // PROJECT_RESOURCE
 
 #endif // SKELETONRESOURCEDATA_H

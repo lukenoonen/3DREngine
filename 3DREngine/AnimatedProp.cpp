@@ -14,7 +14,7 @@ bool CAnimatedProp::Init( void )
 
 	SetAnimation( 0 );
 
-	AddFlags( FL_ANIMATE | FL_UPDATEANIMATION );
+	AddFlags( fl_animate.GetFlag() | fl_updateanimation.GetFlag() );
 
 	return true;
 }

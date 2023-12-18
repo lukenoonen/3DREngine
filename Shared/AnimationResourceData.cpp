@@ -134,9 +134,4 @@ bool UTIL_Write( CFile *pFile, SAnimationResourceData &dData )
 
 	return true;
 }
-
-bool UTIL_GetValue( const CTextItem *pTextItem, SAnimationResourceData &dValue )
-{
-
-}
 #endif // PROJECT_RESOURCE

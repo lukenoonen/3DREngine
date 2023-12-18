@@ -3,6 +3,7 @@
 
 #include "Global.h"
 #include "BaseTransform.h"
+#include "BaseFramebuffer.h"
 
 // TODO: clean up the use of Init() in these classes and derrived classes, since they often call the same functions as PostThink()
 
@@ -10,6 +11,8 @@ class CBaseCamera : public CBaseTransform
 {
 public:
 	DECLARE_CLASS( CBaseCamera, CBaseTransform )
+
+	DECLARE_DATADESC()
 
 	CBaseCamera();
 	virtual ~CBaseCamera();
@@ -20,24 +23,36 @@ public:
 
 	virtual bool IsCamera( void ) const;
 
-	virtual void Render( void );
+	void Render( void );
 
-	virtual int BindTexture( void );
+	int Bind( void );
+
+	int GetPriority( void ) const;
 
 protected:
-	void SetUpdateTextureBuffers( bool bUpdateTextureBuffers );
+	virtual void PerformRender( void );
 
-	virtual void CreateTextureBuffers( void );
-	virtual void DestroyTextureBuffers( void );
+	virtual void UpdateView( void );
+	virtual void UpdateProjection( void );
+	virtual void UpdateTotal( void );
 
-	void SetUpdateMSAABuffers( bool bUpdateTextureBuffers );
+	virtual bool ShouldUpdateView( void );
+	virtual bool ShouldUpdateProjection( void );
 
-	virtual void CreateMSAABuffers( void );
-	virtual void DestroyMSAABuffers( void );
+	void MarkUpdateProjection( void );
+
+protected:
+	CBaseFramebuffer *m_pFramebuffer;
+
+	std::vector<glm::mat4> m_matView;
+	std::vector<glm::mat4> m_matProjection;
+	std::vector<glm::mat4> m_matTotal;
+	std::vector<glm::mat4> m_matTotalLocked;
 
 private:
-	bool m_bUpdateTextureBuffers;
-	bool m_bUpdateMSAABuffers;
+	int m_iPriority;
+
+	bool m_bUpdateProjection;
 };
 
 #endif // BASECAMERA_H

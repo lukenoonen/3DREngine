@@ -4,8 +4,8 @@
 #include "Global.h"
 #include "BaseModeled.h"
 
-#define FL_ANIMATE			(1<<4)
-#define FL_UPDATEANIMATION	(1<<5)
+DEFINE_ENTITY_FLAG( fl_animate, 4 )
+DEFINE_ENTITY_FLAG( fl_updateanimation, 5 )
 
 class CBaseAnimated : public CBaseModeled
 {
