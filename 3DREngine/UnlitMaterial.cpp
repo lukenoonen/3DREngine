@@ -53,7 +53,7 @@ void CUnlitMaterial::Apply( void )
 		if (bDisplayCamera)
 		{
 			pRenderManager->SetUniform( "u_sCamera", m_hCamera->Bind() );
-			pRenderManager->SetUniform( "u_sCameraTexture", m_hTextureCamera->BindTexture() );
+			pRenderManager->SetUniform( "u_sCameraTexture", m_hTextureCamera->Bind() );
 		}
 		break;
 	}

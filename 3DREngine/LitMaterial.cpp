@@ -118,14 +118,14 @@ void CLitMaterial::Apply( void )
 		if (bDisplayCamera)
 		{
 			pRenderManager->SetUniform( "u_sCamera", m_hCamera->Bind() );
-			pRenderManager->SetUniform( "u_sCameraTexture", m_hTextureCamera->BindTexture() );
+			pRenderManager->SetUniform( "u_sCameraTexture", m_hTextureCamera->Bind() );
 		}
 
 		pRenderManager->SetUniform( "u_vecTextureScale", m_vec2TextureScale );
 
 		if (bDisplayShadow)
 		{
-			pRenderManager->SetUniform( "u_sShadow", pShadowCamera->BindTexture() );
+			pRenderManager->SetUniform( "u_sShadow", pShadowCamera->Bind() );
 		}
 
 		break;

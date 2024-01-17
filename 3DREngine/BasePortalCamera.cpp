@@ -14,7 +14,7 @@ bool CBasePortalCamera::Init( void )
 
 	UpdateTransform();
 
-	CBaseCamera *pTargetCamera = GetTargetCamera();
+	CBaseCamera *pTargetCamera = GetTarget();
 
 	const glm::ivec2 &vec2Size = GetSize();
 	m_matProjection = glm::perspective( glm::radians( cf_r_fov.GetValue() ), (float)vec2Size.x / (float)vec2Size.y, cf_r_near.GetValue(), cf_r_far.GetValue() );
