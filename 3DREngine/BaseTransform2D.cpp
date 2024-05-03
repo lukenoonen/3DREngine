@@ -2,11 +2,11 @@
 
 DEFINE_DATADESC( CBaseTransform2D )
 
-	DEFINE_FIELD( DataField, glm::vec2, m_vec2Position, "position", 0 )
-	DEFINE_FIELD( DataField, float, m_flRotation, "rotation", 0 )
-	DEFINE_FIELD( DataField, glm::vec2, m_vec2Scale, "scale", 0 )
-	DEFINE_FIELD( LinkedDataField, CHandle<CBaseTransform2D>, m_hParent, "parent", 0 )
-	DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseTransform2D>, m_hChildren, "children", 0 )
+	DEFINE_FIELD( DataField, glm::vec2, m_vec2Position, "position", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flRotation, "rotation", FL_NONE )
+	DEFINE_FIELD( DataField, glm::vec2, m_vec2Scale, "scale", FL_NONE )
+	DEFINE_FIELD( LinkedDataField, CHandle<CBaseTransform2D>, m_hParent, "parent", FL_NONE )
+	DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseTransform2D>, m_hChildren, "children", FL_NONE )
 
 END_DATADESC()
 

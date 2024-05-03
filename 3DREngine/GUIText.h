@@ -2,7 +2,7 @@
 #define GUITEXT_H
 
 #include "Global.h"
-#include "BaseWorld2D.h"
+#include "BaseBillboard.h"
 #include "TextMaterial.h"
 
 enum class ETextAlign : EBaseEnum
@@ -11,6 +11,7 @@ enum class ETextAlign : EBaseEnum
 	t_center,
 	t_right,
 	t_block,
+	t_continuous,
 
 	i_count,
 	i_invalid = i_count,
@@ -22,6 +23,7 @@ static const char *g_sETextAlignNames[] =
 	"center",
 	"right",
 	"block",
+	"continuous",
 };
 
 DEFINE_ENUM_NAMES( ETextAlign, g_sETextAlignNames )
@@ -40,10 +42,10 @@ struct SVertex2D
 	glm::vec2 vec2TexCoords;
 };
 
-class CGUIText : public CBaseWorld2D
+class CGUIText : public CBaseBillboard
 {
 public:
-	DECLARE_CLASS( CGUIText, CBaseWorld2D )
+	DECLARE_CLASS( CGUIText, CBaseBillboard )
 
 	DECLARE_DATADESC()
 
@@ -54,12 +56,21 @@ public:
 
 	virtual bool Init( void );
 
-	virtual void PostThink( void );
+	virtual void PreThink( void );
 
 	virtual void Draw( void );
 	virtual bool ShouldDraw( void ) const;
 
-	void SetText( const char *sText );
+	// void SetText( const char *sText );
+
+	unsigned int Insert( unsigned int uiPosition, char cChar );
+	unsigned int Delete( unsigned int uiPosition );
+	unsigned int Backspace( unsigned int uiPosition );
+	unsigned int GetLeft( unsigned int uiPosition ) const;
+	unsigned int GetRight( unsigned int uiPosition ) const;
+	unsigned int GetUp( unsigned int uiPosition ) const;
+	unsigned int GetDown( unsigned int uiPosition ) const;
+	unsigned int GetTextLength( void ) const;
 
 private:
 	void RecalculateText( void );
@@ -70,6 +81,7 @@ private:
 
 private:
 	char *m_sText;
+	std::vector<char> m_cText;
 
 	std::vector<SVertex2D> m_verVertices;
 
@@ -81,7 +93,6 @@ private:
 	glm::vec2 m_vec2Bounds;
 	float m_flLineScale;
 	ETextAlign m_eTextAlign;
-
 };
 
 #endif // GUITEXT_H

@@ -48,6 +48,7 @@ public:
 
 	CBaseDrawable();
 	
+	virtual void PreRender( void );
 	virtual void PreDraw( void );
 	virtual void Draw( void );
 	virtual void PostDraw( void );

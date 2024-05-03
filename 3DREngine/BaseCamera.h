@@ -7,9 +7,13 @@
 
 // TODO: clean up the use of Init() in these classes and derrived classes, since they often call the same functions as PostThink()
 
+class CCameraAnchor;
+
 class CBaseCamera : public CBaseTransform
 {
 public:
+	friend class CCameraAnchor;
+
 	DECLARE_CLASS( CBaseCamera, CBaseTransform )
 
 	DECLARE_DATADESC()
@@ -19,7 +23,7 @@ public:
 
 	virtual bool Init( void );
 
-	virtual void PostThink( void );
+	virtual void Think( void );
 
 	virtual bool IsCamera( void ) const;
 
@@ -29,30 +33,32 @@ public:
 
 	int GetPriority( void ) const;
 
+	void InitFramebuffer( CBaseFramebuffer *pFramebuffer );
+	virtual CBaseFramebuffer *GetFramebuffer( void ) const;
+
+	virtual const glm::vec3 &GetCameraPosition( void ) const;
+	virtual const glm::quat &GetCameraRotation( void ) const;
+
+	virtual const glm::mat4 &GetView( void ) const = 0;
+	virtual const glm::mat4 &GetProjection( void ) const = 0;
+	virtual const glm::mat4 &GetTotal( void ) const = 0;
+
 protected:
-	virtual void PerformRender( void );
+	virtual void PerformRender( void ) = 0;
 
-	virtual void UpdateView( void );
-	virtual void UpdateProjection( void );
-	virtual void UpdateTotal( void );
+	virtual bool ShouldUpdateView( void ) const = 0;
+	virtual void UpdateView( void ) = 0;
 
-	virtual bool ShouldUpdateView( void );
-	virtual bool ShouldUpdateProjection( void );
+	virtual bool ShouldUpdateProjection( void ) const = 0;
+	virtual void UpdateProjection( void ) = 0;
 
-	void MarkUpdateProjection( void );
+	virtual void UpdateTotal( void ) = 0;
 
 protected:
 	CBaseFramebuffer *m_pFramebuffer;
 
-	std::vector<glm::mat4> m_matView;
-	std::vector<glm::mat4> m_matProjection;
-	std::vector<glm::mat4> m_matTotal;
-	std::vector<glm::mat4> m_matTotalLocked;
-
 private:
 	int m_iPriority;
-
-	bool m_bUpdateProjection;
 };
 
 #endif // BASECAMERA_H

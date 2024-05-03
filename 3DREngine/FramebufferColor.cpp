@@ -3,8 +3,8 @@
 
 DEFINE_DATADESC_NOBASE( CFramebufferColor )
 
-	DEFINE_FIELD( DataField, glm::ivec2, m_vec2Size, "size", 0 )
-	DEFINE_FIELD( DataField, unsigned char, m_ucMSAALevel, "msaalevel", 0 )
+	DEFINE_FIELD( DataField, glm::ivec2, m_vec2Size, "size", FL_NONE )
+	DEFINE_FIELD( DataField, unsigned char, m_ucMSAALevel, "msaalevel", FL_NONE )
 
 END_DATADESC()
 
@@ -14,14 +14,9 @@ CFramebufferColor::CFramebufferColor()
 	m_ucMSAALevel = 0;
 }
 
-int CFramebufferColor::Bind( void )
+int CFramebufferColor::Bind( void ) const
 {
 	return pRenderManager->BindTexture( m_glTexture, GL_TEXTURE_2D );
-}
-
-const glm::ivec2 &CFramebufferColor::GetSize( void ) const
-{
-	return m_vec2Size;
 }
 
 GLuint CFramebufferColor::GetFramebuffer( void ) const
@@ -39,6 +34,40 @@ void CFramebufferColor::Blit( void )
 	}
 }
 
+const glm::ivec2 &CFramebufferColor::GetSize( void ) const
+{
+	return m_vec2Size;
+}
+
+unsigned char CFramebufferColor::GetMSAALevel( void ) const
+{
+	return m_ucMSAALevel;
+}
+
+bool CFramebufferColor::SetSizeInternal( const glm::ivec2 &vec2Size )
+{
+	if (m_vec2Size != vec2Size)
+	{
+		m_vec2Size = vec2Size;
+		return true;
+	}
+
+	return false;
+}
+
+bool CFramebufferColor::SetMSAALevelInternal( unsigned char ucMSAALevel )
+{
+	if (m_ucMSAALevel != ucMSAALevel)
+	{
+		m_ucMSAALevel = ucMSAALevel;
+		return true;
+	}
+
+	return false;
+}
+
+#include <iostream>
+
 void CFramebufferColor::CreateTextureBuffers( void )
 {
 	glGenFramebuffers( 1, &m_glTextureFBO );
@@ -51,11 +80,16 @@ void CFramebufferColor::CreateTextureBuffers( void )
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT );
+
 	glBindFramebuffer( GL_FRAMEBUFFER, m_glTextureFBO );
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_glTexture, 0 );
+
 	glBindRenderbuffer( GL_RENDERBUFFER, m_glTextureRBO );
 	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_vec2Size.x, m_vec2Size.y );
 	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_glTextureRBO );
+
+	if (glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete" << ": " << std::hex << glCheckFramebufferStatus( GL_FRAMEBUFFER ) << std::endl;
 }
 
 void CFramebufferColor::DestroyTextureBuffers( void )

@@ -1,13 +1,13 @@
-#ifndef PERSPECTIVECOLORCAMERA_H
-#define PERSPECTIVECOLORCAMERA_H
+#ifndef PERSPECTIVEWORLDCAMERA_H
+#define PERSPECTIVEWORLDCAMERA_H
 
 #include "Global.h"
-#include "BaseColorCamera.h"
+#include "BaseWorldCamera.h"
 
-class CPerspectiveColorCamera : public CBaseColorCamera
+class CPerspectiveColorCamera : public CBaseWorldCamera
 {
 public:
-	DECLARE_CLASS( CPerspectiveColorCamera, CBaseColorCamera )
+	DECLARE_CLASS( CPerspectiveColorCamera, CBaseWorldCamera )
 
 	DECLARE_DATADESC()
 
@@ -20,12 +20,14 @@ public:
 	void SetFar( float flFar );
 
 protected:
-	virtual void UpdateProjection( void );
+	virtual bool ShouldUpdateProjection( void ) const;
+
+	virtual glm::mat4 CalculateProjection( void ) const;
 
 private:
-	float m_flFOV;
-	float m_flNear;
-	float m_flFar;
+	CMonitoredValue<float> m_flFOV;
+	CMonitoredValue<float> m_flNear;
+	CMonitoredValue<float> m_flFar;
 };
 
-#endif // PERSPECTIVECOLORCAMERA_H
+#endif // PERSPECTIVEWORLDCAMERA_H

@@ -12,6 +12,6 @@ uniform vec2 u_vecTranslation;
 
 void main(void)
 {
-	gl_Position = u_matProjectionView * u_matModel * vec4(a_vecPos, 0.0f, 1.0f);
+	gl_Position = u_matProjectionView * u_matModel * vec4(a_vecPos.x, 0.0f, a_vecPos.y, 1.0f);
 	v_vecTexCoords = a_vecTexCoords;
 }

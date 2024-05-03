@@ -5,12 +5,12 @@
 
 DEFINE_DATADESC( CSpotShadowCamera )
 
-	DEFINE_FIELD( EmbeddedDataField, CFramebufferShadow, m_pFramebuffer, "framebuffer", 0 )
+	DEFINE_FIELD( EmbeddedDataField, CFramebufferShadow, m_pFramebuffer, "framebuffer", FL_NONE )
 
-	DEFINE_FIELD( DataField, float, m_flNear, "near", 0 )
-	DEFINE_FIELD( DataField, float, m_flFar, "far", 0 )
-	DEFINE_FIELD( DataField, float, m_flOuterCutoff, "outercutoff", 0 )
-	DEFINE_FIELD( DataField, float, m_flBlurRadius, "blurradius", 0 )
+	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flNear, "near", FL_NONE )
+	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flFar, "far", FL_NONE )
+	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flOuterCutoff, "outercutoff", FL_NONE )
+	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flBlurRadius, "blurradius", FL_NONE )
 
 END_DATADESC()
 
@@ -19,16 +19,12 @@ DEFINE_LINKED_CLASS( CSpotShadowCamera, camera_shadow_spot )
 
 CSpotShadowCamera::CSpotShadowCamera()
 {
-	m_pFramebuffer = new CFramebufferShadow();
+	InitFramebuffer( new CFramebufferShadow() );
 
 	m_flNear = 0.1f;
 	m_flFar = 1000.0f;
 	m_flOuterCutoff = 0.7071f;
 	m_flBlurRadius = 0.05f;
-
-	m_matView.resize( 1 );
-	m_matProjection.resize( 1 );
-	m_matTotal.resize( 1 );
 }
 
 bool CSpotShadowCamera::Init( void )
@@ -36,23 +32,17 @@ bool CSpotShadowCamera::Init( void )
 	if (!BaseClass::Init())
 		return false;
 
-	m_bUpdateBlurScale = false;
-
-	SetBlurScale( m_flBlurRadius / (tanf( m_flOuterCutoff ) * M_SQRT2) );
+	SetBlurScale( m_flBlurRadius.Get() / (tanf( m_flOuterCutoff.Get() ) * M_SQRT2) );
 	
 	return true;
 }
 
-void CSpotShadowCamera::PostThink( void )
+void CSpotShadowCamera::Think( void )
 {
-	if (m_bUpdateBlurScale)
-	{
-		SetBlurScale( m_flBlurRadius / (tanf( m_flOuterCutoff ) * M_SQRT2) );
-	}
+	if (m_flOuterCutoff.Modified() || m_flBlurRadius.Modified())
+		SetBlurScale( m_flBlurRadius.Get() / (tanf( m_flOuterCutoff.Get() ) * M_SQRT2) );
 
-	BaseClass::PostThink();
-
-	m_bUpdateBlurScale = false;
+	BaseClass::Think();
 }
 
 void CSpotShadowCamera::ActivateLight( void )
@@ -65,48 +55,68 @@ void CSpotShadowCamera::ActivateLight( void )
 void CSpotShadowCamera::SetNear( float flNear )
 {
 	m_flNear = flNear;
-	MarkUpdateProjection();
 }
 
 void CSpotShadowCamera::SetFar( float flFar )
 {
 	m_flFar = flFar;
-	MarkUpdateProjection();
 }
 
 void CSpotShadowCamera::SetOuterCutoff( float flOuterCutoff )
 {
 	m_flOuterCutoff = flOuterCutoff;
-	MarkUpdateProjection();
-	m_bUpdateBlurScale = true;
 }
 
 void CSpotShadowCamera::SetBlurRadius( float flBlurRadius )
 {
 	m_flBlurRadius = flBlurRadius;
-	m_bUpdateBlurScale = true;
+}
+
+const glm::mat4 &CSpotShadowCamera::GetView( void ) const
+{
+	return m_matView;
+}
+
+const glm::mat4 &CSpotShadowCamera::GetProjection( void ) const
+{
+	return m_matProjection;
+}
+
+const glm::mat4 &CSpotShadowCamera::GetTotal( void ) const
+{
+	return m_matTotal;
 }
 
 void CSpotShadowCamera::PerformRender( void )
 {
 	pRenderManager->SetRenderPass( ERenderPass::t_shadowspot );
 
-	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadow, 0, 0, 1, &m_matTotal[0]);
+	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadow, 0, 0, 1, &m_matTotal);
 
 	pEntityManager->DrawUnlitEntities();
 }
 
+bool CSpotShadowCamera::ShouldUpdateView( void ) const
+{
+	return PositionUpdated() || RotationUpdated();
+}
+
 void CSpotShadowCamera::UpdateView( void )
 {
-	m_matView[0] = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vec3Front, GetRotation() * g_vec3Up );
+	m_matView = glm::lookAt( GetPosition(), GetPosition() + GetRotation() * g_vec3Front, g_vec3Up );
+}
+
+bool CSpotShadowCamera::ShouldUpdateProjection( void ) const
+{
+	return m_flOuterCutoff.Modified() || m_flNear.Modified() || m_flFar.Modified();
 }
 
 void CSpotShadowCamera::UpdateProjection( void )
 {
-	m_matProjection[0] = glm::perspective( m_flOuterCutoff * 2.0f, 1.0f, m_flNear, m_flFar );
+	m_matProjection = glm::perspective( m_flOuterCutoff.Get() * 2.0f, 1.0f, m_flNear.Get(), m_flFar.Get() );
 }
 
 void CSpotShadowCamera::UpdateTotal( void )
 {
-	m_matTotal[0] = m_matProjection[0] * m_matView[0];
+	m_matTotal = m_matProjection * m_matView;
 }

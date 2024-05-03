@@ -8,16 +8,13 @@ CPerspectivePlayerCamera::CPerspectivePlayerCamera()
 
 }
 
-void CPerspectivePlayerCamera::PostThink( void )
+bool CPerspectivePlayerCamera::ShouldUpdateProjection( void ) const
 {
-	if (cf_r_fov.WasDispatched() || cf_r_near.WasDispatched() || cf_r_far.WasDispatched())
-		MarkUpdateProjection();
-
-	BaseClass::PostThink();
+	return cv_r_windowsize.WasDispatched() || cf_r_fov.WasDispatched() || cf_r_near.WasDispatched() || cf_r_far.WasDispatched();
 }
 
-void CPerspectivePlayerCamera::UpdateProjection( void )
+glm::mat4 CPerspectivePlayerCamera::CalculateProjection( void ) const
 {
-	const glm::ivec2 &vec2Size = m_pFramebuffer->GetSize();
-	m_matProjection[0] = glm::perspective( glm::radians( cf_r_fov.GetValue() ), (float)vec2Size.x / (float)vec2Size.y, cf_r_near.GetValue(), cf_r_far.GetValue() );
+	const glm::ivec2 &vec2Size = cv_r_windowsize.GetValue();
+	return glm::perspective( glm::radians( cf_r_fov.GetValue() ), (float)vec2Size.x / (float)vec2Size.y, cf_r_near.GetValue(), cf_r_far.GetValue() );
 }

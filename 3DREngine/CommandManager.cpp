@@ -54,8 +54,6 @@ CBaseConCommand::CBaseConCommand( const char *sName )
 
 	m_fnCommandCallback = NULL;
 	m_fnCommandCallbackVoid = NULL;
-	
-	m_ulFrameLastDispatched = 0;
 
 	CCommandManager::AddCommand( this );
 }
@@ -67,8 +65,6 @@ CBaseConCommand::CBaseConCommand( const char *sName, FnCommandCallback_t fnComma
 	m_fnCommandCallback = fnCommandCallback;
 	m_fnCommandCallbackVoid = NULL;
 
-	m_ulFrameLastDispatched = 0;
-
 	CCommandManager::AddCommand( this );
 }
 
@@ -79,14 +75,12 @@ CBaseConCommand::CBaseConCommand( const char *sName, FnCommandCallbackVoid_t fnC
 	m_fnCommandCallback = NULL;
 	m_fnCommandCallbackVoid = fnCommandCallbackVoid;
 
-	m_ulFrameLastDispatched = 0;
-
 	CCommandManager::AddCommand( this );
 }
 
 bool CBaseConCommand::Dispatch( CTextLine *pTextLine )
 {
-	m_ulFrameLastDispatched = pTimeManager->GetFrameCount();
+	m_mMonitored.Modify();
 
 	if (m_fnCommandCallbackVoid)
 		return (*m_fnCommandCallbackVoid)();
@@ -103,7 +97,7 @@ const char *CBaseConCommand::GetName( void ) const
 
 bool CBaseConCommand::WasDispatched( void ) const
 {
-	return m_ulFrameLastDispatched == pTimeManager->GetFrameCount();
+	return m_mMonitored.Modified();
 }
 
 CConFloat::CConFloat( float flDefaultValue, const char *sName ) : BaseClass( sName )

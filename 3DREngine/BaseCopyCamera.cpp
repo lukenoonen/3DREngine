@@ -3,13 +3,18 @@
 
 DEFINE_DATADESC( CBaseCopyCamera )
 
-	DEFINE_FIELD( LinkedDataField, CBaseWorldCamera, m_hTarget, "target", FL_REQUIRED )
+	DEFINE_FIELD( LinkedDataField, CHandle<CBaseWorldCamera>, m_hTargetCamera, "targetcamera", FL_REQUIRED )
+	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flSizeQualityFactor, "sizequalityfactor", FL_NONE )
+	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flMSAALevelQualityFactor, "msaalevelqualityfactor", FL_NONE )
 
 END_DATADESC()
 
 CBaseCopyCamera::CBaseCopyCamera()
 {
-	m_pFramebuffer = new CFramebufferColor();
+	InitFramebuffer( new CFramebufferColor() );
+
+	m_flSizeQualityFactor = 1.0f;
+	m_flMSAALevelQualityFactor = 1.0f;
 }
 
 bool CBaseCopyCamera::Init( void )
@@ -17,22 +22,45 @@ bool CBaseCopyCamera::Init( void )
 	if (!BaseClass::Init())
 		return false;
 
-	// TODO: copy the target camera framebuffer size!
+	CBaseFramebuffer *pFramebuffer = GetFramebuffer();
+	CBaseFramebuffer *pTargetFramebuffer = m_hTargetCamera->GetFramebuffer();
+
+	const glm::ivec2 &vec2TargetSize = pTargetFramebuffer->GetSize();
+	pFramebuffer->SetSize( glm::ivec2( glm::vec2( vec2TargetSize ) * m_flSizeQualityFactor.Get() ) );
+	m_vec2TargetSize = vec2TargetSize;
+
+	unsigned char ucTargetMSAALevel = pTargetFramebuffer->GetMSAALevel();
+	pFramebuffer->SetMSAALevel( (unsigned char)((float)ucTargetMSAALevel * m_flMSAALevelQualityFactor.Get()) );
+	m_ucTargetMSAALevel = ucTargetMSAALevel;
 
 	return true;
 }
 
-CBaseWorldCamera *CBaseCopyCamera::GetTarget( void ) const
+void CBaseCopyCamera::Think( void )
 {
-	return m_hTarget;
+	CBaseFramebuffer *pFramebuffer = GetFramebuffer();
+	CBaseFramebuffer *pTargetFramebuffer = m_hTargetCamera->GetFramebuffer();
+
+	const glm::ivec2 &vec2TargetSize = pTargetFramebuffer->GetSize();
+	if (m_flSizeQualityFactor.Modified() || m_vec2TargetSize != vec2TargetSize)
+	{
+		pFramebuffer->SetSize( glm::ivec2( glm::vec2( vec2TargetSize ) * m_flSizeQualityFactor.Get() ) );
+		m_vec2TargetSize = vec2TargetSize;
+	}
+
+	unsigned char ucTargetMSAALevel = pTargetFramebuffer->GetMSAALevel();
+	if (m_flMSAALevelQualityFactor.Modified() || m_ucTargetMSAALevel != ucTargetMSAALevel)
+	{
+		pFramebuffer->SetMSAALevel( (unsigned char)((float)ucTargetMSAALevel * m_flMSAALevelQualityFactor.Get()) );
+		m_ucTargetMSAALevel = ucTargetMSAALevel;
+	}
+
+	m_hTargetCamera.Check();
+
+	BaseClass::Think();
 }
 
-void CBaseCopyCamera::UpdateView( void )
+CBaseWorldCamera *CBaseCopyCamera::GetTargetCamera( void ) const
 {
-
-}
-
-void CBaseCopyCamera::UpdateTotal( void )
-{
-
+	return m_hTargetCamera;
 }

@@ -1,5 +1,36 @@
 #include "Maths.h"
 
+glm::quat UTIL_RotationDifference( glm::vec3 vecStart, glm::vec3 vecEnd )
+{
+	vecStart = glm::normalize( vecStart );
+	vecEnd = glm::normalize( vecEnd );
+
+	float flCosTheta = glm::dot( vecStart, vecEnd );
+	glm::vec3 rotationAxis;
+
+	if (flCosTheta < -1.0f + 0.001f)
+	{
+		rotationAxis = glm::cross( g_vec3Up, vecStart );
+		if (glm::length( rotationAxis ) < 0.001f)
+			rotationAxis = glm::cross( g_vec3Right, vecStart );
+
+		rotationAxis = normalize( rotationAxis );
+		return glm::angleAxis( glm::radians( 180.0f ), rotationAxis );
+	}
+
+	rotationAxis = glm::cross( vecStart, vecEnd );
+
+	float flS = glm::sqrt( (1.0f + flCosTheta) * 2.0f );
+	float flInverse = 1 / flS;
+
+	return glm::quat(
+		flS * 0.5f,
+		rotationAxis.x * flInverse,
+		rotationAxis.y * flInverse,
+		rotationAxis.z * flInverse
+	);
+}
+
 bool UTIL_GetValue( const CTextItem *pTextItem, glm::vec2 &vecValue )
 {
 	CTextLine *pTextLine;

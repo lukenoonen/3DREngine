@@ -39,6 +39,14 @@ bool CC_Unbind( const CTextLine *pCommand )
 }
 CConCommand cc_unbind( "unbind", CC_Unbind );
 
+bool CC_ToggleCursor( void )
+{
+	pInputManager->ToggleCursor();
+
+	return true;
+}
+CConCommand cc_togglecursor( "togglecursor", CC_ToggleCursor );
+
 void CB_KeyboardInput( GLFWwindow *pWindow, int iKey, int iScancode, int iAction, int iMods )
 {
 	if (iAction == GLFW_REPEAT)
@@ -208,6 +216,32 @@ void CB_KeyboardInput( GLFWwindow *pWindow, int iKey, int iScancode, int iAction
 	}
 }
 
+void CB_TextInput( GLFWwindow *pWindow, unsigned int uiChar )
+{
+	pInputManager->RecordText( uiChar );
+}
+
+void CB_TextInputKeyboard( GLFWwindow *pWindow, int iKey, int iScancode, int iAction, int iMods )
+{
+	if (iAction == GLFW_RELEASE)
+		return;
+
+	switch (iKey)
+	{
+	case GLFW_KEY_ESCAPE:
+	case GLFW_KEY_DELETE:
+	case GLFW_KEY_BACKSPACE:
+	case GLFW_KEY_ENTER:
+	case GLFW_KEY_TAB:
+	case GLFW_KEY_RIGHT:
+	case GLFW_KEY_LEFT:
+	case GLFW_KEY_DOWN:
+	case GLFW_KEY_UP:
+		pInputManager->RecordText( (unsigned int)iKey );
+		break;
+	}
+}
+
 void CB_MouseButton( GLFWwindow *pWindow, int iButton, int iAction, int iMods )
 {
 	switch (iButton)
@@ -303,41 +337,164 @@ void CKeyBind::UpDispatch( void )
 CInputManager::CInputManager()
 {
 	GLFWwindow *pWindow = pRenderManager->GetWindow();
-	glfwSetInputMode( pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
 	glfwSetInputMode( pWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE );
-	glfwSetKeyCallback( pWindow, CB_KeyboardInput );
+	glfwSetKeyCallback( pWindow, CB_TextInputKeyboard );
+	glfwSetCharCallback( pWindow, CB_TextInput );
 	glfwSetMouseButtonCallback( pWindow, CB_MouseButton );
 	glfwSetScrollCallback( pWindow, CB_Scroll );
 	glfwSetWindowCloseCallback( pWindow, CB_CloseWindow );
-	glfwSetCursorPos( pWindow, 0, 0 );
 
-	m_vec2MousePosition = g_vec2Zero;
-	m_vec2MouseDelta = g_vec2Zero;
+	m_eCursorShape = ECursorShape::i_invalid;
+	for (EBaseEnum i = 0; i < (EBaseEnum)ECursorShape::i_count; i++)
+		m_pCursors[i] = glfwCreateStandardCursor( g_iCursorShapeValues[i] );
+	SetCursor( ECursorShape::t_arrow );
+
+	memset( m_bKeyDown, 0, sizeof( m_bKeyDown ) );
+	memset( m_bPrevKeyDown, 0, sizeof( m_bPrevKeyDown ) );
+
+	m_vec2CursorPosition = g_vec2Zero;
+	m_vec2CursorPosition = -g_vec2One;
+	m_vec2CursorDelta = g_vec2Zero;
+	m_vec2CursorDelta = g_vec2Zero;
+
+	m_bLockCursor = false;
+	m_bLockKeyboard = false;
+
+	LockKeyboard();
+}
+
+CInputManager::~CInputManager()
+{
+	for (EBaseEnum i = 0; i < (EBaseEnum)ECursorShape::i_count; i++)
+		glfwDestroyCursor( m_pCursors[i] );
 }
 
 void CInputManager::OnLoop( void )
 {
+	m_uiText.clear();
+	memcpy( m_bPrevKeyDown, m_bKeyDown, sizeof( m_bPrevKeyDown ) );
+
 	glfwPollEvents();
 
 	GLFWwindow *pWindow = pRenderManager->GetWindow();
 	double dXPos, dYPos;
 	glfwGetCursorPos( pWindow, &dXPos, &dYPos );
-	m_vec2MouseDelta = glm::vec2( (float)dXPos, (float)dYPos );
-	if (m_vec2MouseDelta != g_vec2Zero)
+	if (m_bLockCursor)
 	{
-		m_vec2MousePosition += m_vec2MouseDelta;
-		glfwSetCursorPos( pWindow, 0.0, 0.0 );
+		SetCursorDelta( glm::vec2( (float)dXPos, (float)dYPos ) );
+		if (m_vec2CursorDelta != g_vec2Zero)
+			glfwSetCursorPos( pWindow, 0.0, 0.0 );
+	}
+	else
+	{
+		glm::vec2 vec2NewCursorPosition = glm::vec2( (float)dXPos, (float)dYPos );
+		SetCursorDelta( vec2NewCursorPosition - m_vec2CursorPosition );
+		SetCursorPosition( vec2NewCursorPosition );
 	}
 }
 
-const glm::vec2 &CInputManager::GetMousePosition( void )
+const glm::vec2 &CInputManager::GetCursorPosition( void )
 {
-	return m_vec2MousePosition;
+	return m_vec2CursorPosition;
 }
 
-const glm::vec2 &CInputManager::GetMouseDelta( void )
+const glm::vec2 &CInputManager::GetNormalizedCursorPosition( void )
 {
-	return m_vec2MouseDelta;
+	return m_vec2NormalizedCursorPosition;
+}
+
+const glm::vec2 &CInputManager::GetCursorDelta( void )
+{
+	return m_vec2CursorDelta;
+}
+
+const glm::vec2 &CInputManager::GetNormalizedCursorDelta( void )
+{
+	return m_vec2NormalizedCursorDelta;
+}
+
+void CInputManager::SetCursor( ECursorShape eCursorShape )
+{
+	GLFWwindow *pWindow = pRenderManager->GetWindow();
+	glfwSetCursor( pWindow, m_pCursors[(EBaseEnum)eCursorShape] );
+}
+
+void CInputManager::ResetCursor( void )
+{
+	SetCursor( ECursorShape::t_arrow );
+}
+
+bool CInputManager::IsKeyPressed( EKeyCodes eKeyCode ) const
+{
+	return m_bKeyDown[(EBaseEnum)eKeyCode] && !m_bPrevKeyDown[(EBaseEnum)eKeyCode];
+}
+
+bool CInputManager::IsKeyDown( EKeyCodes eKeyCode ) const
+{
+	return m_bKeyDown[(EBaseEnum)eKeyCode];
+}
+
+bool CInputManager::IsKeyReleased( EKeyCodes eKeyCode ) const
+{
+	return !m_bKeyDown[(EBaseEnum)eKeyCode] && m_bPrevKeyDown[(EBaseEnum)eKeyCode];
+}
+
+void CInputManager::LockCursor( void )
+{
+	GLFWwindow *pWindow = pRenderManager->GetWindow();
+	glfwSetInputMode( pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+	glfwSetCursorPos( pWindow, 0.0, 0.0 );
+	m_bLockCursor = true;
+}
+
+void CInputManager::UnlockCursor( void )
+{
+	GLFWwindow *pWindow = pRenderManager->GetWindow();
+	glfwSetInputMode( pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
+	glfwSetCursorPos( pWindow, m_vec2CursorPosition.x, m_vec2CursorPosition.y );
+	m_bLockCursor = false;
+}
+
+void CInputManager::ToggleCursor( void )
+{
+	if (m_bLockCursor)
+		UnlockCursor();
+	else
+		LockCursor();
+}
+
+bool CInputManager::IsCursorLocked( void ) const
+{
+	return m_bLockCursor;
+}
+
+void CInputManager::LockKeyboard( void )
+{
+	GLFWwindow *pWindow = pRenderManager->GetWindow();
+	glfwSetKeyCallback( pWindow, CB_KeyboardInput );
+	glfwSetCharCallback( pWindow, NULL );
+	m_bLockKeyboard = true;
+}
+
+void CInputManager::UnlockKeyboard( void )
+{
+	GLFWwindow *pWindow = pRenderManager->GetWindow();
+	glfwSetKeyCallback( pWindow, CB_TextInputKeyboard );
+	glfwSetCharCallback( pWindow, CB_TextInput );
+	m_bLockKeyboard = false;
+}
+
+void CInputManager::ToggleKeyboard( void )
+{
+	if (m_bLockKeyboard)
+		UnlockKeyboard();
+	else
+		LockKeyboard();
+}
+
+bool CInputManager::IsKeyboardLocked( void ) const
+{
+	return m_bLockKeyboard;
 }
 
 void CInputManager::BindKey( EKeyCodes eKeyCode, const char *sCommand )
@@ -350,10 +507,41 @@ void CInputManager::UnbindKey( EKeyCodes eKeyCode )
 	m_KeyBinds[(EBaseEnum)eKeyCode].Unbind();
 }
 
+void CInputManager::RecordText( unsigned int uiChar )
+{
+	m_uiText.push_back( uiChar );
+}
+
 void CInputManager::SetKey( EKeyCodes eKeyCode, bool bDown )
 {
+	m_bKeyDown[(EBaseEnum)eKeyCode] = bDown;
+
 	if (bDown)
 		m_KeyBinds[(EBaseEnum)eKeyCode].DownDispatch();
 	else
 		m_KeyBinds[(EBaseEnum)eKeyCode].UpDispatch();
+}
+
+unsigned int CInputManager::GetTextCount( void ) const
+{
+	return (unsigned int)m_uiText.size();
+}
+
+unsigned int CInputManager::GetText( unsigned int uiIndex ) const
+{
+	return m_uiText[uiIndex];
+}
+
+void CInputManager::SetCursorPosition( glm::vec2 vec2CursorPosition )
+{
+	m_vec2CursorPosition = vec2CursorPosition;
+	m_vec2NormalizedCursorPosition = 2.0f * vec2CursorPosition / (glm::vec2)cv_r_windowsize.GetValue() - 1.0f;
+	m_vec2NormalizedCursorPosition.y *= -1.0f;
+}
+
+void CInputManager::SetCursorDelta( glm::vec2 vec2CursorDelta )
+{
+	m_vec2CursorDelta = vec2CursorDelta;
+	m_vec2NormalizedCursorDelta = 2.0f * vec2CursorDelta / (glm::vec2)cv_r_windowsize.GetValue();
+	m_vec2NormalizedCursorDelta.y *= -1.0f;
 }

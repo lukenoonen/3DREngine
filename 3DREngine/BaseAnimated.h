@@ -18,7 +18,7 @@ public:
 
 	virtual bool Init( void );
 
-	virtual void PostThink( void );
+	virtual void PreThink( void );
 	virtual void PreDraw( void );
 	virtual void PostDraw( void );
 

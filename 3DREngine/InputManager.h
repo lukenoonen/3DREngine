@@ -151,28 +151,93 @@ private:
 	char *m_sCommand;
 };
 
+enum class ECursorShape : EBaseEnum
+{
+	t_arrow,
+	t_ibeam,
+	t_crosshair,
+	t_hand,
+	t_hresize,
+	t_vresize,
+
+	i_count,
+	i_invalid = i_count,
+};
+
+static int g_iCursorShapeValues[] =
+{
+	GLFW_ARROW_CURSOR,
+	GLFW_IBEAM_CURSOR,
+	GLFW_CROSSHAIR_CURSOR,
+	GLFW_HAND_CURSOR,
+	GLFW_HRESIZE_CURSOR,
+	GLFW_VRESIZE_CURSOR,
+};
+
 class CInputManager
 {
 public:
 	DECLARE_CLASS_NOBASE( CInputManager )
 
 	CInputManager();
+	~CInputManager();
 
 	void OnLoop( void );
 
-	const glm::vec2 &GetMousePosition( void );
-	const glm::vec2 &GetMouseDelta( void );
+	const glm::vec2 &GetCursorPosition( void );
+	const glm::vec2 &GetNormalizedCursorPosition( void );
+
+	const glm::vec2 &GetCursorDelta( void );
+	const glm::vec2 &GetNormalizedCursorDelta( void );
+
+	void SetCursor( ECursorShape eCursorShape );
+	void ResetCursor( void );
+
+	bool IsKeyPressed( EKeyCodes eKeyCode ) const;
+	bool IsKeyDown( EKeyCodes eKeyCode ) const;
+	bool IsKeyReleased( EKeyCodes eKeyCode ) const;
+
+	void LockCursor( void );
+	void UnlockCursor( void );
+	void ToggleCursor( void );
+	bool IsCursorLocked( void ) const;
+
+	void LockKeyboard( void );
+	void UnlockKeyboard( void );
+	void ToggleKeyboard( void );
+	bool IsKeyboardLocked( void ) const;
 
 	void BindKey( EKeyCodes eKeyCode, const char *sCommand );
 	void UnbindKey( EKeyCodes eKeyCode );
 
+	void RecordText( unsigned int uiChar );
 	void SetKey( EKeyCodes eKeyCode, bool bDown );
 
-private:
-	CKeyBind m_KeyBinds[(EBaseEnum)EKeyCodes::i_count];
+	unsigned int GetTextCount( void ) const;
+	unsigned int GetText( unsigned int uiIndex ) const;
 
-	glm::vec2 m_vec2MousePosition;
-	glm::vec2 m_vec2MouseDelta;
+private:
+	void SetCursorPosition( glm::vec2 vec2CursorPosition );
+	void SetCursorDelta( glm::vec2 vec2CursorPosition );
+
+private:
+	ECursorShape m_eCursorShape;
+	GLFWcursor *m_pCursors[(EBaseEnum)ECursorShape::i_count];
+
+	CKeyBind m_KeyBinds[(EBaseEnum)EKeyCodes::i_count];
+	bool m_bPrevKeyDown[(EBaseEnum)EKeyCodes::i_count];
+	bool m_bKeyDown[(EBaseEnum)EKeyCodes::i_count];
+
+	glm::vec2 m_vec2CursorPosition;
+	glm::vec2 m_vec2NormalizedCursorPosition;
+
+	glm::vec2 m_vec2CursorDelta;
+	glm::vec2 m_vec2NormalizedCursorDelta;
+
+	std::vector<unsigned int> m_uiText;
+
+	bool m_bLockCursor;
+	bool m_bLockKeyboard;
 };
 
 #endif // INPUTMANAGER_H

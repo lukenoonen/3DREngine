@@ -155,22 +155,25 @@ void CTestPlayer::PreThink( void )
 {
 	glm::vec3 vec3Rotation = glm::eulerAngles( GetRotation() );
 
-	glm::vec2 vec2Offset = pInputManager->GetMouseDelta();
-	if (vec2Offset != g_vec2Zero)
+	if (pInputManager->IsCursorLocked())
 	{
-		vec3Rotation.z -= vec2Offset.x * glm::radians( cv2_pl_mousesens.GetValue().x );
-		vec3Rotation.x -= vec2Offset.y * glm::radians( cv2_pl_mousesens.GetValue().y );
+		glm::vec2 vec2Offset = pInputManager->GetCursorDelta();
+		if (vec2Offset != g_vec2Zero)
+		{
+			vec3Rotation.z -= vec2Offset.x * glm::radians( cv2_pl_mousesens.GetValue().x );
+			vec3Rotation.x -= vec2Offset.y * glm::radians( cv2_pl_mousesens.GetValue().y );
 
-		if (vec3Rotation.x > glm::radians( 89.0f ))
-			vec3Rotation.x = glm::radians( 89.0f );
-		if (vec3Rotation.x < -glm::radians( 89.0f ))
-			vec3Rotation.x = -glm::radians( 89.0f );
+			if (vec3Rotation.x > glm::radians( 89.0f ))
+				vec3Rotation.x = glm::radians( 89.0f );
+			if (vec3Rotation.x < -glm::radians( 89.0f ))
+				vec3Rotation.x = -glm::radians( 89.0f );
 
-		SetRotation( glm::quat( vec3Rotation ) );
+			SetRotation( glm::quat( vec3Rotation ) );
 
-		m_vec3Front = GetRotation() * g_vec3Front;
-		m_vec3Right = GetRotation() * g_vec3Right;
-		m_vec3Up = GetRotation() * g_vec3Up;
+			m_vec3Front = GetRotation() * g_vec3Front;
+			m_vec3Right = GetRotation() * g_vec3Right;
+			m_vec3Up = GetRotation() * g_vec3Up;
+		}
 	}
 
 	float flVelocity = cf_pl_speed.GetValue() * pTimeManager->GetFrameTime();

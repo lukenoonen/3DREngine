@@ -10,6 +10,8 @@ public:
 	DECLARE_CLASS( CBasePlayerCamera, CBaseWorldCamera )
 
 	CBasePlayerCamera();
+
+	virtual CBaseFramebuffer *GetFramebuffer( void ) const;
 };
 
 #endif // BASEPLAYERCAMERA_H

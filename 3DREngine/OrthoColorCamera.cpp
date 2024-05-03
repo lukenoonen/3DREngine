@@ -3,13 +3,13 @@
 
 DEFINE_DATADESC( COrthoColorCamera )
 
-	DEFINE_FIELD( DataField, float, m_flWidth, "width", 0 )
-	DEFINE_FIELD( DataField, float, m_flNear, "near", 0 )
-	DEFINE_FIELD( DataField, float, m_flFar, "far", 0 )
+	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flWidth, "width", FL_NONE )
+	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flNear, "near", FL_NONE )
+	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flFar, "far", FL_NONE )
 
 END_DATADESC()
 
-DEFINE_LINKED_CLASS( COrthoColorCamera, camera_color_ortho )
+DEFINE_LINKED_CLASS( COrthoColorCamera, camera_world_ortho )
 
 COrthoColorCamera::COrthoColorCamera()
 {
@@ -21,24 +21,26 @@ COrthoColorCamera::COrthoColorCamera()
 void COrthoColorCamera::SetWidth( float flWidth )
 {
 	m_flWidth = flWidth * 0.5f;
-	MarkUpdateProjection();
 }
 
 void COrthoColorCamera::SetNear( float flNear )
 {
-	m_flNear = flNear;
-	MarkUpdateProjection();
+	m_flNear = flNear * 0.5f;
 }
 
 void COrthoColorCamera::SetFar( float flFar )
 {
-	m_flFar = flFar;
-	MarkUpdateProjection();
+	m_flFar = flFar * 0.5f;
 }
 
-void COrthoColorCamera::UpdateProjection( void )
+bool COrthoColorCamera::ShouldUpdateProjection( void ) const
 {
-	const glm::ivec2 &vec2Size = m_pFramebuffer->GetSize();
-	float flHeight = m_flWidth * (float)vec2Size.y / (float)vec2Size.x;
-	m_matProjection[0] = glm::ortho( -m_flWidth, m_flWidth, -flHeight, flHeight, m_flNear, m_flFar );
+	return m_flWidth.Modified() || m_flNear.Modified() || m_flFar.Modified();
+}
+
+glm::mat4 COrthoColorCamera::CalculateProjection( void ) const
+{
+	const glm::ivec2 &vec2Size = GetFramebuffer()->GetSize();
+	float flHeight = m_flWidth.Get() * (float)vec2Size.y / (float)vec2Size.x;
+	return glm::ortho( -m_flWidth.Get(), m_flWidth.Get(), -flHeight, flHeight, m_flNear.Get(), m_flFar.Get() );
 }

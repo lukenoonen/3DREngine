@@ -2,6 +2,7 @@
 #include "InputManager.h"
 #include "EntityManager.h"
 #include "TimeManager.h"
+#include "FramebufferDefault.h"
 
 bool CV_R_WindowSize( void );
 CConIVec2 cv_r_windowsize( glm::ivec2( 800, 600 ), "r_windowsize", CV_R_WindowSize );
@@ -91,7 +92,10 @@ CRenderManager::CRenderManager()
 	glfwMakeContextCurrent( m_pWindow );
 	gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress );
 
+	m_pDefaultFramebuffer = new CFramebufferDefault();
 	m_pActiveFramebuffer = NULL;
+
+	m_pDefaultFramebuffer->Init();
 
 	m_bBlend = false;
 	m_glFramebuffer = 0;
@@ -133,6 +137,8 @@ CRenderManager::~CRenderManager()
 	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderType::i_count; i++)
 		delete m_pShaders[i];
 
+	delete m_pDefaultFramebuffer;
+
 	glDeleteBuffers( (EBaseEnum)EUniformBufferObjects::i_count, m_glUBOs );
 
 	glfwDestroyWindow( m_pWindow );
@@ -149,6 +155,8 @@ void CRenderManager::RecompileShaders( void )
 
 void CRenderManager::OnLoop( void )
 {
+	m_pDefaultFramebuffer->Think();
+	m_pDefaultFramebuffer->Blit();
 	glfwSwapBuffers( m_pWindow );
 }
 
@@ -167,7 +175,7 @@ void CRenderManager::SetFramebuffer( CBaseFramebuffer *pFramebuffer )
 	if (!m_pActiveFramebuffer)
 	{
 		if (!pFramebuffer)
-			pFramebuffer = ; // TODO: put default framebuffer here
+			pFramebuffer = m_pDefaultFramebuffer; // TODO: put default framebuffer here
 
 		m_pActiveFramebuffer = pFramebuffer;
 		SetViewportSize( m_pActiveFramebuffer->GetSize() );
@@ -178,7 +186,8 @@ void CRenderManager::SetFramebuffer( CBaseFramebuffer *pFramebuffer )
 
 void CRenderManager::ClearFramebuffer( void )
 {
-	m_pActiveFramebuffer->Blit();
+	if (m_pActiveFramebuffer != m_pDefaultFramebuffer)
+		m_pActiveFramebuffer->Blit();
 	m_pActiveFramebuffer = NULL;
 }
 
@@ -366,6 +375,11 @@ void CRenderManager::UnbindAllTextures( void )
 	m_mapTextureIDToIndex.clear();
 	m_mapIndexToTextureID.clear();
 	m_glTextureIndex = 0;
+}
+
+CBaseFramebuffer *CRenderManager::GetDefaultFramebuffer() const
+{
+	return m_pDefaultFramebuffer;
 }
 
 void CRenderManager::CompileShaders( bool bCompileFromText )

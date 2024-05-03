@@ -4,10 +4,10 @@
 
 DEFINE_DATADESC( CBaseLight )
 
-	DEFINE_FIELD( DataField, glm::vec3, m_vec3Ambient, "ambient", 0 )
-	DEFINE_FIELD( DataField, glm::vec3, m_vec3Diffuse, "diffuse", 0 )
-	DEFINE_FIELD( DataField, glm::vec3, m_vec3Specular, "specular", 0 )
-	DEFINE_FIELD( LinkedDataField, CHandle<CBaseShadowCamera>, m_hShadowCamera, "shadowcamera", 0 )
+	DEFINE_FIELD( DataField, glm::vec3, m_vec3Ambient, "ambient", FL_NONE )
+	DEFINE_FIELD( DataField, glm::vec3, m_vec3Diffuse, "diffuse", FL_NONE )
+	DEFINE_FIELD( DataField, glm::vec3, m_vec3Specular, "specular", FL_NONE )
+	DEFINE_FIELD( LinkedDataField, CHandle<CBaseShadowCamera>, m_hShadowCamera, "shadowcamera", FL_NONE )
 
 END_DATADESC()
 

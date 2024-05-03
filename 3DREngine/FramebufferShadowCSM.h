@@ -11,8 +11,6 @@ public:
 
 	CFramebufferShadowCSM();
 
-	virtual const glm::ivec2 &GetSize( void ) const;
-
 	virtual void CreateTextureBuffers( void );
 
 };

@@ -17,7 +17,7 @@ public:
 
 	virtual bool Init( void );
 
-	virtual void PostThink( void );
+	virtual void Think( void );
 
 	virtual void ActivateLight( void );
 
@@ -28,6 +28,10 @@ public:
 	void SetFarError( float flFarError );
 	void SetBlurRadius( float flBlurRadius );
 
+	virtual const glm::mat4 &GetView( void ) const;
+	virtual const glm::mat4 &GetProjection( void ) const;
+	virtual const glm::mat4 &GetTotal( void ) const;
+
 protected:
 	virtual void PerformRender( void );
 	
@@ -35,21 +39,24 @@ protected:
 	virtual void UpdateProjection( void );
 	virtual void UpdateTotal( void );
 
-	virtual bool ShouldUpdateView( void );
-	virtual bool ShouldUpdateProjection( void );
+	virtual bool ShouldUpdateView( void ) const;
+	virtual bool ShouldUpdateProjection( void ) const;
 
 private:
 	void CalculateCascade( void );
 	void CalculateRadius( void ); 
 	void CalculateNearFar( void );
+	void CalculateBlurScale( void );
 
 private:
-	float m_flBlendDistance;
-	float m_flDistanceFactor;
-	float m_flInitialDistance;
-	float m_flNearError;
-	float m_flFarError;
-	float m_flBlurRadius;
+	CMonitoredValue<float> m_flBlendDistance;
+	CMonitoredValue<float> m_flDistanceFactor;
+	CMonitoredValue<float> m_flInitialDistance;
+	CMonitoredValue<float> m_flNearError;
+	CMonitoredValue<float> m_flFarError;
+	CMonitoredValue<float> m_flBlurRadius;
+
+	bool m_bUpdateProjection;
 
 	float m_flCascadeEnd[5];
 	float m_flCascadeEndNear[4];
@@ -57,10 +64,9 @@ private:
 	glm::vec4 m_vec4CascadeEndClipSpaceNear;
 	glm::vec4 m_vec4CascadeEndClipSpaceFar;
 
-	bool m_bUpdateCascade;
-	bool m_bUpdateRadius;
-	bool m_bUpdateNearFar;
-	bool m_bUpdateBlurScale;
+	glm::mat4 m_matView;
+	glm::mat4 m_matProjection[4];
+	glm::mat4 m_matTotal[4];
 };
 
 #endif // CSMSHADOWCAMERA_H

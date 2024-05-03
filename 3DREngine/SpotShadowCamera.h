@@ -17,7 +17,7 @@ public:
 
 	virtual bool Init( void );
 
-	virtual void PostThink( void );
+	virtual void Think( void );
 
 	virtual void ActivateLight( void );
 
@@ -26,20 +26,30 @@ public:
 	void SetOuterCutoff( float flOuterCutoff );
 	void SetBlurRadius( float flBlurRadius );
 
+	virtual const glm::mat4 &GetView( void ) const;
+	virtual const glm::mat4 &GetProjection( void ) const;
+	virtual const glm::mat4 &GetTotal( void ) const;
+
 protected:
 	virtual void PerformRender( void );
 
+	virtual bool ShouldUpdateView( void ) const;
 	virtual void UpdateView( void );
+
+	virtual bool ShouldUpdateProjection( void ) const;
 	virtual void UpdateProjection( void );
+
 	virtual void UpdateTotal( void );
 
 private:
-	float m_flNear;
-	float m_flFar;
-	float m_flOuterCutoff;
-	float m_flBlurRadius;
+	CMonitoredValue<float> m_flNear;
+	CMonitoredValue<float> m_flFar;
+	CMonitoredValue<float> m_flOuterCutoff;
+	CMonitoredValue<float> m_flBlurRadius;
 
-	bool m_bUpdateBlurScale;
+	glm::mat4 m_matView;
+	glm::mat4 m_matProjection;
+	glm::mat4 m_matTotal;
 };
 
 #endif // SPOTSHADOWCAMERA_H

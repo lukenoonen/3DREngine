@@ -13,12 +13,10 @@ public:
 
 	CPlanarReflectionCamera();
 
-	virtual int BindTexture( void );
-
 protected:
 	virtual bool ShouldFlipPortal( void );
 
-	virtual void UpdateTransform( void );
+	virtual glm::mat4 CalculateTransform( void ) const;
 };
 
 #endif // PLANARREFLECTIONCAMERA_H

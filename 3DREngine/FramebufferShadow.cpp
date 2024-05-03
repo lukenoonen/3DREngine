@@ -3,7 +3,7 @@
 
 DEFINE_DATADESC_NOBASE( CFramebufferShadow )
 
-	DEFINE_FIELD( DataField, glm::ivec2, m_vec2Size, "size", 0 )
+	DEFINE_FIELD( DataField, glm::ivec2, m_vec2Size, "size", FL_NONE )
 
 END_DATADESC()
 
@@ -15,6 +15,22 @@ CFramebufferShadow::CFramebufferShadow()
 const glm::ivec2 &CFramebufferShadow::GetSize( void ) const
 {
 	return m_vec2Size;
+}
+
+bool CFramebufferShadow::SetSizeInternal( const glm::ivec2 &vec2Size )
+{
+	if (m_vec2Size != vec2Size)
+	{
+		m_vec2Size = vec2Size;
+		return true;
+	}
+
+	return false;
+}
+
+int CFramebufferShadow::Bind( void ) const
+{
+	return pRenderManager->BindTexture( m_glTexture, GL_TEXTURE_2D );
 }
 
 GLuint CFramebufferShadow::GetFramebuffer( void ) const

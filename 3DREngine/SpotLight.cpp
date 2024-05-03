@@ -4,11 +4,11 @@
 
 DEFINE_DATADESC( CSpotLight )
 
-	DEFINE_FIELD( DataField, float, m_flCutoff, "cutoff", 0 )
-	DEFINE_FIELD( DataField, float, m_flOuterCutoff, "outercutoff", 0 )
-	DEFINE_FIELD( DataField, float, m_flConstant, "constant", 0 )
-	DEFINE_FIELD( DataField, float, m_flLinear, "linear", 0 )
-	DEFINE_FIELD( DataField, float, m_flQuadratic, "quadratic", 0 )
+	DEFINE_FIELD( DataField, float, m_flCutoff, "cutoff", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flOuterCutoff, "outercutoff", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flConstant, "constant", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flLinear, "linear", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flQuadratic, "quadratic", FL_NONE )
 
 END_DATADESC()
 

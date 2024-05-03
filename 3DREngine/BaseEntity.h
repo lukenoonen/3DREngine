@@ -4,6 +4,7 @@
 #include "Global.h"
 #include "DataDesc.h"
 #include "Handle.h"
+#include "Monitored.h"
 #include "EntityFactory.h"
 #include "BaseReferenced.h"
 #include "EntityFlag.h"

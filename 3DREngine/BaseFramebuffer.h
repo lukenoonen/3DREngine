@@ -9,13 +9,27 @@ public:
 	DECLARE_CLASS_NOBASE( CBaseFramebuffer )
 
 	CBaseFramebuffer();
+	~CBaseFramebuffer();
 
-	virtual int Bind( void );
+	// TODO: FORMALISE THE INIT/THINK THINGS
+	virtual void Init( void );
 
-	virtual const glm::ivec2 &GetSize( void ) const;
+	virtual void Think( void );
+
+	virtual int Bind( void ) const;
 	virtual GLuint GetFramebuffer( void ) const;
 
 	virtual void Blit( void );
+
+	virtual const glm::ivec2 &GetSize( void ) const;
+	virtual unsigned char GetMSAALevel( void ) const;
+
+	void SetSize( const glm::ivec2 &vec2Size );
+	void SetMSAALevel( unsigned char ucMSAALevel );
+
+protected:
+	virtual bool SetSizeInternal( const glm::ivec2 &vec2Size );
+	virtual bool SetMSAALevelInternal( unsigned char ucMSAALevel );
 
 	virtual void CreateTextureBuffers( void );
 	virtual void DestroyTextureBuffers( void );

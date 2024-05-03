@@ -1,18 +1,17 @@
 #include "GUIText.h"
 #include "RenderManager.h"
-#include "BaseCamera.h"
 
 // TODO: clean up, make GUI elements render above everything else, and so on
 
 DEFINE_DATADESC( CGUIText )
 
-	DEFINE_FIELD( DataField, char *, m_sText, "text", FL_REQUIRED )
+	DEFINE_FIELD( DataField, char *, m_sText, "text", FL_NONE ) // TODO: make std::vector<char> work like these strings
 
 	DEFINE_FIELD( LinkedDataField, CHandle<CTextMaterial>, m_hTextMaterial, "textmaterial", FL_REQUIRED )
 
-	DEFINE_FIELD( DataField, glm::vec2, m_vec2Bounds, "bounds", 0 )
-	DEFINE_FIELD( DataField, float, m_flLineScale, "linescale", 0 )
-	DEFINE_FIELD( DataField, ETextAlign, m_eTextAlign, "textalign", 0 )
+	DEFINE_FIELD( DataField, glm::vec2, m_vec2Bounds, "bounds", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flLineScale, "linescale", FL_NONE )
+	DEFINE_FIELD( DataField, ETextAlign, m_eTextAlign, "textalign", FL_NONE )
 
 END_DATADESC()
 
@@ -23,11 +22,11 @@ CGUIText::CGUIText()
 	m_vec2Bounds = g_vec2One;
 	m_flLineScale = 1.0f;
 	m_eTextAlign = ETextAlign::t_left;
+	m_sText = NULL;
 }
 
 CGUIText::~CGUIText()
 {
-	delete[] m_sText;
 	DeleteText();
 }
 
@@ -36,31 +35,30 @@ bool CGUIText::Init( void )
 	if (!BaseClass::Init())
 		return false;
 
-	if (!m_hTextMaterial)
-		return false;
+	if (m_sText)
+	{
+		const char *pSearch = m_sText;
+		while (*pSearch) m_cText.push_back( *pSearch++ );
+		delete[] m_sText;
+	}
+
+	m_cText.push_back( '\0' );
 
 	CalculateText();
 	return true;
 }
 
-void CGUIText::PostThink( void )
+void CGUIText::PreThink( void )
 {
 	if (cv_r_windowsize.WasDispatched())
 		RecalculateText();
 
-	BaseClass::PostThink();
+	BaseClass::PreThink();
 }
 
 void CGUIText::Draw( void )
 {
-	CBaseCamera *pCamera = pEntityManager->GetCurrentCamera();
-	SetRotation( glm::quat( glm::eulerAngles( pCamera->GetRotation() ) * glm::vec3( 1.0f, 1.0f, 1.0f ) ) * glm::quat( glm::radians( glm::vec3( 90.0f, 0.0f, 0.0f ) ) ) );
-
-	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_model, 0, &GetModelMatrix() ); // TODO: change "model" matrix to better name
-
-	// TODO: Enabling and disabling depth testing was removed in liu of setting the Z coord in the vs to be -1.0. See if this is a valid solution
-	pRenderManager->SetBlend( true );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	BaseClass::Draw();
 
 	m_hTextMaterial->Apply();
 
@@ -68,10 +66,6 @@ void CGUIText::Draw( void )
 
 	glBindVertexArray( m_glVAO );
 	glDrawArrays( GL_TRIANGLES, 0, (GLsizei)m_verVertices.size() );
-
-	glBlendFunc( GL_ONE, GL_ONE );
-
-	pRenderManager->SetBlend( false );
 }
 
 bool CGUIText::ShouldDraw( void ) const
@@ -79,11 +73,71 @@ bool CGUIText::ShouldDraw( void ) const
 	return BaseClass::ShouldDraw() && m_hTextMaterial->ShouldApply();
 }
 
-void CGUIText::SetText( const char *sText )
+/* void CGUIText::SetText(const char *sText)
 {
 	delete[] m_sText;
 	m_sText = UTIL_strdup( sText );
 	RecalculateText();
+}*/
+
+
+unsigned int CGUIText::Insert( unsigned int uiPosition, char cChar )
+{
+	if (uiPosition <= GetTextLength())
+	{
+		m_cText.insert( m_cText.begin() + uiPosition, cChar );
+		RecalculateText();
+		return uiPosition + 1;
+	}
+	return uiPosition;
+}
+
+unsigned int CGUIText::Delete( unsigned int uiPosition )
+{
+	if (uiPosition < GetTextLength())
+	{
+		m_cText.erase( m_cText.begin() + uiPosition );
+		RecalculateText();
+	}
+
+	return uiPosition;
+}
+
+unsigned int CGUIText::Backspace( unsigned int uiPosition )
+{
+	Delete( uiPosition - 1 );
+	return uiPosition == 0 ? 0 : uiPosition - 1;
+}
+
+unsigned int CGUIText::GetLeft( unsigned int uiPosition ) const
+{
+	unsigned int uiLeft = uiPosition - 1;
+	return uiLeft < GetTextLength() ? uiLeft : uiPosition;
+}
+
+unsigned int CGUIText::GetRight( unsigned int uiPosition ) const
+{
+	unsigned int uiRight = uiPosition + 1;
+	return uiRight < GetTextLength() ? uiRight : uiPosition;
+}
+
+unsigned int CGUIText::GetUp( unsigned int uiPosition ) const
+{
+	// TODO: implement
+	unsigned int uiLeft = uiPosition - 1;
+	return uiLeft < GetTextLength() ? uiLeft : uiPosition;
+}
+
+unsigned int CGUIText::GetDown( unsigned int uiPosition ) const
+{
+	// TODO: implement
+	unsigned int uiRight = uiPosition + 1;
+	return uiRight < GetTextLength() ? uiRight : uiPosition;
+}
+
+unsigned int CGUIText::GetTextLength( void ) const
+{
+	return (unsigned int)m_cText.size() - 1;
 }
 
 void CGUIText::RecalculateText( void )
@@ -92,12 +146,14 @@ void CGUIText::RecalculateText( void )
 	CalculateText();
 }
 
+#include <iostream>
+
 // TODO: clean up and finish (NOT DONE AT ALL)
 void CGUIText::CalculateText( void )
 {
 	glm::vec2 vec2Cursor = g_vec2Zero;
 
-	const char *sCursor = m_sText;
+	unsigned int uiCursor = 0;
 
 	float flTextScale = 2.0f / (float)cv_r_windowsize.GetValue().x;
 	glm::vec2 vec2AdjustedBounds = m_vec2Bounds / flTextScale;
@@ -111,16 +167,16 @@ void CGUIText::CalculateText( void )
 
 	float flTest = 0.0f;
 
-	while (*sCursor)
+	while (uiCursor < GetTextLength())
 	{
-		const char *sTarget = sCursor;
+		unsigned int uiTarget = uiCursor;
 		float flAdvance = 0.0f;
-		switch (*sCursor)
+		switch (m_cText[uiCursor])
 		{
 		case '\n':
 		{
 			flAdvance = 0.0f;
-			sTarget++;
+			uiTarget++;
 			break;
 		}
 		case '\t':
@@ -131,13 +187,13 @@ void CGUIText::CalculateText( void )
 			if (flCursorDelta == 0.0f)
 				flCursorDelta = flTabAdvance;
 			flAdvance += flCursorDelta;
-			sTarget++;
+			uiTarget++;
 			break;
 		}
 		case ' ':
 		{
-			flAdvance += (float)pFont->GetChar( *sTarget ).iAdvance;
-			sTarget++;
+			flAdvance += (float)pFont->GetChar( m_cText[uiTarget] ).iAdvance;
+			uiTarget++;
 			break;
 		}
 		default:
@@ -151,9 +207,9 @@ void CGUIText::CalculateText( void )
 				bool bSearching = true;
 				while (bSearching)
 				{
-					flAdvance += (float)pFont->GetChar( *sTarget ).iAdvance;
-					sTarget++;
-					switch (*sTarget)
+					flAdvance += (float)pFont->GetChar( m_cText[uiTarget] ).iAdvance;
+					uiTarget++;
+					switch (m_cText[uiTarget])
 					{
 					case ' ':
 					case '\t':
@@ -169,8 +225,8 @@ void CGUIText::CalculateText( void )
 			}
 			default:
 			{
-				flAdvance += (float)pFont->GetChar( *sTarget ).iAdvance;
-				sTarget++;
+				flAdvance += (float)pFont->GetChar( m_cText[uiTarget] ).iAdvance;
+				uiTarget++;
 				break;
 			}
 			}
@@ -179,11 +235,11 @@ void CGUIText::CalculateText( void )
 		}
 		}
 
-		if (vec2Cursor.x + flAdvance >= vec2AdjustedBounds.x || flAdvance == 0.0f)
+		if (flAdvance == 0.0f || vec2Cursor.x + flAdvance >= vec2AdjustedBounds.x && !tcText.empty() && tcText.top().cChar != '\0')
 		{
 			vec2Cursor.y += flLine;
 
-			if (vec2Cursor.y >= vec2AdjustedBounds.y)
+			if (m_eTextAlign != ETextAlign::t_continuous && vec2Cursor.y >= vec2AdjustedBounds.y)
 				break;
 
 			uiLines++;
@@ -192,7 +248,7 @@ void CGUIText::CalculateText( void )
 			vec2Cursor.x = 0.0f;
 		}
 
-		switch (*sCursor)
+		switch (m_cText[uiCursor])
 		{
 		case ' ':
 		case '\t':
@@ -208,9 +264,9 @@ void CGUIText::CalculateText( void )
 		}
 
 		float flCursorX = vec2Cursor.x;
-		while (sCursor < sTarget)
+		while (uiCursor < uiTarget)
 		{
-			switch (*sCursor)
+			switch (m_cText[uiCursor])
 			{
 			case ' ':
 			case '\t':
@@ -220,15 +276,21 @@ void CGUIText::CalculateText( void )
 			}
 			default:
 			{
-				const SChar &sChar = pFont->GetChar( *sCursor );
-				tcText.push( { *sCursor, flCursorX } );
+				const SChar &sChar = pFont->GetChar( m_cText[uiCursor] );
+				tcText.push( { m_cText[uiCursor], flCursorX } );
 
 				flCursorX += (float)sChar.iAdvance;
 				break;
 			}
 			}
 
-			sCursor++;
+			if (flCursorX > vec2AdjustedBounds.x)
+			{
+				uiCursor = uiTarget;
+				break;
+			}
+
+			uiCursor++;
 		}
 
 		vec2Cursor.x += flAdvance;
@@ -267,11 +329,23 @@ void CGUIText::CalculateText( void )
 			const SChar &sChar = m_hTextMaterial->GetFont()->GetChar( tcText.top().cChar );
 			glm::vec2 vec2Min = glm::vec2( tcText.top().flXPos + flJustification, (float)(uiLines + 1) * flLine) + (glm::vec2)sChar.vec2Offset;
 			glm::vec2 vec2Max = vec2Min + (glm::vec2)sChar.vec2Size;
+			glm::vec2 vec2BoundsAdjust = g_vec2One;
+			if (vec2Max.x > vec2AdjustedBounds.x)
+			{
+				vec2BoundsAdjust.x = (vec2AdjustedBounds.x - vec2Min.x) / (vec2Max.x - vec2Min.x);
+				vec2Max.x = vec2AdjustedBounds.x;
+			}
+			if (vec2Max.y > vec2AdjustedBounds.y)
+			{
+				vec2BoundsAdjust.y = (vec2AdjustedBounds.y - vec2Min.y) / (vec2Max.y - vec2Min.y);
+				vec2Max.y = vec2AdjustedBounds.y;
+			}
+
 			vec2Min *= g_vec2FlipVertical * flTextScale;
 			vec2Max *= g_vec2FlipVertical * flTextScale;
 
 			glm::vec2 vec2TexMin = (glm::vec2)sChar.vec2Position / (glm::vec2)m_hTextMaterial->GetFont()->GetBitmapSize();
-			glm::vec2 vec2TexMax = vec2TexMin + (glm::vec2)sChar.vec2Size / (glm::vec2)m_hTextMaterial->GetFont()->GetBitmapSize();
+			glm::vec2 vec2TexMax = vec2TexMin + (glm::vec2)sChar.vec2Size / (glm::vec2)m_hTextMaterial->GetFont()->GetBitmapSize() * vec2BoundsAdjust;
 
 			m_verVertices.push_back( { glm::vec2( vec2Min.x, vec2Min.y ), glm::vec2( vec2TexMin.x, vec2TexMin.y ) } );
 			m_verVertices.push_back( { glm::vec2( vec2Min.x, vec2Max.y ), glm::vec2( vec2TexMin.x, vec2TexMax.y ) } );

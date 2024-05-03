@@ -8,6 +8,7 @@
 // TODO: clean this up, maybe split into multiple files
 
 // TODO: Consider adding FL_NONE (0)
+#define FL_NONE		(0)
 #define FL_REQUIRED	(1<<0)
 #define FL_SAVED	(1<<1)
 

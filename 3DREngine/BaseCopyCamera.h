@@ -14,13 +14,19 @@ public:
 
 	virtual bool Init( void );
 
-protected:
-	CBaseWorldCamera *GetTarget( void ) const;
+	virtual void Think( void );
 
-	virtual void UpdateView( void );
+protected:
+	CBaseWorldCamera *GetTargetCamera( void ) const;
 
 private:
-	CHandle<CBaseWorldCamera> m_hTarget;
+	CHandle<CBaseWorldCamera> m_hTargetCamera;
+
+	CMonitoredValue<float> m_flSizeQualityFactor;
+	CMonitoredValue<float> m_flMSAALevelQualityFactor;
+
+	glm::ivec2 m_vec2TargetSize;
+	unsigned char m_ucTargetMSAALevel;
 };
 
 #endif // BASECOPYCAMERA_H

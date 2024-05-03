@@ -1,8 +1,14 @@
 #include "FramebufferShadowCubemap.h"
+#include "RenderManager.h"
 
 CFramebufferShadowCubemap::CFramebufferShadowCubemap()
 {
 
+}
+
+int CFramebufferShadowCubemap::Bind( void ) const
+{
+	return pRenderManager->BindTexture( m_glTexture, GL_TEXTURE_CUBE_MAP );
 }
 
 void CFramebufferShadowCubemap::CreateTextureBuffers( void )

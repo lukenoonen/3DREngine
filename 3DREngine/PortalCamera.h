@@ -15,11 +15,10 @@ public:
 
 	CPortalCamera();
 
-	virtual int BindTexture( void );
-
 protected:
-	virtual bool ShouldUpdateTransform( void );
-	virtual void UpdateTransform( void );
+	virtual bool ShouldUpdateTransform( void ) const;
+
+	virtual glm::mat4 CalculateTransform( void ) const;
 
 private:
 	CHandle<CBaseTransform> m_hDisplay;

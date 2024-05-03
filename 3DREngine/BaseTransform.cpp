@@ -3,11 +3,11 @@
 
 DEFINE_DATADESC( CBaseTransform )
 
-	DEFINE_FIELD( DataField, glm::vec3, m_vec3Position, "position", 0 )
-	DEFINE_FIELD( DataField, glm::quat, m_qRotation, "rotation", 0 )
-	DEFINE_FIELD( DataField, glm::vec3, m_vec3Scale, "scale", 0 )
-	DEFINE_FIELD( LinkedDataField, CHandle<CBaseTransform>, m_hParent, "parent", 0 )
-	DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseTransform>, m_hChildren, "children", 0 )
+	DEFINE_FIELD( DataField, CMonitoredValue<glm::vec3>, m_vec3Position, "position", FL_NONE )
+	DEFINE_FIELD( DataField, CMonitoredValue<glm::quat>, m_qRotation, "rotation", FL_NONE )
+	DEFINE_FIELD( DataField, CMonitoredValue<glm::vec3>, m_vec3Scale, "scale", FL_NONE )
+	DEFINE_FIELD( LinkedDataField, CHandle<CBaseTransform>, m_hParent, "parent", FL_NONE )
+	// DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseTransform>, m_hChildren, "children", FL_NONE )
 
 END_DATADESC()
 
@@ -16,12 +16,8 @@ CBaseTransform::CBaseTransform()
 	AddFlags( fl_parentposition.GetFlag() | fl_parentrotation.GetFlag() | fl_parentscale.GetFlag() );
 
 	m_vec3Position = g_vec3Zero;
-	m_qRotation = g_vec3Zero;
+	m_qRotation = glm::quat(g_vec3Zero);
 	m_vec3Scale = g_vec3One;
-
-	m_ulLastFramePositionUpdated = 0;
-	m_ulLastFrameRotationUpdated = 0;
-	m_ulLastFrameScaleUpdated = 0;
 }
 
 bool CBaseTransform::Init( void )
@@ -31,9 +27,13 @@ bool CBaseTransform::Init( void )
 
 	if (m_hParent)
 	{
-		AddPosition( m_hParent->GetPosition() );
-		AddRotation( m_hParent->GetRotation() );
-		AddScale( m_hParent->GetScale() );
+		m_hParent->AddChild( this );
+		if (HasFlags(fl_parentposition.GetFlag()))
+			AddParentPosition( m_hParent->GetPosition() );
+		if (HasFlags( fl_parentrotation.GetFlag() ))
+			AddParentRotation( m_hParent->GetPosition(), m_hParent->GetRotation(), g_qZero, m_hParent->GetRotation() );
+		if (HasFlags( fl_parentscale.GetFlag() ))
+			AddParentScale( m_hParent->GetScale(), m_hParent->GetPosition(), m_hParent->GetScale() );
 	}
 
 	return true;
@@ -67,81 +67,69 @@ void CBaseTransform::SetScale( const glm::vec3 &vec3Scale )
 	AddScale( vec3Scale / GetScale() );
 }
 
+#include <iostream>
+
 void CBaseTransform::AddPosition( const glm::vec3 &vec3Position )
 {
-	m_vec3Position += vec3Position;
+	m_vec3Position = GetPosition() + vec3Position;
 	if (!m_hChildren.empty())
 	{
 		for (unsigned int i = 0; i < m_hChildren.size(); i++)
 		{
 			if (m_hChildren[i]->HasFlags( fl_parentposition.GetFlag() ))
-				m_hChildren[i]->AddPosition( vec3Position );
+				m_hChildren[i]->AddParentPosition( vec3Position );
 		}
 	}
-
-	MarkPositionUpdated();
 }
 
 void CBaseTransform::AddRotation( const glm::quat &qRotation )
 {
 	if (!m_hChildren.empty())
 	{
-		glm::quat qRotationInverse = glm::inverse( m_qRotation );
+		glm::quat qRotationInverse = glm::inverse( GetRotation() );
 
-		m_qRotation = m_qRotation * qRotation;
+		m_qRotation = GetRotation() * qRotation;
+
+		glm::quat qRotationDelta = GetRotation() * qRotationInverse;
 
 		for (unsigned int i = 0; i < m_hChildren.size(); i++)
 		{
 			if (m_hChildren[i]->HasFlags( fl_parentrotation.GetFlag() ))
-			{
-				m_hChildren[i]->SetRotation( m_qRotation * qRotationInverse * m_hChildren[i]->GetRotation() );
-				glm::vec3 vec3Difference = m_hChildren[i]->GetPosition() - GetPosition();
-				m_hChildren[i]->AddPosition( qRotationInverse * vec3Difference - vec3Difference );
-				vec3Difference = m_hChildren[i]->GetPosition() - GetPosition();
-				m_hChildren[i]->AddPosition( m_qRotation * vec3Difference - vec3Difference );
-			}
+				m_hChildren[i]->AddParentRotation( GetPosition(), GetRotation(), qRotationInverse, qRotationDelta );
 		}
 	}
 	else
 	{
-		m_qRotation = m_qRotation * qRotation;
+		m_qRotation = GetRotation() * qRotation;
 	}
-
-	MarkRotationUpdated();
 }
 
 void CBaseTransform::AddScale( const glm::vec3 &vec3Scale )
 {
-	m_vec3Scale *= vec3Scale;
+	m_vec3Scale = GetScale() * vec3Scale;
 	if (!m_hChildren.empty())
 	{
 		for (unsigned int i = 0; i < m_hChildren.size(); i++)
 		{
 			if (m_hChildren[i]->HasFlags( fl_parentscale.GetFlag() ))
-			{
-				m_hChildren[i]->AddScale( vec3Scale );
-				glm::vec3 vec3Difference = m_hChildren[i]->GetPosition() - GetPosition();
-				m_hChildren[i]->AddPosition( m_vec3Scale * vec3Difference - vec3Difference );
-			}
+				m_hChildren[i]->AddParentScale( vec3Scale, GetPosition(), GetScale() );
 		}
 	}
-
-	MarkScaleUpdated();
 }
 
 const glm::vec3 &CBaseTransform::GetPosition( void ) const
 {
-	return m_vec3Position;
+	return m_vec3Position.Get();
 }
 
 const glm::quat &CBaseTransform::GetRotation( void ) const
 {
-	return m_qRotation;
+	return m_qRotation.Get();
 }
 
 const glm::vec3 &CBaseTransform::GetScale( void ) const
 {
-	return m_vec3Scale;
+	return m_vec3Scale.Get();
 }
 
 void CBaseTransform::SetParent( CBaseTransform *pParent )
@@ -174,30 +162,36 @@ void CBaseTransform::RemoveChild( CBaseTransform *pChild )
 
 bool CBaseTransform::PositionUpdated( void ) const
 {
-	return m_ulLastFramePositionUpdated == pTimeManager->GetFrameCount();
+	return m_vec3Position.Modified();
 }
 
 bool CBaseTransform::RotationUpdated( void ) const
 {
-	return m_ulLastFrameRotationUpdated == pTimeManager->GetFrameCount();
+	return m_qRotation.Modified();
 }
 
 bool CBaseTransform::ScaleUpdated( void ) const
 {
-	return m_ulLastFrameScaleUpdated == pTimeManager->GetFrameCount();
+	return m_vec3Scale.Modified();
 }
 
-void CBaseTransform::MarkPositionUpdated( void )
+void CBaseTransform::AddParentPosition( const glm::vec3 &vec3Position )
 {
-	m_ulLastFramePositionUpdated = pTimeManager->GetFrameCount();
+	AddPosition( vec3Position );
 }
 
-void CBaseTransform::MarkRotationUpdated( void )
+void CBaseTransform::AddParentRotation( const glm::vec3 &vec3ParentPosition, const glm::quat &qParentRotation, const glm::quat &qRotationInverse, const glm::quat &qRotationDelta )
 {
-	m_ulLastFrameRotationUpdated = pTimeManager->GetFrameCount();
+	SetRotation( qRotationDelta * GetRotation() );
+	glm::vec3 vec3Difference = GetPosition() - vec3ParentPosition;
+	AddPosition( qRotationInverse * vec3Difference - vec3Difference );
+	vec3Difference = GetPosition() - vec3ParentPosition;
+	AddPosition( qParentRotation * vec3Difference - vec3Difference );
 }
 
-void CBaseTransform::MarkScaleUpdated( void )
+void CBaseTransform::AddParentScale( const glm::vec3 &vec3Scale, const glm::vec3 &vec3ParentPosition, const glm::vec3 &vec3ParentScale )
 {
-	m_ulLastFrameScaleUpdated = pTimeManager->GetFrameCount();
+	AddScale( vec3Scale );
+	glm::vec3 vec3Difference = GetPosition() - vec3ParentPosition;
+	AddPosition( vec3ParentScale * vec3Difference - vec3Difference );
 }

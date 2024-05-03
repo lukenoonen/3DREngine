@@ -4,7 +4,7 @@
 
 DEFINE_DATADESC_NOBASE( CBaseAnimated )
 
-	DEFINE_FIELD( DataField, float, m_flAnimationTimeScale, "animationtimescale", 0 )
+	DEFINE_FIELD( DataField, float, m_flAnimationTimeScale, "animationtimescale", FL_NONE )
 
 END_DATADESC()
 
@@ -28,7 +28,7 @@ bool CBaseAnimated::Init( void )
 	return true;
 }
 
-void CBaseAnimated::PostThink( void )
+void CBaseAnimated::PreThink( void )
 {
 	if (HasFlags( fl_animate.GetFlag() | fl_updateanimation.GetFlag() ))
 	{
@@ -65,7 +65,7 @@ void CBaseAnimated::PostThink( void )
 		pModel->UpdateAnimation( m_matBoneTransforms, m_uiAnimations, m_flAnimationTimes, flAdjustedAnimationTransitionFactors );
 	}
 
-	BaseClass::PostThink();
+	BaseClass::PreThink();
 }
 
 void CBaseAnimated::PreDraw( void )

@@ -49,9 +49,11 @@ CEntityManager::~CEntityManager()
 	delete m_pEntityFlags;
 }
 
+#include <iostream>
+
 void CEntityManager::OnLoop( void )
 {
-	// TODO: formalise the way newly-added entities are handled
+	// TODO: formalise the way newly-added entities are handled (BAD LINKING!!!! FIX IT!!!!)
 	if (m_uiEntityCount != m_pEntities.size())
 	{
 		for (unsigned int i = m_uiEntityCount; i < m_pEntities.size(); i++)
@@ -85,6 +87,9 @@ void CEntityManager::OnLoop( void )
 
 	for (unsigned int i = 0; i < m_uiEntityCount; i++)
 		m_pEntities[i]->PostThink();
+
+	for (unsigned int i = 0; i < m_pDrawableEntities.size(); i++)
+		m_pDrawableEntities[i]->PreRender();
 
 	for (unsigned int i = 0; i < m_pCameraEntities.size(); i++)
 	{
@@ -427,6 +432,9 @@ CBaseEntity *CEntityManager::LoadEntity( const char *sFileName )
 	}
 
 	CBaseEntity *pEntity = CreateEntity( uiEntityIndex );
+	if (!pEntity)
+		return NULL;
+
 	bool bResult = UTIL_LoadData( pEntity );
 	pFileManager->Close();
 

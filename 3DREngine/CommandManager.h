@@ -2,6 +2,7 @@
 #define COMMANDMANAGER_H
 
 #include "Global.h"
+#include "Monitored.h"
 
 typedef bool ( *FnCommandCallbackVoid_t )( void );
 typedef bool ( *FnCommandCallback_t )( const CTextLine *pCommand );
@@ -29,7 +30,7 @@ private:
 	FnCommandCallback_t m_fnCommandCallback;
 	FnCommandCallbackVoid_t m_fnCommandCallbackVoid;
 
-	unsigned long m_ulFrameLastDispatched;
+	CMonitored m_mMonitored;
 };
 
 class CConFloat : public CBaseConCommand

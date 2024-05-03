@@ -11,6 +11,9 @@ public:
 
 	CFramebufferShadowCubemap();
 
+	virtual int Bind( void ) const;
+
+protected:
 	virtual void CreateTextureBuffers( void );
 };
 

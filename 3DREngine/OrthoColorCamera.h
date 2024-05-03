@@ -2,12 +2,12 @@
 #define ORTHOCOLORCAMERA_H
 
 #include "Global.h"
-#include "BaseColorCamera.h"
+#include "BaseWorldCamera.h"
 
-class COrthoColorCamera : public CBaseColorCamera
+class COrthoColorCamera : public CBaseWorldCamera
 {
 public:
-	DECLARE_CLASS( COrthoColorCamera, CBaseColorCamera )
+	DECLARE_CLASS( COrthoColorCamera, CBaseWorldCamera )
 
 	DECLARE_DATADESC()
 
@@ -20,12 +20,14 @@ public:
 	void SetFar( float flFar );
 
 protected:
-	virtual void UpdateProjection( void );
+	virtual bool ShouldUpdateProjection( void ) const;
+
+	virtual glm::mat4 CalculateProjection( void ) const;
 
 private:
-	float m_flWidth;
-	float m_flNear;
-	float m_flFar;
+	CMonitoredValue<float> m_flWidth;
+	CMonitoredValue<float> m_flNear;
+	CMonitoredValue<float> m_flFar;
 };
 
 #endif // ORTHOCOLORCAMERA_H

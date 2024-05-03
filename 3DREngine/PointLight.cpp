@@ -4,9 +4,9 @@
 
 DEFINE_DATADESC( CPointLight )
 
-	DEFINE_FIELD( DataField, float, m_flConstant, "constant", 0 )
-	DEFINE_FIELD( DataField, float, m_flLinear, "linear", 0 )
-	DEFINE_FIELD( DataField, float, m_flQuadratic, "quadratic", 0 )
+	DEFINE_FIELD( DataField, float, m_flConstant, "constant", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flLinear, "linear", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flQuadratic, "quadratic", FL_NONE )
 
 END_DATADESC()
 

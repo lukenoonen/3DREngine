@@ -65,6 +65,8 @@ template <class T> inline T UTIL_min( T a, T b )
 	return a < b ? a : b;
 }
 
+glm::quat UTIL_RotationDifference( glm::vec3 vecStart, glm::vec3 vecEnd );
+
 bool UTIL_GetValue( const CTextItem *pTextItem, glm::vec2 &vecValue );
 bool UTIL_GetValue( const CTextItem *pTextItem, glm::vec3 &vecValue );
 bool UTIL_GetValue( const CTextItem *pTextItem, glm::vec4 &vecValue );

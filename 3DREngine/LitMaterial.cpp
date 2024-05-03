@@ -6,14 +6,14 @@
 DEFINE_DATADESC( CLitMaterial )
 
 	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hDiffuse, "diffuse", FL_REQUIRED )
-	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hSpecular, "specular", 0 )
-	DEFINE_FIELD( DataField, float, m_flShininess, "shininess", 0 )
-	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hNormal, "normal", 0 )
-	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hCamera, "camera", 0 )
-	DEFINE_FIELD( LinkedDataField, CHandle<CBaseCamera>, m_hTextureCamera, "texturecamera", 0 )
-	DEFINE_FIELD( DataField, glm::vec2, m_vec2TextureScale, "texturescale", 0 )
-	DEFINE_FIELD( DataField, bool, m_bRecieveShadows, "recieveshadows", 0 )
-	DEFINE_FIELD( DataField, bool, m_bCastShadows, "castshadows", 0 )
+	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hSpecular, "specular", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flShininess, "shininess", FL_NONE )
+	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hNormal, "normal", FL_NONE )
+	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hCamera, "camera", FL_NONE )
+	DEFINE_FIELD( LinkedDataField, CHandle<CBaseCamera>, m_hTextureCamera, "texturecamera", FL_NONE )
+	DEFINE_FIELD( DataField, glm::vec2, m_vec2TextureScale, "texturescale", FL_NONE )
+	DEFINE_FIELD( DataField, bool, m_bRecieveShadows, "recieveshadows", FL_NONE )
+	DEFINE_FIELD( DataField, bool, m_bCastShadows, "castshadows", FL_NONE )
 
 END_DATADESC()
 

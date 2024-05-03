@@ -14,12 +14,12 @@ bool CBaseWorld3D::Init( void )
 	return true;
 }
 
-void CBaseWorld3D::PostThink( void )
+void CBaseWorld3D::PreRender( void )
 {
 	if (PositionUpdated() || RotationUpdated() || ScaleUpdated())
 		UpdateModelMatrix();
 
-	BaseClass::PostThink();
+	BaseClass::PreRender();
 }
 
 const glm::mat4 &CBaseWorld3D::GetModelMatrix( void ) const

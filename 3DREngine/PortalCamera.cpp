@@ -15,19 +15,13 @@ CPortalCamera::CPortalCamera()
 
 }
 
-int CPortalCamera::BindTexture( void )
-{
-	return BaseClass::BindTexture();
-}
-
-bool CPortalCamera::ShouldUpdateTransform( void )
+bool CPortalCamera::ShouldUpdateTransform( void ) const
 {
 	return BaseClass::ShouldUpdateTransform() || m_hDisplay->PositionUpdated() || m_hDisplay->RotationUpdated();
 }
 
-void CPortalCamera::UpdateTransform( void )
+glm::mat4 CPortalCamera::CalculateTransform( void ) const
 {
-	BaseClass::UpdateTransform();
 	glm::mat4 matRotation = glm::toMat4( glm::inverse( m_hDisplay->GetRotation() ) * GetRotation() );
-	m_matTransform = glm::translate( g_matIdentity, GetPosition() - glm::vec3( matRotation * glm::vec4( m_hDisplay->GetPosition(), 1.0f ) ) ) * matRotation;
+	return glm::translate( g_matIdentity, GetPosition() - glm::vec3( matRotation * glm::vec4( m_hDisplay->GetPosition(), 1.0f ) ) ) * matRotation;
 }

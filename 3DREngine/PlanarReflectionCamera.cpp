@@ -9,20 +9,14 @@ CPlanarReflectionCamera::CPlanarReflectionCamera()
 
 }
 
-int CPlanarReflectionCamera::BindTexture( void )
-{
-	return BaseClass::BindTexture();
-}
-
 bool CPlanarReflectionCamera::ShouldFlipPortal( void )
 {
 	return true;
 }
 
-void CPlanarReflectionCamera::UpdateTransform( void )
+glm::mat4 CPlanarReflectionCamera::CalculateTransform( void ) const
 {
-	BaseClass::UpdateTransform();
-	m_matTransform = glm::mat4(
+	return glm::mat4(
 		-2.0f * m_vec4Plane.x * m_vec4Plane.x + 1.0f, -2.0f * m_vec4Plane.y * m_vec4Plane.x, -2.0f * m_vec4Plane.z * m_vec4Plane.x, 0.0f,
 		-2.0f * m_vec4Plane.x * m_vec4Plane.y, -2.0f * m_vec4Plane.y * m_vec4Plane.y + 1.0f, -2.0f * m_vec4Plane.z * m_vec4Plane.y, 0.0f,
 		-2.0f * m_vec4Plane.x * m_vec4Plane.z, -2.0f * m_vec4Plane.y * m_vec4Plane.z, -2.0f * m_vec4Plane.z * m_vec4Plane.z + 1.0f, 0.0f,

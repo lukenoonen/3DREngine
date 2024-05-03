@@ -4,7 +4,7 @@
 
 DEFINE_DATADESC( CGUIPanelMaterial )
 
-	DEFINE_FIELD( DataField, glm::vec3, m_vec3Color, "color", 0 )
+	DEFINE_FIELD( DataField, glm::vec3, m_vec3Color, "color", FL_NONE )
 
 END_DATADESC()
 

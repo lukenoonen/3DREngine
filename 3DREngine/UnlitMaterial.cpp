@@ -3,9 +3,9 @@
 DEFINE_DATADESC( CUnlitMaterial )
 
 	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hDiffuse, "diffuse", FL_REQUIRED )
-	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hCamera, "camera", 0 )
-	DEFINE_FIELD( LinkedDataField, CHandle<CBaseCamera>, m_hTextureCamera, "texturecamera", 0 )
-	DEFINE_FIELD( DataField, glm::vec2, m_vec2TextureScale, "texturescale", 0 )
+	DEFINE_FIELD( LinkedDataField, CHandle<CTexture>, m_hCamera, "camera", FL_NONE )
+	DEFINE_FIELD( LinkedDataField, CHandle<CBaseCamera>, m_hTextureCamera, "texturecamera", FL_NONE )
+	DEFINE_FIELD( DataField, glm::vec2, m_vec2TextureScale, "texturescale", FL_NONE )
 
 END_DATADESC()
 

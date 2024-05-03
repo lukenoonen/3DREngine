@@ -3,9 +3,9 @@
 
 DEFINE_DATADESC( CBaseShadowCamera )
 
-	DEFINE_FIELD( DataField, float, m_flFadeNear, "fadenear", 0 )
-	DEFINE_FIELD( DataField, float, m_flFadeFar, "fadefar", 0 )
-	DEFINE_FIELD( DataField, float, m_flBlurScale, "blurscale", 0 )
+	DEFINE_FIELD( DataField, float, m_flFadeNear, "fadenear", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flFadeFar, "fadefar", FL_NONE )
+	DEFINE_FIELD( DataField, float, m_flBlurScale, "blurscale", FL_NONE )
 
 END_DATADESC()
 

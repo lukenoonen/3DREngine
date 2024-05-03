@@ -4,7 +4,7 @@
 DEFINE_DATADESC_NOBASE( CBaseEntity )
 
 	DEFINE_FIELD( DataField, char *, m_sName, "name", FL_REQUIRED )
-	DEFINE_FIELD( FlagDataField, int, m_iFlags, "flags", 0 )
+	DEFINE_FIELD( FlagDataField, int, m_iFlags, "flags", FL_NONE )
 
 END_DATADESC()
 
@@ -12,7 +12,7 @@ CBaseEntity::CBaseEntity()
 {
 	m_sFileName = NULL;
 
-	m_iFlags = 0;
+	m_iFlags = FL_NONE;
 
 	m_bRemoved = false;
 }

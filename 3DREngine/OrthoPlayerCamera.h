@@ -13,10 +13,10 @@ public:
 
 	COrthoPlayerCamera();
 
-	virtual void PostThink( void );
-
 protected:
-	virtual void UpdateProjection( void );
+	virtual bool ShouldUpdateProjection( void ) const;
+
+	virtual glm::mat4 CalculateProjection( void ) const;
 };
 
 #endif // ORTHOPLAYERCAMERA_H

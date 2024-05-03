@@ -41,22 +41,19 @@ public:
 	bool RotationUpdated( void ) const;
 	bool ScaleUpdated( void ) const;
 
-private:
-	void MarkPositionUpdated( void );
-	void MarkRotationUpdated( void );
-	void MarkScaleUpdated( void );
+protected:
+	void AddParentPosition( const glm::vec3 &vec3Position );
+	void AddParentRotation( const glm::vec3 &vec3ParentPosition, const glm::quat &qParentRotation, const glm::quat &qRotationInverse, const glm::quat &qRotationDelta );
+	void AddParentScale( const glm::vec3 &vec3Scale, const glm::vec3 &vec3ParentPosition, const glm::vec3 &vec3ParentScale );
 
 private:
-	glm::vec3 m_vec3Position;
-	glm::quat m_qRotation;
-	glm::vec3 m_vec3Scale;
+	CMonitoredValue<glm::vec3> m_vec3Position;
+	CMonitoredValue<glm::quat> m_qRotation;
+	CMonitoredValue<glm::vec3> m_vec3Scale;
 
+protected:
 	CHandle<CBaseTransform> m_hParent;
 	std::vector<CHandle<CBaseTransform>> m_hChildren;
-
-	unsigned long m_ulLastFramePositionUpdated; // TODO: consider whether these should be saved
-	unsigned long m_ulLastFrameRotationUpdated;
-	unsigned long m_ulLastFrameScaleUpdated;
 };
 
 #endif // BASETRANSFORM_H

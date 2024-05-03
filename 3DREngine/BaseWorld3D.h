@@ -13,7 +13,7 @@ public:
 
 	virtual bool Init( void );
 
-	virtual void PostThink( void );
+	virtual void PreRender( void );
 
 	const glm::mat4 &GetModelMatrix( void ) const;
 	const glm::mat4 &GetModelMatrixInverse( void ) const;

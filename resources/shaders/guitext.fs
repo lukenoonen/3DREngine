@@ -9,5 +9,8 @@ uniform vec3 u_vecColor;
 
 void main(void)
 {
-	v_vecColour = vec4(u_vecColor, texture(u_sFont, v_vecTexCoords).r);
+	float flAlpha = texture(u_sFont, v_vecTexCoords).r;
+	if (flAlpha < 0.5f)
+		discard;
+	v_vecColour = vec4(u_vecColor, flAlpha);
 }

@@ -3,7 +3,7 @@
 
 DEFINE_DATADESC( CBaseCamera )
 
-	DEFINE_FIELD( DataField, int, m_iPriority, "priority", 0 )
+	DEFINE_FIELD( DataField, int, m_iPriority, "priority", FL_NONE )
 
 END_DATADESC()
 
@@ -25,7 +25,8 @@ bool CBaseCamera::Init( void )
 	if (!BaseClass::Init())
 		return false;
 
-	m_bUpdateProjection = false;
+	if (m_pFramebuffer)
+		m_pFramebuffer->Init();
 
 	UpdateView();
 	UpdateProjection();
@@ -34,16 +35,17 @@ bool CBaseCamera::Init( void )
 	return true;
 }
 
-void CBaseCamera::PostThink( void )
+void CBaseCamera::Think( void )
 {
-	bool bUpdateTotal = false;
+	if (m_pFramebuffer)
+		m_pFramebuffer->Think();
 
+	bool bUpdateTotal = false;
 	if (ShouldUpdateView())
 	{
 		UpdateView();
 		bUpdateTotal = true;
 	}
-
 	if (ShouldUpdateProjection())
 	{
 		UpdateProjection();
@@ -51,13 +53,9 @@ void CBaseCamera::PostThink( void )
 	}
 
 	if (bUpdateTotal)
-	{
 		UpdateTotal();
-	}
 
-	m_bUpdateProjection = false;
-
-	BaseClass::PostThink();
+	BaseClass::Think();
 }
 
 bool CBaseCamera::IsCamera( void ) const
@@ -82,37 +80,22 @@ int CBaseCamera::GetPriority( void ) const
 	return m_iPriority;
 }
 
-void CBaseCamera::PerformRender( void )
+void CBaseCamera::InitFramebuffer( CBaseFramebuffer *pFramebuffer )
 {
-
+	m_pFramebuffer = pFramebuffer;
 }
 
-void CBaseCamera::UpdateView( void )
+CBaseFramebuffer *CBaseCamera::GetFramebuffer( void ) const
 {
-
+	return m_pFramebuffer;
 }
 
-void CBaseCamera::UpdateProjection( void )
+const glm::vec3 &CBaseCamera::GetCameraPosition( void ) const
 {
-
+	return GetPosition();
 }
 
-void CBaseCamera::UpdateTotal( void )
+const glm::quat &CBaseCamera::GetCameraRotation( void ) const
 {
-
-}
-
-bool CBaseCamera::ShouldUpdateView( void )
-{
-	return PositionUpdated() || RotationUpdated();
-}
-
-bool CBaseCamera::ShouldUpdateProjection( void )
-{
-	return m_bUpdateProjection;
-}
-
-void CBaseCamera::MarkUpdateProjection( void )
-{
-	m_bUpdateProjection = true;
+	return GetRotation();
 }

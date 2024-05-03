@@ -14,8 +14,13 @@ public:
 
 	CFramebufferShadow();
 
-	virtual const glm::ivec2 &GetSize( void ) const;
+	virtual int Bind( void ) const;
 	virtual GLuint GetFramebuffer( void ) const;
+
+	virtual const glm::ivec2 &GetSize( void ) const;
+
+protected:
+	virtual bool SetSizeInternal( const glm::ivec2 &vec2Size );
 
 	virtual void CreateTextureBuffers( void );
 	virtual void DestroyTextureBuffers( void );

@@ -4,7 +4,7 @@
 
 DEFINE_DATADESC( CBaseDrawable )
 
-	DEFINE_FIELD( FlagDataField, int, m_iDrawFlags, "drawflags", 0 )
+	DEFINE_FIELD( FlagDataField, int, m_iDrawFlags, "drawflags", FL_NONE )
 
 END_DATADESC()
 
@@ -13,6 +13,11 @@ CBaseDrawable::CBaseDrawable()
 	AddFlags( fl_draw.GetFlag() );
 
 	m_iDrawFlags = 0;
+}
+
+void CBaseDrawable::PreRender( void )
+{
+
 }
  
 void CBaseDrawable::PreDraw( void )

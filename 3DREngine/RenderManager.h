@@ -88,6 +88,8 @@ public:
 	void UnbindTexture( GLuint glTextureID );
 	void UnbindAllTextures( void );
 
+	CBaseFramebuffer *GetDefaultFramebuffer() const;
+
 private:
 	void CompileShaders( bool bCompileFromText );
 
@@ -97,6 +99,7 @@ private:
 	GLFWmonitor *m_pMonitor;
 	GLFWwindow *m_pWindow;
 
+	CBaseFramebuffer *m_pDefaultFramebuffer;
 	CBaseFramebuffer *m_pActiveFramebuffer;
 
 	bool m_bBlend;

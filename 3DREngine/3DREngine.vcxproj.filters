@@ -57,12 +57,6 @@
     <Filter Include="Source Files\Entity\Player">
       <UniqueIdentifier>{52bc40f6-bf09-4606-862f-0d75fab63973}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Entity\Camera\Copy">
-      <UniqueIdentifier>{b6d2509a-4ea9-4b3d-a508-60d0c63660e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Entity\Camera\Copy\Reflection">
-      <UniqueIdentifier>{847f5dbc-054c-4ef8-b78f-4597bde05fe9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Entity\Camera\Copy">
       <UniqueIdentifier>{ba28eebb-ed5a-40c6-a8df-2c6fd3ff5095}</UniqueIdentifier>
     </Filter>
@@ -96,14 +90,53 @@
     <Filter Include="Header Files\Entity\GUI">
       <UniqueIdentifier>{f410497c-1bd2-48dc-b5e9-905d69da2bb6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Entity\Text">
-      <UniqueIdentifier>{85272f50-ec18-4afa-ba7a-16d36d5cc320}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Misc\Framebuffer">
       <UniqueIdentifier>{ecefd3d3-04e1-404c-ad9f-a9cdaa74e96c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Misc\Framebuffer">
       <UniqueIdentifier>{6cfc1a77-f5d1-43c0-9bc7-e0423417e82a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity\Camera\Shadow">
+      <UniqueIdentifier>{4f00e1cb-5dc7-4033-a5bf-d05d29169b0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity\Camera\Shadow">
+      <UniqueIdentifier>{00a3d1bc-6504-418b-9aea-c14a2259c54e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity\Camera\World">
+      <UniqueIdentifier>{78b7ab7b-64ab-4f5a-8830-8929f38cf596}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity\Camera\World\Player">
+      <UniqueIdentifier>{69913b10-0d17-4910-bcd2-9a2e63749a3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity\Camera\World\Color">
+      <UniqueIdentifier>{21d6f133-1191-49e9-afe3-642cc6854d1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity\Camera\World">
+      <UniqueIdentifier>{c46ee057-aa9d-4fdb-8778-47d030edf3b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity\Camera\World\Color">
+      <UniqueIdentifier>{67566bfb-c83f-41d8-8c12-7c66bc9a1758}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity\Camera\World\Player">
+      <UniqueIdentifier>{f41f0424-e250-4479-bed9-d3f8ab34b4d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity\Camera\World\Copy">
+      <UniqueIdentifier>{b6d2509a-4ea9-4b3d-a508-60d0c63660e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity\Camera\World\Copy\Reflection">
+      <UniqueIdentifier>{847f5dbc-054c-4ef8-b78f-4597bde05fe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity\Billboard">
+      <UniqueIdentifier>{4d9a503d-b2f8-4da3-b2c3-d76f625b3d0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity\Billboard">
+      <UniqueIdentifier>{f3be9e3c-c54a-42c1-b73b-3359560546bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity\HUD">
+      <UniqueIdentifier>{2a517792-9c92-4748-80be-6d1434c3613d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity\HUD">
+      <UniqueIdentifier>{ad824457-e9ef-4316-aa08-bb54894750ec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -178,12 +211,6 @@
     </ClCompile>
     <ClCompile Include="BaseWorld3D.cpp">
       <Filter>Source Files\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseCopyMSAACamera.cpp">
-      <Filter>Source Files\Entity\Camera\Copy</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseCopySizeCamera.cpp">
-      <Filter>Source Files\Entity\Camera\Copy</Filter>
     </ClCompile>
     <ClCompile Include="BasePortalCamera.cpp">
       <Filter>Source Files\Entity\Camera\Copy\Portal</Filter>
@@ -317,9 +344,6 @@
     <ClCompile Include="GUIPanelMaterial.cpp">
       <Filter>Source Files\Entity\Asset</Filter>
     </ClCompile>
-    <ClCompile Include="GUIText.cpp">
-      <Filter>Source Files\Entity\Text</Filter>
-    </ClCompile>
     <ClCompile Include="EntityFlag.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
@@ -338,47 +362,77 @@
     <ClCompile Include="FramebufferShadowCubemap.cpp">
       <Filter>Source Files\Misc\Framebuffer</Filter>
     </ClCompile>
-    <ClCompile Include="BaseWorldCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseColorCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="OrthoColorCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="PerspectiveColorCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="BasePlayerCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="OrthoPlayerCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="PerspectivePlayerCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="FrameBufferShadowCSM.cpp">
       <Filter>Source Files\Misc\Framebuffer</Filter>
     </ClCompile>
+    <ClCompile Include="BaseCopyCamera.cpp">
+      <Filter>Source Files\Entity\Camera\Copy</Filter>
+    </ClCompile>
     <ClCompile Include="BaseShadowCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
+      <Filter>Source Files\Entity\Camera\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="CSMShadowCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
+      <Filter>Source Files\Entity\Camera\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="DirShadowCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
+      <Filter>Source Files\Entity\Camera\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="PointShadowCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
+      <Filter>Source Files\Entity\Camera\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="SpotShadowCamera.cpp">
+      <Filter>Source Files\Entity\Camera\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="BasePlayerCamera.cpp">
+      <Filter>Source Files\Entity\Camera\World\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PerspectivePlayerCamera.cpp">
+      <Filter>Source Files\Entity\Camera\World\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="OrthoPlayerCamera.cpp">
+      <Filter>Source Files\Entity\Camera\World\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseColorCamera.cpp">
+      <Filter>Source Files\Entity\Camera\World\Color</Filter>
+    </ClCompile>
+    <ClCompile Include="OrthoColorCamera.cpp">
+      <Filter>Source Files\Entity\Camera\World\Color</Filter>
+    </ClCompile>
+    <ClCompile Include="PerspectiveColorCamera.cpp">
+      <Filter>Source Files\Entity\Camera\World\Color</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseWorldCamera.cpp">
+      <Filter>Source Files\Entity\Camera\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Monitored.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="FramebufferDefault.cpp">
+      <Filter>Source Files\Misc\Framebuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraAnchor.cpp">
       <Filter>Source Files\Entity\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="BaseCopyCamera.cpp">
-      <Filter>Source Files\Entity\Camera</Filter>
+    <ClCompile Include="GUIText.cpp">
+      <Filter>Source Files\Entity\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="2DAlign.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseBillboard.cpp">
+      <Filter>Source Files\Entity\Billboard</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseHUDElement.cpp">
+      <Filter>Source Files\Entity\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="MasterHUDElement.cpp">
+      <Filter>Source Files\Entity\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="DraggableHUDElement.cpp">
+      <Filter>Source Files\Entity\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="TextInputHUDElement.cpp">
+      <Filter>Source Files\Entity\HUD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -453,12 +507,6 @@
     </ClInclude>
     <ClInclude Include="AnimatedProp.h">
       <Filter>Header Files\Entity\Prop</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseCopySizeCamera.h">
-      <Filter>Header Files\Entity\Camera\Copy</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseCopyMSAACamera.h">
-      <Filter>Header Files\Entity\Camera\Copy</Filter>
     </ClInclude>
     <ClInclude Include="BaseMaterial.h">
       <Filter>Header Files\Entity\Asset</Filter>
@@ -613,56 +661,83 @@
     <ClInclude Include="FramebufferShadowCubemap.h">
       <Filter>Header Files\Misc\Framebuffer</Filter>
     </ClInclude>
-    <ClInclude Include="BaseWorldCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="OrthoColorCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="PerspectiveColorCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseColorCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="PortalCamera.h">
-      <Filter>Header Files\Entity\Camera\Copy\Reflection</Filter>
+      <Filter>Header Files\Entity\Camera\World\Copy\Reflection</Filter>
     </ClInclude>
     <ClInclude Include="PlanarReflectionCamera.h">
-      <Filter>Header Files\Entity\Camera\Copy\Reflection</Filter>
+      <Filter>Header Files\Entity\Camera\World\Copy\Reflection</Filter>
     </ClInclude>
     <ClInclude Include="BasePortalCamera.h">
-      <Filter>Header Files\Entity\Camera\Copy\Reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="BasePlayerCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="OrthoPlayerCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="PerspectivePlayerCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
+      <Filter>Header Files\Entity\Camera\World\Copy\Reflection</Filter>
     </ClInclude>
     <ClInclude Include="FramebufferShadowCSM.h">
       <Filter>Header Files\Misc\Framebuffer</Filter>
     </ClInclude>
-    <ClInclude Include="BaseShadowCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="CSMShadowCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="DirShadowCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
+    <ClInclude Include="SpotShadowCamera.h">
+      <Filter>Header Files\Entity\Camera\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="PointShadowCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
+      <Filter>Header Files\Entity\Camera\Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="SpotShadowCamera.h">
-      <Filter>Header Files\Entity\Camera</Filter>
+    <ClInclude Include="DirShadowCamera.h">
+      <Filter>Header Files\Entity\Camera\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="CSMShadowCamera.h">
+      <Filter>Header Files\Entity\Camera\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseShadowCamera.h">
+      <Filter>Header Files\Entity\Camera\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="BaseCopyCamera.h">
+      <Filter>Header Files\Entity\Camera\World\Copy</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseWorldCamera.h">
+      <Filter>Header Files\Entity\Camera\World</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseColorCamera.h">
+      <Filter>Header Files\Entity\Camera\World\Color</Filter>
+    </ClInclude>
+    <ClInclude Include="OrthoColorCamera.h">
+      <Filter>Header Files\Entity\Camera\World\Color</Filter>
+    </ClInclude>
+    <ClInclude Include="PerspectiveColorCamera.h">
+      <Filter>Header Files\Entity\Camera\World\Color</Filter>
+    </ClInclude>
+    <ClInclude Include="PerspectivePlayerCamera.h">
+      <Filter>Header Files\Entity\Camera\World\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="OrthoPlayerCamera.h">
+      <Filter>Header Files\Entity\Camera\World\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BasePlayerCamera.h">
+      <Filter>Header Files\Entity\Camera\World\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Monitored.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="FramebufferDefault.h">
+      <Filter>Header Files\Misc\Framebuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraAnchor.h">
       <Filter>Header Files\Entity\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="2DAlign.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseBillboard.h">
+      <Filter>Header Files\Entity\Billboard</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseHUDElement.h">
+      <Filter>Header Files\Entity\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="MasterHUDElement.h">
+      <Filter>Header Files\Entity\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="DraggableHUDElement.h">
+      <Filter>Header Files\Entity\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="TextInputHUDElement.h">
+      <Filter>Header Files\Entity\HUD</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
