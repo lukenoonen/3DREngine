@@ -23,6 +23,8 @@ public:
 	virtual unsigned char GetMSAALevel( void ) const;
 
 protected:
+	virtual void ClearBufferInternal( void );
+
 	virtual bool SetSizeInternal( const glm::ivec2 &vec2Size );
 	virtual bool SetMSAALevelInternal( unsigned char ucMSAALevel );
 

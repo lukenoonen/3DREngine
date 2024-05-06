@@ -27,7 +27,11 @@ public:
 	void SetSize( const glm::ivec2 &vec2Size );
 	void SetMSAALevel( unsigned char ucMSAALevel );
 
+	void ClearBuffer( void );
+
 protected:
+	virtual void ClearBufferInternal( void );
+
 	virtual bool SetSizeInternal( const glm::ivec2 &vec2Size );
 	virtual bool SetMSAALevelInternal( unsigned char ucMSAALevel );
 
@@ -36,6 +40,9 @@ protected:
 
 	virtual void CreateMSAABuffers( void );
 	virtual void DestroyMSAABuffers( void );
+
+private:
+	unsigned long m_ulLastRender;
 };
 
 #endif // BASEFRAMEBUFFER_H

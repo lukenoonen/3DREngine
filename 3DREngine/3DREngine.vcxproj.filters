@@ -434,6 +434,12 @@
     <ClCompile Include="TextInputHUDElement.cpp">
       <Filter>Source Files\Entity\HUD</Filter>
     </ClCompile>
+    <ClCompile Include="BaseHUDPanel.cpp">
+      <Filter>Source Files\Entity\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseHUDParent.cpp">
+      <Filter>Source Files\Entity\HUD</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Global.h">
@@ -737,6 +743,12 @@
       <Filter>Header Files\Entity\HUD</Filter>
     </ClInclude>
     <ClInclude Include="TextInputHUDElement.h">
+      <Filter>Header Files\Entity\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseHUDPanel.h">
+      <Filter>Header Files\Entity\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseHUDParent.h">
       <Filter>Header Files\Entity\HUD</Filter>
     </ClInclude>
   </ItemGroup>

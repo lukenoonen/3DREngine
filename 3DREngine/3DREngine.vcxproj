@@ -170,6 +170,8 @@
     <ClCompile Include="BaseDrawable.cpp" />
     <ClCompile Include="BaseEntity.cpp" />
     <ClCompile Include="BaseHUDElement.cpp" />
+    <ClCompile Include="BaseHUDPanel.cpp" />
+    <ClCompile Include="BaseHUDParent.cpp" />
     <ClCompile Include="BaseLight.cpp" />
     <ClCompile Include="BaseMaterial.cpp" />
     <ClCompile Include="BaseModeled.cpp" />
@@ -271,6 +273,8 @@
     <ClInclude Include="BaseDrawable.h" />
     <ClInclude Include="BaseEntity.h" />
     <ClInclude Include="BaseHUDElement.h" />
+    <ClInclude Include="BaseHUDPanel.h" />
+    <ClInclude Include="BaseHUDParent.h" />
     <ClInclude Include="BaseLight.h" />
     <ClInclude Include="BaseMaterial.h" />
     <ClInclude Include="BaseModeled.h" />

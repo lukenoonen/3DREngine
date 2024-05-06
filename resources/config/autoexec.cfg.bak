@@ -3,4 +3,4 @@ exec render;
 fps -1;
 ts 1;
 
-exec scene1;
+exec scene2;

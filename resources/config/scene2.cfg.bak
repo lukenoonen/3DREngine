@@ -26,8 +26,6 @@ createentity prop_static {name planebrick; position [0 0 -5]; rotation [-90 0 0]
 createentity camera_shadow_csm {name csmshadowcam; rotation [-70 60 0]; drawflags [dfl_0]; priority 0;};
 createentity light_csm {name csmlight; rotation [-70 60 0]; diffuse [0.8 0.8 0.8]; specular [0.02 0.02 0.02]; shadowcamera csmshadowcam; drawflags [dfl_0];};
 
-createentity light_point {name csmlight; position [0 0 3]; diffuse [0.8 0.8 0.8]; specular [0.02 0.02 0.02]; drawflags [dfl_0];};
-
 createentity skybox {name skybox; skyboxmaterial skybox_material_skybox; geometry inversecube_geometry; drawflags [dfl_0];};
 
 createentity camera_portal {name portal_camera; position [0 -10 0]; rotation [0 0 45]; display mirror; targetcamera playercamera; drawflags [dfl_0]; priority 1;};

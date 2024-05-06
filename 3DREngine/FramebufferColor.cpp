@@ -44,6 +44,11 @@ unsigned char CFramebufferColor::GetMSAALevel( void ) const
 	return m_ucMSAALevel;
 }
 
+void CFramebufferColor::ClearBufferInternal( void )
+{
+	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+}
+
 bool CFramebufferColor::SetSizeInternal( const glm::ivec2 &vec2Size )
 {
 	if (m_vec2Size != vec2Size)

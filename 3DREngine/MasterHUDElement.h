@@ -2,13 +2,14 @@
 #define MASTERHUDELEMENT_H
 
 #include "Global.h"
+#include "BaseHUDParent.h"
 #include "BaseHUDElement.h"
 #include "BasePlayerCamera.h"
 
-class CMasterHUDElement : public CBaseHUDElement
+class CMasterHUDElement : public CBaseHUDParent
 {
 public:
-	DECLARE_CLASS( CMasterHUDElement, CBaseHUDElement )
+	DECLARE_CLASS( CMasterHUDElement, CBaseHUDParent )
 
 	DECLARE_DATADESC()
 
@@ -20,17 +21,11 @@ public:
 
 	virtual void PreThink( void );
 
-	virtual CBaseHUDElement *GetMouseOver( void );
-
-protected:
-	CBaseHUDElement *GetMouseOverIndex( unsigned int &uiMouseOverIndex );
+	virtual CBaseHUDElement *PropagateGetMouseOver( EMouseOverType eMouseOverType );
 
 private:
 	CHandle<CBasePlayerCamera> m_hHUDCamera;
 	std::vector<CHandle<CBaseHUDElement>> m_hHUDChildren;
-
-	CBaseHUDElement *m_pFocusedHUDElement;
-	CBaseHUDElement *m_pHoveredHUDElement;
 };
 
 #endif // MASTERHUDELEMENT_H

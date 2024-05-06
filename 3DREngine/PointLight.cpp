@@ -19,6 +19,8 @@ CPointLight::CPointLight()
 	m_flQuadratic = 0.032f;
 }
 
+#include <iostream>
+
 bool CPointLight::Init( void )
 {
 	if (!BaseClass::Init())

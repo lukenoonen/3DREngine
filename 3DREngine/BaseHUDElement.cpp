@@ -27,12 +27,16 @@ void CBaseHUDElement::SetHUDCamera( CBasePlayerCamera *pHUDCamera )
 	UpdateBounds();
 }
 
-CBaseHUDElement *CBaseHUDElement::GetMouseOver( void )
+bool CBaseHUDElement::GetMouseOver( EMouseOverType eMouseOverType, CBaseHUDElement *&pMouseOver )
 {
-	if (IsMouseOver())
-		return this;
+	if (!IsMouseOver())
+	{
+		pMouseOver = NULL;
+		return false;
+	}
 
-	return NULL;
+	pMouseOver = this;
+	return true;
 }
 
 void CBaseHUDElement::Click( void )

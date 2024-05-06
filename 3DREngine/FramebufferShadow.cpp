@@ -17,6 +17,11 @@ const glm::ivec2 &CFramebufferShadow::GetSize( void ) const
 	return m_vec2Size;
 }
 
+void CFramebufferShadow::ClearBufferInternal( void )
+{
+	glClear( GL_DEPTH_BUFFER_BIT );
+}
+
 bool CFramebufferShadow::SetSizeInternal( const glm::ivec2 &vec2Size )
 {
 	if (m_vec2Size != vec2Size)

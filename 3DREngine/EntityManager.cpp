@@ -133,33 +133,26 @@ void CEntityManager::DrawUnlitEntities( void )
 
 void CEntityManager::DrawLitEntities( void )
 {
-	pRenderManager->SetBlend( false );
-
 	for (unsigned int i = 0; i < m_pLightEntities.size(); i++)
 	{
 		m_pCurrentLight = m_pLightEntities[i];
+		if (!m_pCurrentLight->ShouldDraw())
+			continue;
 
-		if (m_pCurrentLight->ShouldDraw())
+		m_pCurrentLight->ActivateLight();
+		for (unsigned int j = 0; j < m_pDrawableEntities.size(); j++)
 		{
-			m_pCurrentLight->ActivateLight();
-			for (unsigned int i = 0; i < m_pDrawableEntities.size(); i++)
-			{
-				CBaseDrawable *pDrawable = m_pDrawableEntities[i];
-				if (pDrawable->ShouldDraw())
-				{
-					pDrawable->PreDraw();
-					pDrawable->Draw();
-					pDrawable->PostDraw();
-				}
-			}
+			CBaseDrawable *pDrawable = m_pDrawableEntities[j];
+			if (!pDrawable->ShouldDraw())
+				continue;
 
-			pRenderManager->SetBlend( true );
+			pDrawable->PreDraw();
+			pDrawable->Draw();
+			pDrawable->PostDraw();
 		}
 	}
 
 	m_pCurrentLight = NULL;
-
-	pRenderManager->SetBlend( false );
 }
 
 void CEntityManager::AddEntity( CBaseEntity *pEntity )

@@ -5,6 +5,15 @@
 #include "BaseWorld2D.h"
 #include "BasePlayerCamera.h"
 
+enum class EMouseOverType : EBaseEnum
+{
+	t_focus,
+	t_hover,
+
+	i_count,
+	i_invalid = i_count,
+};
+
 class CBaseHUDElement : public CBaseWorld2D
 {
 public:
@@ -18,7 +27,7 @@ public:
 
 	void SetHUDCamera( CBasePlayerCamera *pHUDCamera );
 
-	virtual CBaseHUDElement *GetMouseOver( void );
+	virtual bool GetMouseOver( EMouseOverType eMouseOverType, CBaseHUDElement *&pMouseOver );
 
 	void Click( void );
 	virtual void OnClick( void );

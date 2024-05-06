@@ -14,7 +14,7 @@ public:
 	bool Modified( void ) const;
 
 private:
-	unsigned long m_uiLastFrameModified;
+	unsigned long m_ulLastFrameModified;
 };
 
 template <class T> class CMonitoredValue : public CMonitored
@@ -29,6 +29,7 @@ public:
 	const T &Get( void ) const;
 
 	CMonitoredValue<T> &operator = ( T tValue );
+	T *operator & ();
 
 private:
 	T m_tValue;
@@ -54,6 +55,11 @@ template<class T> CMonitoredValue<T> &CMonitoredValue<T>::operator = ( T tValue 
 {
 	Set( tValue );
 	return *this;
+}
+
+template<class T> T *CMonitoredValue<T>::operator & ()
+{
+	return &m_tValue;
 }
 
 template <class T> const T &CMonitoredValue<T>::Get( void ) const

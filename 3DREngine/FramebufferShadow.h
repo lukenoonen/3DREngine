@@ -20,6 +20,8 @@ public:
 	virtual const glm::ivec2 &GetSize( void ) const;
 
 protected:
+	virtual void ClearBufferInternal( void );
+
 	virtual bool SetSizeInternal( const glm::ivec2 &vec2Size );
 
 	virtual void CreateTextureBuffers( void );

@@ -1,8 +1,9 @@
 #include "BaseFramebuffer.h"
+#include "TimeManager.h"
 
 CBaseFramebuffer::CBaseFramebuffer()
 {
-
+	m_ulLastRender = 0;
 }
 
 CBaseFramebuffer::~CBaseFramebuffer()
@@ -66,6 +67,20 @@ void CBaseFramebuffer::SetMSAALevel( unsigned char ucMSAALevel )
 		DestroyMSAABuffers();
 		CreateMSAABuffers();
 	}
+}
+
+void CBaseFramebuffer::ClearBuffer( void )
+{
+	if (m_ulLastRender != pTimeManager->GetFrameCount())
+	{
+		m_ulLastRender = pTimeManager->GetFrameCount();
+		ClearBufferInternal();
+	}
+}
+
+void CBaseFramebuffer::ClearBufferInternal( void )
+{
+
 }
 
 bool CBaseFramebuffer::SetSizeInternal( const glm::ivec2 &vec2Size )

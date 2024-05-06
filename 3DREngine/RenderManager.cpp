@@ -3,6 +3,7 @@
 #include "EntityManager.h"
 #include "TimeManager.h"
 #include "FramebufferDefault.h"
+#include <iostream>
 
 bool CV_R_WindowSize( void );
 CConIVec2 cv_r_windowsize( glm::ivec2( 800, 600 ), "r_windowsize", CV_R_WindowSize );
@@ -73,8 +74,6 @@ bool CC_R_RecompileShaders( void )
 }
 CConCommand cc_r_recompileshaders( "r_recompileshaders", CC_R_RecompileShaders );
 
-#include <iostream>
-
 CRenderManager::CRenderManager()
 {
 	glfwInit();
@@ -130,6 +129,8 @@ CRenderManager::CRenderManager()
 	glActiveTexture( GL_TEXTURE0 + m_glMaxTextures );
 
 	m_glTextureIndex = 0;
+
+	SetBlend( true );
 }
 
 CRenderManager::~CRenderManager()
@@ -155,6 +156,8 @@ void CRenderManager::RecompileShaders( void )
 
 void CRenderManager::OnLoop( void )
 {
+	if (pTimeManager->GetFrameCount() % 100 == 0)
+		std::cout << 1.0f / pTimeManager->GetFrameTime() << "\n";
 	m_pDefaultFramebuffer->Think();
 	m_pDefaultFramebuffer->Blit();
 	glfwSwapBuffers( m_pWindow );
@@ -180,7 +183,7 @@ void CRenderManager::SetFramebuffer( CBaseFramebuffer *pFramebuffer )
 		m_pActiveFramebuffer = pFramebuffer;
 		SetViewportSize( m_pActiveFramebuffer->GetSize() );
 		SetFramebuffer( m_pActiveFramebuffer->GetFramebuffer() );
-		glClear( GL_DEPTH_BUFFER_BIT );
+		m_pActiveFramebuffer->ClearBuffer();
 	}
 }
 

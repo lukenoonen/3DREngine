@@ -1,0 +1,16 @@
+#version 330 core
+
+#include "lightPositionBuffer"
+#include "lightMaxDistance"
+
+in vec4 v_vecFragPos;
+
+float rand(vec2 co){
+    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+// Functions
+void main()
+{
+	gl_FragDepth = length(u_vecLightPosition - v_vecFragPos.xyz) / u_flLightMaxDistance;
+}

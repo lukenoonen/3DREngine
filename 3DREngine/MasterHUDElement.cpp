@@ -74,7 +74,7 @@ void CMasterHUDElement::PreThink( void )
 		}
 		else if (!pInputManager->IsKeyDown( EKeyCodes::t_m0 ))
 		{
-			CBaseHUDElement *pMouseOver = GetMouseOver();
+			CBaseHUDElement *pMouseOver = GetMouseOver( EMouseOverType::t_hover );
 			if (m_pHoveredHUDElement != pMouseOver)
 			{
 				if (m_pHoveredHUDElement)
@@ -112,7 +112,19 @@ void CMasterHUDElement::PreThink( void )
 	BaseClass::PreThink();
 }
 
-CBaseHUDElement *CMasterHUDElement::GetMouseOver( void )
+CBaseHUDElement *CMasterHUDElement::PropagateGetMouseOver( EMouseOverType eMouseOverType )
+{
+	for (unsigned int i = 0; i < m_hHUDChildren.size(); i++)
+	{
+		CBaseHUDElement *pMouseOver = m_hHUDChildren[i]->GetMouseOver( eMouseOverType );
+		if (pMouseOver)
+			return pMouseOver;
+	}
+
+	return NULL;
+}
+
+/*CBaseHUDElement *CMasterHUDElement::GetMouseOver(EMouseOverType eMouseOverType)
 {
 	for (unsigned int i = 0; i < m_hHUDChildren.size(); i++)
 	{
@@ -137,4 +149,4 @@ CBaseHUDElement *CMasterHUDElement::GetMouseOverIndex( unsigned int &uiMouseOver
 	}
 
 	return NULL;
-}
+}*/
