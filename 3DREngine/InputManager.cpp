@@ -218,14 +218,17 @@ void CB_KeyboardInput( GLFWwindow *pWindow, int iKey, int iScancode, int iAction
 
 void CB_TextInput( GLFWwindow *pWindow, unsigned int uiChar )
 {
-	pInputManager->RecordText( uiChar );
+	pInputManager->RecordText( uiChar, 0 );
 }
+
+#include <iostream>
 
 void CB_TextInputKeyboard( GLFWwindow *pWindow, int iKey, int iScancode, int iAction, int iMods )
 {
 	if (iAction == GLFW_RELEASE)
 		return;
 
+	bool bRecordText = false;
 	switch (iKey)
 	{
 	case GLFW_KEY_ESCAPE:
@@ -237,9 +240,23 @@ void CB_TextInputKeyboard( GLFWwindow *pWindow, int iKey, int iScancode, int iAc
 	case GLFW_KEY_LEFT:
 	case GLFW_KEY_DOWN:
 	case GLFW_KEY_UP:
-		pInputManager->RecordText( (unsigned int)iKey );
+		bRecordText = true;
+		break;
+	default:
+		if (iMods & GLFW_MOD_CONTROL)
+		{
+			switch (iKey)
+			{
+			case GLFW_KEY_V:
+				bRecordText = true;
+				break;
+			}
+		}
 		break;
 	}
+
+	if (bRecordText)
+		pInputManager->RecordText( (unsigned int)iKey, iMods );
 }
 
 void CB_MouseButton( GLFWwindow *pWindow, int iButton, int iAction, int iMods )
@@ -371,7 +388,7 @@ CInputManager::~CInputManager()
 
 void CInputManager::OnLoop( void )
 {
-	m_uiText.clear();
+	m_sText.clear();
 	memcpy( m_bPrevKeyDown, m_bKeyDown, sizeof( m_bPrevKeyDown ) );
 
 	glfwPollEvents();
@@ -415,13 +432,18 @@ const glm::vec2 &CInputManager::GetNormalizedCursorDelta( void )
 
 void CInputManager::SetCursor( ECursorShape eCursorShape )
 {
-	GLFWwindow *pWindow = pRenderManager->GetWindow();
-	glfwSetCursor( pWindow, m_pCursors[(EBaseEnum)eCursorShape] );
+	if (m_eCursorShape != eCursorShape)
+	{
+		GLFWwindow *pWindow = pRenderManager->GetWindow();
+		glfwSetCursor( pWindow, m_pCursors[(EBaseEnum)eCursorShape] );
+		m_eCursorShape = eCursorShape;
+	}
 }
 
-void CInputManager::ResetCursor( void )
+void CInputManager::ResetCursor( ECursorShape eCursorShape /* = ECursorShape::i_invalid */ )
 {
-	SetCursor( ECursorShape::t_arrow );
+	if (m_eCursorShape == eCursorShape || eCursorShape == ECursorShape::i_invalid)
+		SetCursor( ECursorShape::t_arrow );
 }
 
 bool CInputManager::IsKeyPressed( EKeyCodes eKeyCode ) const
@@ -507,9 +529,9 @@ void CInputManager::UnbindKey( EKeyCodes eKeyCode )
 	m_KeyBinds[(EBaseEnum)eKeyCode].Unbind();
 }
 
-void CInputManager::RecordText( unsigned int uiChar )
+void CInputManager::RecordText( unsigned int uiChar, int iMods )
 {
-	m_uiText.push_back( uiChar );
+	m_sText.push_back( { uiChar, iMods } );
 }
 
 void CInputManager::SetKey( EKeyCodes eKeyCode, bool bDown )
@@ -524,12 +546,29 @@ void CInputManager::SetKey( EKeyCodes eKeyCode, bool bDown )
 
 unsigned int CInputManager::GetTextCount( void ) const
 {
-	return (unsigned int)m_uiText.size();
+	return (unsigned int)m_sText.size();
 }
 
-unsigned int CInputManager::GetText( unsigned int uiIndex ) const
+unsigned int CInputManager::GetTextChar( unsigned int uiIndex ) const
 {
-	return m_uiText[uiIndex];
+	return m_sText[uiIndex].uiChar;
+}
+
+int CInputManager::GetTextMods( unsigned int uiIndex ) const
+{
+	return m_sText[uiIndex].iMods;
+}
+
+const char *CInputManager::GetClipboardString( void ) const
+{
+	GLFWwindow *pWindow = pRenderManager->GetWindow();
+	return glfwGetClipboardString( pWindow );
+}
+
+void CInputManager::SetClipboardString( const char *sString )
+{
+	GLFWwindow *pWindow = pRenderManager->GetWindow();
+	return glfwSetClipboardString( pWindow, sString );
 }
 
 void CInputManager::SetCursorPosition( glm::vec2 vec2CursorPosition )

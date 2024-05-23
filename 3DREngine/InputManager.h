@@ -174,6 +174,12 @@ static int g_iCursorShapeValues[] =
 	GLFW_VRESIZE_CURSOR,
 };
 
+struct SInputChar
+{
+	unsigned int uiChar;
+	int iMods;
+};
+
 class CInputManager
 {
 public:
@@ -191,7 +197,7 @@ public:
 	const glm::vec2 &GetNormalizedCursorDelta( void );
 
 	void SetCursor( ECursorShape eCursorShape );
-	void ResetCursor( void );
+	void ResetCursor( ECursorShape eCursorShape = ECursorShape::i_invalid );
 
 	bool IsKeyPressed( EKeyCodes eKeyCode ) const;
 	bool IsKeyDown( EKeyCodes eKeyCode ) const;
@@ -210,11 +216,15 @@ public:
 	void BindKey( EKeyCodes eKeyCode, const char *sCommand );
 	void UnbindKey( EKeyCodes eKeyCode );
 
-	void RecordText( unsigned int uiChar );
+	void RecordText( unsigned int uiChar, int iMods );
 	void SetKey( EKeyCodes eKeyCode, bool bDown );
 
 	unsigned int GetTextCount( void ) const;
-	unsigned int GetText( unsigned int uiIndex ) const;
+	unsigned int GetTextChar( unsigned int uiIndex ) const;
+	int GetTextMods( unsigned int uiIndex ) const;
+
+	const char *GetClipboardString( void ) const;
+	void SetClipboardString( const char *sString );
 
 private:
 	void SetCursorPosition( glm::vec2 vec2CursorPosition );
@@ -234,7 +244,7 @@ private:
 	glm::vec2 m_vec2CursorDelta;
 	glm::vec2 m_vec2NormalizedCursorDelta;
 
-	std::vector<unsigned int> m_uiText;
+	std::vector<SInputChar> m_sText;
 
 	bool m_bLockCursor;
 	bool m_bLockKeyboard;

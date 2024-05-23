@@ -31,9 +31,11 @@ void CDraggableHUDElement::Think( void )
 void CDraggableHUDElement::OnHover( void )
 {
 	pInputManager->SetCursor( ECursorShape::t_hand );
+	BaseClass::OnHover();
 }
 
 void CDraggableHUDElement::OnUnhover( void )
 {
-	pInputManager->ResetCursor();
+	pInputManager->ResetCursor( ECursorShape::t_hand );
+	BaseClass::OnUnhover();
 }

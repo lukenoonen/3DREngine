@@ -119,15 +119,6 @@ DEFINE_LINKED_CLASS( CTestPlayer, player_test )
 
 CTestPlayer::CTestPlayer()
 {
-	/*CPerspectivePlayerCamera *pCamera = new CPerspectivePlayerCamera();
-	pCamera->SetName( "PerspectivePlayerCamera" );
-	SetCamera( pCamera );
-	pCamera->SetParent( this );
-	pCamera->SetPosition( GetPosition() );
-	pCamera->SetRotation( GetRotation() );
-	pCamera->SetScale( GetScale() );
-	pEntityManager->AddEntity( pCamera );*/
-
 	for (EBaseEnum i = 0; i < (EBaseEnum)EMovement::i_count; i++)
 		m_bMovement[i] = false;
 

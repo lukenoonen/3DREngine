@@ -7,6 +7,9 @@
 #include "UniformBufferObjects.h"
 #include "BaseFramebuffer.h"
 
+#define DEFAULT_SCR_WIDTH	(1920)
+#define DEFAULT_SCR_HEIGHT	(1080)
+
 extern CConIVec2 cv_r_windowsize;
 extern CConBool cb_r_fullscreen;
 extern CConBool cb_r_vsync;

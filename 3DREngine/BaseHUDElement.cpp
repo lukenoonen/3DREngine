@@ -1,4 +1,27 @@
 #include "BaseHUDElement.h"
+#include "RenderManager.h"
+
+glm::vec3 UTIL_LocalToCamera( const glm::vec3 &vec3Local, const glm::mat4 &matTotal )
+{
+	glm::vec4 vec4Camera = matTotal * glm::vec4( vec3Local.x, vec3Local.z, -vec3Local.y, 1.0f );
+	return vec4Camera / vec4Camera.w;
+}
+
+glm::vec3 UTIL_LocalToCamera( const glm::vec2 &vec2Local, const glm::mat4 &matTotal )
+{
+	return UTIL_LocalToCamera( glm::vec3( vec2Local, 0.0f ), matTotal );
+}
+
+glm::vec3 UTIL_CameraToLocal( const glm::vec3 &vec3Camera, const glm::mat4 &matTotalInverse )
+{
+	glm::vec4 vec4Local = matTotalInverse * glm::vec4( vec3Camera, 1.0f );
+	return glm::vec3( vec4Local.x, -vec4Local.z, vec4Local.y ) / vec4Local.w;
+}
+
+glm::vec3 UTIL_CameraToLocal( const glm::vec2 &vec2Camera, const glm::mat4 &matTotalInverse )
+{
+	return UTIL_CameraToLocal( glm::vec3( vec2Camera, 0.0f ), matTotalInverse );
+}
 
 DEFINE_LINKED_CLASS( CBaseHUDElement, hud_test )
 
@@ -27,16 +50,9 @@ void CBaseHUDElement::SetHUDCamera( CBasePlayerCamera *pHUDCamera )
 	UpdateBounds();
 }
 
-bool CBaseHUDElement::GetMouseOver( EMouseOverType eMouseOverType, CBaseHUDElement *&pMouseOver )
+CBaseHUDElement *CBaseHUDElement::GetMouseOver( EMouseOverType eMouseOverType )
 {
-	if (!IsMouseOver())
-	{
-		pMouseOver = NULL;
-		return false;
-	}
-
-	pMouseOver = this;
-	return true;
+	return IsMouseOver() ? this : NULL;
 }
 
 void CBaseHUDElement::Click( void )
@@ -47,7 +63,12 @@ void CBaseHUDElement::Click( void )
 
 void CBaseHUDElement::OnClick( void )
 {
-	std::cout << GetName() << " clicked\n";
+	std::cout << (GetName() ? GetName() : "NULL") << " clicked\n";
+}
+
+void CBaseHUDElement::PropagateClick( void )
+{
+
 }
 
 void CBaseHUDElement::Release( void )
@@ -58,7 +79,12 @@ void CBaseHUDElement::Release( void )
 
 void CBaseHUDElement::OnRelease( void )
 {
-	std::cout << GetName() << " released\n";
+	std::cout << (GetName() ? GetName() : "NULL") << " released\n";
+}
+
+void CBaseHUDElement::PropagateRelease( void )
+{
+
 }
 
 bool CBaseHUDElement::IsClicked( void ) const
@@ -74,18 +100,31 @@ void CBaseHUDElement::GainFocus( void )
 
 void CBaseHUDElement::OnGainFocus( void )
 {
-	std::cout << GetName() << " gain focus\n";
+	std::cout << (GetName() ? GetName() : "NULL") << " gain focus\n";
+}
+
+void CBaseHUDElement::PropagateGainFocus( void )
+{
+
 }
 
 void CBaseHUDElement::LoseFocus( void )
 {
+	if (IsClicked())
+		Release();
+
 	m_bFocus = false;
 	OnLoseFocus();
 }
 
 void CBaseHUDElement::OnLoseFocus( void )
 {
-	std::cout << GetName() << " lose focus\n";
+	std::cout << (GetName() ? GetName() : "NULL") << " lose focus\n";
+}
+
+void CBaseHUDElement::PropagateLoseFocus( void )
+{
+
 }
 
 bool CBaseHUDElement::HasFocus( void ) const
@@ -101,7 +140,12 @@ void CBaseHUDElement::Hover( void )
 
 void CBaseHUDElement::OnHover( void )
 {
-	std::cout << GetName() << " hover\n";
+	std::cout << (GetName() ? GetName() : "NULL") << " hover\n";
+}
+
+void CBaseHUDElement::PropagateHover( void )
+{
+
 }
 
 void CBaseHUDElement::Unhover( void )
@@ -112,12 +156,39 @@ void CBaseHUDElement::Unhover( void )
 
 void CBaseHUDElement::OnUnhover( void )
 {
-	std::cout << GetName() << " unhover\n";
+	std::cout << (GetName() ? GetName() : "NULL") << " unhover\n";
+}
+
+void CBaseHUDElement::PropagateUnhover( void )
+{
+
 }
 
 bool CBaseHUDElement::HasHover( void ) const
 {
 	return m_bHover;
+}
+
+void CBaseHUDElement::ClearFocus( void )
+{
+	if (HasFocus())
+		LoseFocus();
+}
+
+void CBaseHUDElement::ClearHover( void )
+{
+	if (HasHover())
+		Unhover();
+}
+
+bool CBaseHUDElement::FocusCheck( void )
+{
+	return HasFocus();
+}
+
+bool CBaseHUDElement::HoverCheck( void )
+{
+	return HasHover();
 }
 
 CBasePlayerCamera *CBaseHUDElement::GetHUDCamera( void ) const
@@ -133,17 +204,12 @@ float CBaseHUDElement::GetDepth( void ) const
 void CBaseHUDElement::UpdateBounds( void )
 {
 	glm::mat4 matTotal = m_pHUDCamera->GetTotal() * GetModelMatrix();
-	glm::vec4 vec4Result;
-	vec4Result = matTotal * glm::vec4( 0.0f, 0.0f, 0.0f, 1.0f );
-	vec4Result /= vec4Result.w;
-	m_flDepth = vec4Result.z;
-	m_vec2Bounds[0] = vec4Result;
-	vec4Result = matTotal * glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f );
-	m_vec2Bounds[1] = vec4Result / vec4Result.w;
-	vec4Result = matTotal * glm::vec4( 1.0f, 0.0f, -1.0f, 1.0f );
-	m_vec2Bounds[2] = vec4Result / vec4Result.w;
-	vec4Result = matTotal * glm::vec4( 0.0f, 0.0f, -1.0f, 1.0f );
-	m_vec2Bounds[3] = vec4Result / vec4Result.w;
+	glm::vec3 vec3Result = UTIL_LocalToCamera( glm::vec2( 0.0f, 0.0f ), matTotal );
+	m_flDepth = vec3Result.z;
+	m_vec2Bounds[0] = vec3Result;
+	m_vec2Bounds[1] = UTIL_LocalToCamera( glm::vec2( 1.0f, 0.0f ), matTotal );
+	m_vec2Bounds[2] = UTIL_LocalToCamera( glm::vec2( 1.0f, 1.0f ), matTotal );
+	m_vec2Bounds[3] = UTIL_LocalToCamera( glm::vec2( 0.0f, 1.0f ), matTotal );
 
 	m_vec2Min = m_vec2Bounds[0];
 	m_vec2Max = m_vec2Bounds[0];

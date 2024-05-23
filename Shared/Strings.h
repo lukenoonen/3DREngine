@@ -6,6 +6,16 @@
 
 #include <string>
 
+inline bool UTIL_isspace( int character )
+{
+	return isspace( character ) || character == 0;
+}
+
+inline size_t UTIL_strlen( const char *str )
+{
+	return strlen( str );
+}
+
 inline int UTIL_strcmp( const char *str1, const char *str2 )
 {
 	return strcmp( str1, str2 );

@@ -13,22 +13,37 @@ CFont::CFont()
 
 }
 
-unsigned int CFont::GetFontSize( void ) const
-{
-	return m_pFontResource->GetFontSize();
-}
-
-const glm::ivec2 &CFont::GetBitmapSize( void ) const
-{
-	return m_pFontResource->GetBitmapSize();
-}
-
 int CFont::BindBitmap( void ) const
 {
 	return m_pFontResource->BindBitmap();
 }
 
-const SChar &CFont::GetChar( char cChar ) const
+unsigned int CFont::GetFontSize( void ) const
 {
-	return m_pFontResource->GetChar( cChar );
+	return m_pFontResource->GetFontSize();
+}
+
+float CFont::GetAdvance( char cChar, float flScale ) const
+{
+	return (float)m_pFontResource->GetChar( cChar ).iAdvance * flScale;
+}
+
+glm::vec2 CFont::GetOffset( char cChar, float flScale ) const
+{
+	return (glm::vec2)m_pFontResource->GetChar( cChar ).vec2Offset * flScale;
+}
+
+glm::vec2 CFont::GetSize( char cChar, float flScale ) const
+{
+	return (glm::vec2)m_pFontResource->GetChar( cChar ).vec2Size * flScale;
+}
+
+glm::vec2 CFont::GetNormalizedPosition( char cChar ) const
+{
+	return (glm::vec2)m_pFontResource->GetChar( cChar ).vec2Position / (glm::vec2)m_pFontResource->GetBitmapSize();
+}
+
+glm::vec2 CFont::GetNormalizedSize( char cChar ) const
+{
+	return (glm::vec2)m_pFontResource->GetChar( cChar ).vec2Size / (glm::vec2)m_pFontResource->GetBitmapSize();
 }

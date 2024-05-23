@@ -4,6 +4,7 @@
 DEFINE_DATADESC( CTextInputHUDElement )
 
 	DEFINE_FIELD( LinkedDataField, CHandle<CGUIText>, m_hGUIText, "guitext", FL_REQUIRED )
+	DEFINE_FIELD( LinkedDataField, CHandle<CGUICursor>, m_hGUICursor, "guicursor", FL_REQUIRED )
 
 END_DATADESC()
 
@@ -14,71 +15,127 @@ CTextInputHUDElement::CTextInputHUDElement()
 
 }
 
-#include <iostream>
+bool CTextInputHUDElement::Init( void )
+{
+	if (!BaseClass::Init())
+		return false;
+
+	m_hGUIText->SetPosition( g_vec3Zero );
+	m_hGUIText->SetRotation( g_vec3Zero );
+	m_hGUIText->SetScale( g_vec3One );
+	m_hGUIText->SetParentRelative( this );
+
+	m_hGUICursor->SetGUIText( m_hGUIText );
+	return true;
+}
 
 void CTextInputHUDElement::Think( void )
 {
+	CBasePlayerCamera *pHUDCamera = GetHUDCamera();
 	if (HasFocus())
 	{
 		for (unsigned int i = 0; i < pInputManager->GetTextCount(); i++)
 		{
-			unsigned int uiChar = pInputManager->GetText( i );
+			unsigned int uiChar = pInputManager->GetTextChar( i );
+			int iMods = pInputManager->GetTextMods( i );
 			switch (uiChar)
 			{
 			case GLFW_KEY_ESCAPE:
 				LoseFocus();
 				break;
 			case GLFW_KEY_DELETE:
-				m_uiPosition = m_hGUIText->Delete( m_uiPosition );
+				m_hGUICursor->Delete();
 				break;
 			case GLFW_KEY_BACKSPACE:
-				m_uiPosition = m_hGUIText->Backspace( m_uiPosition );
+				m_hGUICursor->Backspace();
 				break;
 			case GLFW_KEY_ENTER:
-				m_uiPosition = m_hGUIText->Insert( m_uiPosition, '\n' );
+				m_hGUICursor->Insert( '\n' );
 				break;
 			case GLFW_KEY_TAB:
-				m_uiPosition = m_hGUIText->Insert( m_uiPosition, '\t' );
+				m_hGUICursor->Insert( '\t' );
 				break;
 			case GLFW_KEY_RIGHT:
-				m_uiPosition = m_hGUIText->GetRight( m_uiPosition );
+				m_hGUICursor->MoveHorizontal( 1 );
 				break;
 			case GLFW_KEY_LEFT:
-				m_uiPosition = m_hGUIText->GetLeft( m_uiPosition );
+				m_hGUICursor->MoveHorizontal( -1 );
 				break;
 			case GLFW_KEY_DOWN:
-				m_uiPosition = m_hGUIText->GetDown( m_uiPosition );
+				m_hGUICursor->MoveVertical( 1 );
 				break;
 			case GLFW_KEY_UP:
-				m_uiPosition = m_hGUIText->GetUp( m_uiPosition );
+				m_hGUICursor->MoveVertical( -1 );
 				break;
 			default:
-				m_uiPosition = m_hGUIText->Insert( m_uiPosition, (char)uiChar );
+				char cChar = (char)uiChar;
+				if (iMods & GLFW_MOD_CONTROL)
+				{
+					switch (cChar)
+					{
+					case 'V':
+						m_hGUICursor->Insert( pInputManager->GetClipboardString() );
+						break;
+					}
+				}
+				else
+				{
+					m_hGUICursor->Insert( cChar );
+				}
 				break;
 			}
 		}
 	}
 
+	if (IsClicked())
+	{
+		m_hGUICursor->Drag( CalculateGUITextCursorPosition() );
+	}
+
 	BaseClass::Think();
+}
+
+void CTextInputHUDElement::OnClick( void )
+{
+	m_hGUICursor->Click( CalculateGUITextCursorPosition() );
+	m_hGUICursor->StartBlinking();
+	BaseClass::OnClick();
+}
+
+void CTextInputHUDElement::OnRelease( void )
+{
+	m_hGUICursor->Release( CalculateGUITextCursorPosition() );
+	BaseClass::OnRelease();
 }
 
 void CTextInputHUDElement::OnGainFocus( void )
 {
 	pInputManager->UnlockKeyboard();
-	m_uiPosition = m_hGUIText->GetTextLength();
+	BaseClass::OnGainFocus();
 }
 
 void CTextInputHUDElement::OnLoseFocus( void )
 {
 	pInputManager->LockKeyboard();
+	m_hGUICursor->StopBlinking();
+	BaseClass::OnLoseFocus();
 }
 
 void CTextInputHUDElement::OnHover( void )
 {
 	pInputManager->SetCursor( ECursorShape::t_ibeam );
+	BaseClass::OnHover();
 }
 
 void CTextInputHUDElement::OnUnhover( void )
 {
-	pInputManager->ResetCursor();
+	pInputManager->ResetCursor( ECursorShape::t_ibeam );
+	BaseClass::OnUnhover();
+}
+
+glm::vec2 CTextInputHUDElement::CalculateGUITextCursorPosition( void ) const
+{
+	CBasePlayerCamera *pHUDCamera = GetHUDCamera();
+	glm::mat4 matTotalInverse = glm::inverse( pHUDCamera->GetTotal() * m_hGUIText->GetModelMatrix() );
+	return UTIL_CameraToLocal( pInputManager->GetNormalizedCursorPosition(), matTotalInverse );
 }

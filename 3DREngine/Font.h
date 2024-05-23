@@ -16,10 +16,14 @@ public:
 
 	CFont();
 
-	unsigned int GetFontSize( void ) const;
-	const glm::ivec2 &GetBitmapSize( void ) const;
 	int BindBitmap( void ) const;
-	const SChar &GetChar( char cChar ) const;
+
+	unsigned int GetFontSize( void ) const;
+	float GetAdvance( char cChar, float flScale ) const;
+	glm::vec2 GetOffset( char cChar, float flScale ) const;
+	glm::vec2 GetSize( char cChar, float flScale ) const;
+	glm::vec2 GetNormalizedPosition( char cChar ) const;
+	glm::vec2 GetNormalizedSize( char cChar ) const;
 
 private:
 	CFontResource *m_pFontResource;

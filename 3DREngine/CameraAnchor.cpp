@@ -18,12 +18,12 @@ CCameraAnchor::CCameraAnchor()
 
 bool CCameraAnchor::Init( void )
 {
+	m_qInverseCamera = glm::inverse( m_hCamera->GetRotation() );
+	Anchor();
+
 	if (!BaseClass::Init())
 		return false;
 
-	m_qInverseCamera = glm::inverse( m_hCamera->GetRotation() );
-
-	Anchor();
 	return true;
 }
 

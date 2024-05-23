@@ -440,6 +440,15 @@
     <ClCompile Include="BaseHUDParent.cpp">
       <Filter>Source Files\Entity\HUD</Filter>
     </ClCompile>
+    <ClCompile Include="GUICursor.cpp">
+      <Filter>Source Files\Entity\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Any.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyValues.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Global.h">
@@ -750,6 +759,15 @@
     </ClInclude>
     <ClInclude Include="BaseHUDParent.h">
       <Filter>Header Files\Entity\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="GUICursor.h">
+      <Filter>Header Files\Entity\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Any.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyValues.h">
+      <Filter>Header Files\Misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

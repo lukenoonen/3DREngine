@@ -56,23 +56,12 @@ bool CGUIPanel::Init( void )
 
 void CGUIPanel::Draw( void )
 {
-	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_model, 0, &GetModelMatrix() ); // TODO: change "model" matrix to better name
+	BaseClass::Draw();
 
 	m_hGUIPanelMaterial->Apply();
 
-	pRenderManager->SetUniform( "u_vecTranslation", GetPosition() );
-
 	glBindVertexArray( m_glVAO );
 	glDrawArrays( GL_TRIANGLES, 0, 6 );
-}
-
-#include <TimeManager.h>
-
-void CGUIPanel::PostThink( void )
-{
-	AddRotation( glm::vec3( 1.0f, 1.0f, 1.0f ) * pTimeManager->GetFrameTime() );
-
-	BaseClass::PostThink();
 }
 
 bool CGUIPanel::ShouldDraw( void ) const

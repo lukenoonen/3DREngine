@@ -21,6 +21,9 @@ public:
 
 	virtual void PreThink( void );
 
+	virtual void PropagateSetHUDCamera( CBasePlayerCamera *pHUDCamera );
+
+	virtual CBaseHUDElement *PersonalGetMouseOver( EMouseOverType eMouseOverType, CBaseHUDElement *pMouseOver );
 	virtual CBaseHUDElement *PropagateGetMouseOver( EMouseOverType eMouseOverType );
 
 private:

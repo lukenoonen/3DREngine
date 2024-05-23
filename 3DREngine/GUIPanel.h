@@ -2,13 +2,13 @@
 #define GUIPANEL_H
 
 #include "Global.h"
-#include "BaseWorld2D.h"
+#include "BaseBillboard.h"
 #include "GUIPanelMaterial.h"
 
-class CGUIPanel : public CBaseWorld2D
+class CGUIPanel : public CBaseBillboard
 {
 public:
-	DECLARE_CLASS( CGUIPanel, CBaseWorld2D )
+	DECLARE_CLASS( CGUIPanel, CBaseBillboard )
 
 	DECLARE_DATADESC()
 
@@ -18,8 +18,6 @@ public:
 	virtual ~CGUIPanel();
 
 	virtual bool Init( void );
-
-	virtual void PostThink( void );
 
 	virtual void Draw( void );
 	virtual bool ShouldDraw( void ) const;

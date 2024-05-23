@@ -95,6 +95,7 @@ bool UTIL_ProcessFont( CTextBlock *pTextBlock )
 	int iXPos = 0;
 	int iYPos = 0;
 	int iLineMaxHeight = 0;
+	int iMaxDepth = INT_MIN;
 	
 	for (unsigned int i = 0; i < FONT_CHAR_SIZE; i++)
 	{
@@ -135,11 +136,21 @@ bool UTIL_ProcessFont( CTextBlock *pTextBlock )
 		if (iLineMaxHeight < iHeight)
 			iLineMaxHeight = iHeight;
 
+		int iDepth = iOffsetY + iHeight;
+		if (iMaxDepth < iDepth)
+			iMaxDepth = iDepth;
+
 		SChar &cChar = sFontData.sChars[i];
 		cChar.vec2Position = glm::ivec2( iCurrentXPos, iCurrentYPos );
 		cChar.vec2Size = glm::ivec2( iWidth, iHeight );
 		cChar.vec2Offset = glm::ivec2( iOffsetX, iOffsetY );
 		cChar.iAdvance = iAdvance;
+	}
+
+	for (unsigned int i = 0; i < FONT_CHAR_SIZE; i++)
+	{
+		SChar &cChar = sFontData.sChars[i];
+		cChar.vec2Offset.y -= iMaxDepth;
 	}
 
 	sFontData.vec2BitmapSize.y = iYPos + iLineMaxHeight;

@@ -22,6 +22,11 @@ bool CBaseDataField::LoadText( void *pData, const CTextBlock *pTextBlock ) const
 	return LoadTextInternal( pData, pTextBlock ) || !(m_iFlags & FL_REQUIRED);
 }
 
+bool CBaseDataField::LoadKV( void *pData, const CKeyValues *pKV ) const
+{
+	return LoadKVInternal( pData, pKV ) || !(m_iFlags & FL_REQUIRED);
+}
+
 bool CBaseDataField::Link( void *pData ) const
 {
 	return LinkInternal( pData ) || !(m_iFlags & FL_REQUIRED);
@@ -38,6 +43,11 @@ bool CBaseDataField::LoadInternal( void *pData ) const
 }
 
 bool CBaseDataField::LoadTextInternal( void *pData, const CTextBlock *pTextBlock ) const
+{
+	return true;
+}
+
+bool CBaseDataField::LoadKVInternal( void *pData, const CKeyValues *pKV ) const
 {
 	return true;
 }
@@ -100,6 +110,20 @@ bool CDataMap::LoadText( void *pData, const CTextBlock *pTextBlock ) const
 
 	if (m_pBaseMap)
 		return m_pBaseMap->LoadText( pData, pTextBlock );
+
+	return true;
+}
+
+bool CDataMap::LoadKV( void *pData, const CKeyValues *pKV ) const
+{
+	for (unsigned int i = 0; i < m_pDataFields.size(); i++)
+	{
+		if (!m_pDataFields[i]->LoadKV( pData, pKV ))
+			return false;
+	}
+
+	if (m_pBaseMap)
+		return m_pBaseMap->LoadKV( pData, pKV );
 
 	return true;
 }

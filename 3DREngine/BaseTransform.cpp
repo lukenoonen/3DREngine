@@ -67,8 +67,6 @@ void CBaseTransform::SetScale( const glm::vec3 &vec3Scale )
 	AddScale( vec3Scale / GetScale() );
 }
 
-#include <iostream>
-
 void CBaseTransform::AddPosition( const glm::vec3 &vec3Position )
 {
 	m_vec3Position = GetPosition() + vec3Position;
@@ -139,6 +137,25 @@ void CBaseTransform::SetParent( CBaseTransform *pParent )
 
 	if (pParent)
 		pParent->AddChild( this );
+
+	m_hParent = pParent;
+}
+
+void CBaseTransform::SetParentRelative( CBaseTransform *pParent )
+{
+	if (m_hParent)
+		m_hParent->RemoveChild( this );
+
+	if (pParent)
+	{
+		pParent->AddChild( this );
+		if (HasFlags( fl_parentposition.GetFlag() ))
+			AddParentPosition( pParent->GetPosition() );
+		if (HasFlags( fl_parentrotation.GetFlag() ))
+			AddParentRotation( pParent->GetPosition(), pParent->GetRotation(), g_qZero, pParent->GetRotation() );
+		if (HasFlags( fl_parentscale.GetFlag() ))
+			AddParentScale( pParent->GetScale(), pParent->GetPosition(), pParent->GetScale() );
+	}
 
 	m_hParent = pParent;
 }

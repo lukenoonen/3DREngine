@@ -65,6 +65,18 @@ template <class T> inline T UTIL_min( T a, T b )
 	return a < b ? a : b;
 }
 
+template <class T> inline T UTIL_clamp( T a, T l, T h )
+{
+	return UTIL_min( UTIL_max( a, l ), h );
+}
+
+template <class T> inline void UTIL_swap( T &a, T &b )
+{
+	T t = a;
+	a = b;
+	b = t;
+}
+
 glm::quat UTIL_RotationDifference( glm::vec3 vecStart, glm::vec3 vecEnd );
 
 bool UTIL_GetValue( const CTextItem *pTextItem, glm::vec2 &vecValue );

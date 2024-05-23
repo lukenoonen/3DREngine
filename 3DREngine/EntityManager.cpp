@@ -233,7 +233,8 @@ CBaseEntity *CEntityManager::GetEntityByName( const char *sName ) // TODO: figur
 	for (unsigned int i = 0; i < m_pEntities.size(); i++)
 	{
 		CBaseEntity *pEntity = m_pEntities[i];
-		if (UTIL_streq( pEntity->GetName(), sName ))
+		const char *sEntityName = pEntity->GetName();
+		if (sEntityName && UTIL_streq( sEntityName, sName ))
 			return pEntity;
 	}
 
@@ -336,7 +337,6 @@ bool CEntityManager::AddEntityTest( const char *sMapName, const CTextBlock *pTex
 	return true;
 }
 
-
 void CEntityManager::AddFlag( CEntityFlag *pEntityFlag )
 {
 	if (!s_pEntityFlags)
@@ -357,24 +357,19 @@ int CEntityManager::GetFlag( const char *sKey ) const
 	return -1;
 }
 
-#include <iostream>
-
 void CEntityManager::AddCamera( CBaseCamera *pCamera )
 {
-	std::cout << pCamera->GetMapName() << '\n';
 	int iCameraPriority = pCamera->GetPriority();
 	for (unsigned int i = 0; i < m_pCameraEntities.size(); i++)
 	{
 		if (iCameraPriority <= m_pCameraEntities[i]->GetPriority())
 		{
 			m_pCameraEntities.insert( m_pCameraEntities.begin() + i, pCamera );
-			std::cout << i << '\n';
 			return;
 		}
 	}
 
 	m_pCameraEntities.push_back( pCamera );
-	std::cout << m_pCameraEntities.size() << '\n';
 }
 
 void CEntityManager::AddDrawable( CBaseDrawable *pDrawable )

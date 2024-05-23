@@ -34,6 +34,7 @@ public:
 	const glm::vec3 &GetScale( void ) const;
 
 	void SetParent( CBaseTransform *pParent );
+	void SetParentRelative( CBaseTransform *pParent );
 	void AddChild( CBaseTransform *pChild );
 	void RemoveChild( CBaseTransform *pChild );
 

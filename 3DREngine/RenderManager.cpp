@@ -6,7 +6,7 @@
 #include <iostream>
 
 bool CV_R_WindowSize( void );
-CConIVec2 cv_r_windowsize( glm::ivec2( 800, 600 ), "r_windowsize", CV_R_WindowSize );
+CConIVec2 cv_r_windowsize( glm::ivec2( DEFAULT_SCR_WIDTH, DEFAULT_SCR_HEIGHT ), "r_windowsize", CV_R_WindowSize );
 bool CV_R_WindowSize( void )
 {
 	const glm::ivec2 &vecWindowSize = cv_r_windowsize.GetValue();
@@ -86,7 +86,7 @@ CRenderManager::CRenderManager()
 	m_eRenderPass = ERenderPass::i_invalid;
 
 	m_pMonitor = glfwGetPrimaryMonitor();
-	m_pWindow = glfwCreateWindow( 800, 600, "3DREngine", NULL, NULL );
+	m_pWindow = glfwCreateWindow( DEFAULT_SCR_WIDTH, DEFAULT_SCR_HEIGHT, "3DREngine", NULL, NULL );
 
 	glfwMakeContextCurrent( m_pWindow );
 	gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress );
@@ -156,8 +156,6 @@ void CRenderManager::RecompileShaders( void )
 
 void CRenderManager::OnLoop( void )
 {
-	if (pTimeManager->GetFrameCount() % 100 == 0)
-		std::cout << 1.0f / pTimeManager->GetFrameTime() << "\n";
 	m_pDefaultFramebuffer->Think();
 	m_pDefaultFramebuffer->Blit();
 	glfwSwapBuffers( m_pWindow );

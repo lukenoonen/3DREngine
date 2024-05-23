@@ -11,20 +11,35 @@ public:
 
 	CBaseHUDParent();
 
-	virtual bool GetMouseOver( EMouseOverType eMouseOverType, CBaseHUDElement *&pMouseOver );
-	virtual bool PropagateGetMouseOver( EMouseOverType eMouseOverType, CBaseHUDElement *&pMouseOver );
+	virtual void PostThink( void );
 
-	virtual void OnClick( void );
-	virtual void OnRelease( void );
+	virtual void SetHUDCamera( CBasePlayerCamera *pHUDCamera );
+	virtual void PropagateSetHUDCamera( CBasePlayerCamera *pHUDCamera ) = 0;
 
-	virtual void OnGainFocus( void );
-	virtual void OnLoseFocus( void );
+	virtual CBaseHUDElement *GetMouseOver( EMouseOverType eMouseOverType );
+	virtual CBaseHUDElement *PersonalGetMouseOver( EMouseOverType eMouseOverType, CBaseHUDElement *pMouseOver );
+	virtual CBaseHUDElement *PropagateGetMouseOver( EMouseOverType eMouseOverType ) = 0;
 
-	virtual void OnHover( void );
-	virtual void OnUnhover( void );
+	virtual void PropagateClick( void );
+	virtual void PropagateRelease( void );
+
+	virtual void PropagateGainFocus( void );
+	virtual void PropagateLoseFocus( void );
+
+	virtual void PropagateHover( void );
+	virtual void PropagateUnhover( void );
+
+	virtual void ClearFocus( void );
+	virtual void ClearHover( void );
+
+	virtual bool FocusCheck( void );
+	virtual bool HoverCheck( void );
 
 private:
+	CBaseHUDElement *m_pPrevFocusedHUDElement;
 	CBaseHUDElement *m_pFocusedHUDElement;
+
+	CBaseHUDElement *m_pPrevHoveredHUDElement;
 	CBaseHUDElement *m_pHoveredHUDElement;
 };
 

@@ -4,6 +4,7 @@
 #include "Global.h"
 #include "FileManager.h"
 #include "EntityManager.h"
+#include "KeyValues.h"
 
 // TODO: clean this up, maybe split into multiple files
 
@@ -22,12 +23,14 @@ public:
 	bool Save( void *pData ) const;
 	bool Load( void *pData ) const;
 	bool LoadText( void *pData, const CTextBlock *pTextBlock ) const;
+	bool LoadKV( void *pData, const CKeyValues *pKV ) const;
 	bool Link( void *pData ) const;
 
 protected:
 	virtual bool SaveInternal( void *pData ) const;
 	virtual bool LoadInternal( void *pData ) const;
 	virtual bool LoadTextInternal( void *pData, const CTextBlock *pTextBlock ) const;
+	virtual bool LoadKVInternal( void *pData, const CKeyValues *pKV ) const;
 	virtual bool LinkInternal( void *pData ) const;
 
 protected:
@@ -49,6 +52,7 @@ public:
 	bool Save( void *pData ) const;
 	bool Load( void *pData ) const;
 	bool LoadText( void *pData, const CTextBlock *pTextBlock ) const;
+	bool LoadKV( void *pData, const CKeyValues *pKV ) const;
 	bool Link( void *pData ) const;
 
 private:
@@ -71,6 +75,11 @@ template <class T> bool UTIL_LoadTextData( T *pData, const CTextBlock *pTextBloc
 	return pData->GetDataMap()->LoadText( pData, pTextBlock );
 }
 
+template <class T> bool UTIL_LoadKVData( T *pData, const CKeyValues *pKV )
+{
+	return pData->GetDataMap()->LoadKV( pData, pKV );
+}
+
 template <class T> bool UTIL_LinkData( T *pData )
 {
 	return pData->GetDataMap()->Link( pData );
@@ -91,6 +100,9 @@ template <class T> bool UTIL_LinkData( T *pData )
 
 #define DEFINE_FIELDTYPE_LOAD_TEXT( dataname, textblockname ) \
 		virtual bool LoadTextInternal( void *dataname, const CTextBlock *textblockname ) const
+
+#define DEFINE_FIELDTYPE_LOAD_KV( dataname, kvname ) \
+		virtual bool LoadKVInternal( void *dataname, const CKeyValues *kvname ) const
 
 #define DEFINE_FIELDTYPE_LINK( dataname ) \
 		virtual bool LinkInternal( void *dataname ) const
@@ -166,6 +178,11 @@ DEFINE_FIELDTYPE_NOBASE( T, DataField )
 		return m_sName && pTextBlock->GetValue( GET_DATA( pData, m_uiOffset, T ), 1, m_sName );
 	}
 
+	DEFINE_FIELDTYPE_LOAD_KV( pData, pKV )
+	{
+		return m_sName && pKV->Get( m_sName, GET_DATA( pData, m_uiOffset, T ) );
+	}
+
 END_FIELDTYPE()
 
 DEFINE_FIELDTYPE( T, LinkedDataField, DataField<T> )
@@ -199,7 +216,19 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedDataField )
 		if (!pTextBlock->GetValue( pEmbeddedTextBlock, 1, m_sName ))
 			return false;
 
-		return UTIL_LoadTextData( GET_DATA( pData, m_uiOffset, T * ), pEmbeddedTextBlock);
+		return UTIL_LoadTextData( GET_DATA( pData, m_uiOffset, T * ), pEmbeddedTextBlock );
+	}
+
+	DEFINE_FIELDTYPE_LOAD_KV( pData, pKV )
+	{
+		if (!m_sName)
+			return false;
+
+		CKeyValues *pEmbeddedKV;
+		if (!pKV->Get( m_sName, pEmbeddedKV ))
+			return false;
+
+		return UTIL_LoadKVData( GET_DATA( pData, m_uiOffset, T * ), pEmbeddedKV );
 	}
 
 END_FIELDTYPE()
@@ -267,6 +296,11 @@ DEFINE_FIELDTYPE_NOBASE( T, VectorDataField )
 		}
 
 		return true;
+	}
+
+	DEFINE_FIELDTYPE_LOAD_KV( pData, pKV )
+	{
+		// TODO: finish
 	}
 
 END_FIELDTYPE()
@@ -347,6 +381,11 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 		}
 
 		return true;
+	}
+
+	DEFINE_FIELDTYPE_LOAD_KV( pData, pKV )
+	{
+		// TODO: finish
 	}
 
 END_FIELDTYPE()

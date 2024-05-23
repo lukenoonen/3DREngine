@@ -12,8 +12,7 @@ DEFINE_LINKED_CLASS( CMasterHUDElement, hud_master )
 
 CMasterHUDElement::CMasterHUDElement()
 {
-	m_pFocusedHUDElement = NULL;
-	m_pHoveredHUDElement = NULL;
+
 }
 
 bool CMasterHUDElement::Init( void )
@@ -23,93 +22,58 @@ bool CMasterHUDElement::Init( void )
 
 	SetHUDCamera( m_hHUDCamera );
 
-	for (unsigned int i = 0; i < m_hHUDChildren.size(); i++)
-		m_hHUDChildren[i]->SetHUDCamera( m_hHUDCamera );
-
 	return true;
 }
 
 void CMasterHUDElement::PreThink( void )
 {
-	if (!pInputManager->IsCursorLocked())
+	if (pInputManager->IsCursorLocked())
 	{
-		if (m_pHoveredHUDElement && !m_pHoveredHUDElement->HasHover())
-			m_pHoveredHUDElement = NULL;
-
-		if (m_pFocusedHUDElement && !m_pFocusedHUDElement->HasFocus())
-			m_pFocusedHUDElement = NULL;
-
-		if (pInputManager->IsKeyPressed( EKeyCodes::t_m0 ))
-		{
-			unsigned int uiMouseOverIndex;
-			CBaseHUDElement *pMouseOver = GetMouseOverIndex( uiMouseOverIndex );
-			if (m_pFocusedHUDElement != pMouseOver)
-			{
-				if (m_pFocusedHUDElement)
-					m_pFocusedHUDElement->LoseFocus();
-
-				if (pMouseOver)
-				{
-					if (uiMouseOverIndex != 0)
-					{
-						auto it = m_hHUDChildren.begin();
-						std::rotate( it, it + uiMouseOverIndex, it + uiMouseOverIndex + 1 );
-					}
-					pMouseOver->GainFocus();
-					pMouseOver->Click();
-				}
-
-				m_pFocusedHUDElement = pMouseOver;
-			}
-			else
-			{
-				if (pMouseOver)
-					pMouseOver->Click();
-			}
-		}
-		else if (pInputManager->IsKeyReleased( EKeyCodes::t_m0 ))
-		{
-			if (m_pFocusedHUDElement)
-				m_pFocusedHUDElement->Release();
-		}
-		else if (!pInputManager->IsKeyDown( EKeyCodes::t_m0 ))
-		{
-			CBaseHUDElement *pMouseOver = GetMouseOver( EMouseOverType::t_hover );
-			if (m_pHoveredHUDElement != pMouseOver)
-			{
-				if (m_pHoveredHUDElement)
-					m_pHoveredHUDElement->Unhover();
-
-				if (pMouseOver)
-					pMouseOver->Hover();
-
-				m_pHoveredHUDElement = pMouseOver;
-			}
-		}
+		ClearHover();
+		ClearFocus();
 	}
 	else
 	{
-		if (m_pHoveredHUDElement)
-		{
-			if (m_pHoveredHUDElement->HasHover())
-				m_pHoveredHUDElement->Unhover();
+		HoverCheck();
+		FocusCheck();
 
-			m_pHoveredHUDElement = NULL;
+		if (pInputManager->IsKeyPressed( EKeyCodes::t_m0 ))
+		{
+			CBaseHUDElement *pMouseOver = GetMouseOver( EMouseOverType::t_focus );
+			if (pMouseOver)
+			{
+				auto it = std::find( m_hHUDChildren.begin(), m_hHUDChildren.end(), pMouseOver );
+				if (it != m_hHUDChildren.begin() && it != m_hHUDChildren.end())
+					std::rotate( m_hHUDChildren.begin(), it, it + 1 );
+			}
+			PropagateLoseFocus();
+			PropagateGainFocus();
+			PropagateClick();
 		}
-
-		if (m_pFocusedHUDElement)
+		else if (pInputManager->IsKeyReleased( EKeyCodes::t_m0 ))
 		{
-			if (m_pFocusedHUDElement->IsClicked())
-				m_pFocusedHUDElement->Release();
-
-			if (m_pFocusedHUDElement->HasFocus())
-				m_pFocusedHUDElement->LoseFocus();
-
-			m_pHoveredHUDElement = NULL;
+			PropagateRelease();
+		}
+		else if (!pInputManager->IsKeyDown( EKeyCodes::t_m0 ))
+		{
+			GetMouseOver( EMouseOverType::t_hover );
+			PropagateUnhover();
+			PropagateHover();
 		}
 	}
 
 	BaseClass::PreThink();
+}
+
+void CMasterHUDElement::PropagateSetHUDCamera( CBasePlayerCamera *pHUDCamera )
+{
+	for (unsigned int i = 0; i < m_hHUDChildren.size(); i++)
+		m_hHUDChildren[i]->SetHUDCamera( pHUDCamera );
+}
+
+CBaseHUDElement *CMasterHUDElement::PersonalGetMouseOver( EMouseOverType eMouseOverType, CBaseHUDElement *pMouseOver )
+{
+	return pMouseOver;
 }
 
 CBaseHUDElement *CMasterHUDElement::PropagateGetMouseOver( EMouseOverType eMouseOverType )
@@ -123,30 +87,3 @@ CBaseHUDElement *CMasterHUDElement::PropagateGetMouseOver( EMouseOverType eMouse
 
 	return NULL;
 }
-
-/*CBaseHUDElement *CMasterHUDElement::GetMouseOver(EMouseOverType eMouseOverType)
-{
-	for (unsigned int i = 0; i < m_hHUDChildren.size(); i++)
-	{
-		CBaseHUDElement *pMouseOver = m_hHUDChildren[i]->GetMouseOver();
-		if (pMouseOver)
-			return pMouseOver;
-	}
-
-	return NULL;
-}
-
-CBaseHUDElement *CMasterHUDElement::GetMouseOverIndex( unsigned int &uiMouseOverIndex )
-{
-	for (unsigned int i = 0; i < m_hHUDChildren.size(); i++)
-	{
-		CBaseHUDElement *pMouseOver = m_hHUDChildren[i]->GetMouseOver();
-		if (pMouseOver)
-		{
-			uiMouseOverIndex = i;
-			return pMouseOver;
-		}
-	}
-
-	return NULL;
-}*/

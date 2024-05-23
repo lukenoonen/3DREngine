@@ -3,13 +3,14 @@
 
 DEFINE_DATADESC_NOBASE( CBaseEntity )
 
-	DEFINE_FIELD( DataField, char *, m_sName, "name", FL_REQUIRED )
+	DEFINE_FIELD( DataField, char *, m_sName, "name", FL_NONE )
 	DEFINE_FIELD( FlagDataField, int, m_iFlags, "flags", FL_NONE )
 
 END_DATADESC()
 
 CBaseEntity::CBaseEntity()
 {
+	m_sName = NULL;
 	m_sFileName = NULL;
 
 	m_iFlags = FL_NONE;
@@ -26,11 +27,8 @@ CBaseEntity::~CBaseEntity()
 		delete[] m_sFileName;
 }
 
-#include <iostream>
-
 bool CBaseEntity::Init( void )
 {
-	std::cout << m_sName << ": " << m_iFlags << '\n';
 	return true;
 }
 
