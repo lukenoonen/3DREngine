@@ -22,5 +22,6 @@ private:
 bool UTIL_Write( CFile *pFile, CTextureResource *&pData );
 bool UTIL_Read( CFile *pFile, CTextureResource *&pData );
 bool UTIL_GetValue( const CTextItem *pTextItem, CTextureResource *&pValue );
+bool UTIL_AnyConvert( const char *sName, CTextureResource *&pValue );
 
 #endif // TEXTURERESOURCE_H

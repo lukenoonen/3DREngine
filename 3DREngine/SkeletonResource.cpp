@@ -80,3 +80,9 @@ bool UTIL_GetValue( const CTextItem *pTextItem, CSkeletonResource *&pValue )
 	pValue = pResourceManager->GetSkeletonResource( sName );
 	return pValue != NULL;
 }
+
+bool UTIL_AnyConvert( const char *sName, CSkeletonResource *&pValue )
+{
+	pValue = pResourceManager->GetSkeletonResource( sName );
+	return pValue != NULL;
+}

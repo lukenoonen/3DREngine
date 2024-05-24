@@ -29,5 +29,6 @@ private:
 bool UTIL_Write( CFile *pFile, CSkeletonResource *&pData );
 bool UTIL_Read( CFile *pFile, CSkeletonResource *&pData );
 bool UTIL_GetValue( const CTextItem *pTextItem, CSkeletonResource *&pValue );
+bool UTIL_AnyConvert( const char *sName, CSkeletonResource *&pValue );
 
 #endif // SKELETONRESOURCE_H

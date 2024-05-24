@@ -96,3 +96,9 @@ bool UTIL_GetValue( const CTextItem *pTextItem, CTextureResource *&pValue )
 	pValue = pResourceManager->GetTextureResource( sName );
 	return pValue != NULL;
 }
+
+bool UTIL_AnyConvert( const char *sName, CTextureResource *&pValue )
+{
+	pValue = pResourceManager->GetTextureResource( sName );
+	return pValue != NULL;
+}

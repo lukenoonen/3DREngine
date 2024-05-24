@@ -89,4 +89,10 @@ template <class T> bool UTIL_GetValue( const CTextItem *pTextItem, CMonitoredVal
 	return true;
 }
 
+template <class T> bool UTIL_AnyConvert( T tValue, CMonitoredValue<T> &mValue )
+{
+	mValue.Set( tValue );
+	return true;
+}
+
 #endif // MONITORED_H

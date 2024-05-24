@@ -22,8 +22,8 @@ public:
 	CAny();
 	CAny( T tValue );
 
-	void GetValue( T &tValue ) const;
-	void SetValue( T tValue );
+	void GetInternal( T &tValue ) const;
+	void SetInternal( T tValue );
 
 private:
 	T m_tValue;
@@ -34,9 +34,8 @@ template <class T> bool CBaseAny::Get( T &tValue ) const
 	CAny<T> *pThis = dynamic_cast<CAny<T> *>(this);
 	if (!pThis)
 		return false;
-
-	pThis->GetValue( tValue );
-	return true;
+	
+	return pThis->GetValue( rValue );
 }
 
 template <class T> bool CBaseAny::Set( T tValue )
@@ -59,12 +58,12 @@ template <class T> CAny<T>::CAny( T tValue )
 	m_tValue = tValue;
 }
 
-template <class T> void CAny<T>::GetValue( T &tValue ) const
+template <class T> void CAny<T>::GetInternal( T &tValue ) const
 {
 	tValue = m_tValue;
 }
 
-template <class T> void CAny<T>::SetValue( T tValue )
+template <class T> void CAny<T>::SetInternal( T tValue )
 {
 	m_tValue = tValue;
 }

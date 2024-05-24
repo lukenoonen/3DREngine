@@ -216,7 +216,9 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedDataField )
 		if (!pTextBlock->GetValue( pEmbeddedTextBlock, 1, m_sName ))
 			return false;
 
-		return UTIL_LoadTextData( GET_DATA( pData, m_uiOffset, T * ), pEmbeddedTextBlock );
+		T *&pEmbeddedData = GET_DATA( pData, m_uiOffset, T * ); // TODO: test that this works, remove current allocations
+		pEmbeddedData = new T();
+		return UTIL_LoadTextData( pEmbeddedData, pEmbeddedTextBlock );
 	}
 
 	DEFINE_FIELDTYPE_LOAD_KV( pData, pKV )
@@ -300,7 +302,11 @@ DEFINE_FIELDTYPE_NOBASE( T, VectorDataField )
 
 	DEFINE_FIELDTYPE_LOAD_KV( pData, pKV )
 	{
-		// TODO: finish
+		if (!m_sName)
+			return false;
+
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
+		return pKV->Get( m_sName, vecData );
 	}
 
 END_FIELDTYPE()
@@ -376,7 +382,7 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 			if (!pTextLine->GetValue( pEmbeddedTextBlock, i ))
 				return false;
 
-			if (!UTIL_LoadData( vecData[i], pEmbeddedTextBlock ))
+			if (!UTIL_LoadTextData( vecData[i], pEmbeddedTextBlock ))
 				return false;
 		}
 
@@ -385,7 +391,21 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 
 	DEFINE_FIELDTYPE_LOAD_KV( pData, pKV )
 	{
-		// TODO: finish
+		if (!m_sName)
+			return false;
+
+		std::vector<T *> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T *> );
+		std::vector<CKeyValues *> vecKeyValues;
+		if (!pKV->Get( m_sName, vecKeyValues ))
+			return false;
+
+		vecData.resize( vecKeyValues.size() );
+		for (unsigned int i = 0; i < vecKeyValues.size(); i++)
+		{
+			if (!UTIL_LoadKVData( vecData[i], ))
+		}
+
+		return pKV->Get( m_sName, vecData );
 	}
 
 END_FIELDTYPE()
