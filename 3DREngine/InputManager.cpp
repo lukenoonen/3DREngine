@@ -221,8 +221,6 @@ void CB_TextInput( GLFWwindow *pWindow, unsigned int uiChar )
 	pInputManager->RecordText( uiChar, 0 );
 }
 
-#include <iostream>
-
 void CB_TextInputKeyboard( GLFWwindow *pWindow, int iKey, int iScancode, int iAction, int iMods )
 {
 	if (iAction == GLFW_RELEASE)

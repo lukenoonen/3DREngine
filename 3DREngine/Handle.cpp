@@ -10,20 +10,55 @@ CBaseHandle::CBaseHandle()
 
 CBaseHandle::CBaseHandle( CBaseEntity *pEntity )
 {
+	if (pEntity)
+		pEntity->Reference();
+
 	m_ucActiveData = 0;
 	m_uData.pEntity = pEntity;
 }
 
+CBaseHandle::CBaseHandle( CBaseHandle &hOther )
+{
+	m_ucActiveData = 3;
+	switch (hOther.m_ucActiveData)
+	{
+	case 0:
+		SetEntity( hOther.m_uData.pEntity );
+		break;
+	case 1:
+		SetName( hOther.m_uData.sName );
+		break;
+	case 2:
+		SetIndex( hOther.m_uData.uiIndex );
+		break;
+	}
+}
+
 CBaseHandle::~CBaseHandle()
 {
-	if (m_ucActiveData == 1)
+	switch (m_ucActiveData)
+	{
+	case 0:
+		if (m_uData.pEntity)
+			m_uData.pEntity->Unreference();
+		break;
+	case 1:
 		delete[] m_uData.sName;
+		break;
+	case 2:
+		break;
+	}
 }
 
 void CBaseHandle::SetEntity( CBaseEntity *pEntity )
 {
 	if (m_ucActiveData == 0 && m_uData.pEntity)
+	{
+		if (m_uData.pEntity == pEntity)
+			return;
+
 		m_uData.pEntity->Unreference();
+	}
 
 	if (pEntity)
 		pEntity->Reference();
@@ -92,7 +127,8 @@ bool CBaseHandle::Verify( CBaseEntity *pEntity )
 
 bool UTIL_Write( CFile *pFile, CBaseHandle &hData )
 {
-	unsigned int uiIndex = pEntityManager->GetEntityIndex( hData.Get() );
+	CBaseEntity *pEntity = hData.Get();
+	unsigned int uiIndex = pEntity->GetLoadIndex();
 	return pFile->Write( uiIndex );
 }
 

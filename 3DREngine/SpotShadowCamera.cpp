@@ -1,11 +1,10 @@
 #include "SpotShadowCamera.h"
 #include "RenderManager.h"
 #include "EntityManager.h"
-#include "FramebufferShadow.h"
 
 DEFINE_DATADESC( CSpotShadowCamera )
 
-	DEFINE_FIELD( EmbeddedDataField, CFramebufferShadow, m_pFramebuffer, "framebuffer", FL_NONE )
+	DEFINE_FIELD( EmbeddedDataField, CFramebufferShadow, m_fFramebufferShadow, "framebuffer", FL_NONE )
 
 	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flNear, "near", FL_NONE )
 	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flFar, "far", FL_NONE )
@@ -19,8 +18,6 @@ DEFINE_LINKED_CLASS( CSpotShadowCamera, camera_shadow_spot )
 
 CSpotShadowCamera::CSpotShadowCamera()
 {
-	InitFramebuffer( new CFramebufferShadow() );
-
 	m_flNear = 0.1f;
 	m_flFar = 1000.0f;
 	m_flOuterCutoff = 0.7071f;
@@ -50,6 +47,16 @@ void CSpotShadowCamera::ActivateLight( void )
 	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadow, 0, 0, 1, &m_matTotal[0] );
 
 	BaseClass::ActivateLight();
+}
+
+CBaseFramebuffer *CSpotShadowCamera::GetFramebuffer( void )
+{
+	return &m_fFramebufferShadow;
+}
+
+const CBaseFramebuffer *CSpotShadowCamera::GetFramebuffer( void ) const
+{
+	return &m_fFramebufferShadow;
 }
 
 void CSpotShadowCamera::SetNear( float flNear )

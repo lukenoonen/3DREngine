@@ -38,52 +38,7 @@ void CTextInputHUDElement::Think( void )
 		{
 			unsigned int uiChar = pInputManager->GetTextChar( i );
 			int iMods = pInputManager->GetTextMods( i );
-			switch (uiChar)
-			{
-			case GLFW_KEY_ESCAPE:
-				LoseFocus();
-				break;
-			case GLFW_KEY_DELETE:
-				m_hGUICursor->Delete();
-				break;
-			case GLFW_KEY_BACKSPACE:
-				m_hGUICursor->Backspace();
-				break;
-			case GLFW_KEY_ENTER:
-				m_hGUICursor->Insert( '\n' );
-				break;
-			case GLFW_KEY_TAB:
-				m_hGUICursor->Insert( '\t' );
-				break;
-			case GLFW_KEY_RIGHT:
-				m_hGUICursor->MoveHorizontal( 1 );
-				break;
-			case GLFW_KEY_LEFT:
-				m_hGUICursor->MoveHorizontal( -1 );
-				break;
-			case GLFW_KEY_DOWN:
-				m_hGUICursor->MoveVertical( 1 );
-				break;
-			case GLFW_KEY_UP:
-				m_hGUICursor->MoveVertical( -1 );
-				break;
-			default:
-				char cChar = (char)uiChar;
-				if (iMods & GLFW_MOD_CONTROL)
-				{
-					switch (cChar)
-					{
-					case 'V':
-						m_hGUICursor->Insert( pInputManager->GetClipboardString() );
-						break;
-					}
-				}
-				else
-				{
-					m_hGUICursor->Insert( cChar );
-				}
-				break;
-			}
+			ProcessInput( uiChar, iMods );
 		}
 	}
 
@@ -93,6 +48,17 @@ void CTextInputHUDElement::Think( void )
 	}
 
 	BaseClass::Think();
+}
+
+void CTextInputHUDElement::Remove( void )
+{
+	m_hGUIText->Remove();
+	m_hGUIText.Check();
+
+	m_hGUICursor->Remove();
+	m_hGUICursor.Check();
+
+	BaseClass::Remove();
 }
 
 void CTextInputHUDElement::OnClick( void )
@@ -131,6 +97,65 @@ void CTextInputHUDElement::OnUnhover( void )
 {
 	pInputManager->ResetCursor( ECursorShape::t_ibeam );
 	BaseClass::OnUnhover();
+}
+
+void CTextInputHUDElement::ClearText( void )
+{
+	m_hGUIText->SetText( "" );
+	m_hGUICursor->MoveToStart();
+}
+
+const char *CTextInputHUDElement::GetText( void )
+{
+	return m_hGUIText->GetText();
+}
+
+void CTextInputHUDElement::ProcessInput( unsigned int uiChar, int iMods )
+{
+	switch (uiChar)
+	{
+	case GLFW_KEY_ESCAPE:
+		LoseFocus();
+		return;
+	case GLFW_KEY_DELETE:
+		m_hGUICursor->Delete();
+		return;
+	case GLFW_KEY_BACKSPACE:
+		m_hGUICursor->Backspace();
+		return;
+	case GLFW_KEY_ENTER:
+		m_hGUICursor->Insert( '\n' );
+		return;
+	case GLFW_KEY_TAB:
+		m_hGUICursor->Insert( '\t' );
+		return;
+	case GLFW_KEY_RIGHT:
+		m_hGUICursor->MoveHorizontal( 1 );
+		return;
+	case GLFW_KEY_LEFT:
+		m_hGUICursor->MoveHorizontal( -1 );
+		return;
+	case GLFW_KEY_DOWN:
+		m_hGUICursor->MoveVertical( 1 );
+		return;
+	case GLFW_KEY_UP:
+		m_hGUICursor->MoveVertical( -1 );
+		return;
+	}
+
+	char cChar = (char)uiChar;
+	if (iMods & GLFW_MOD_CONTROL) // TODO: handle this better, newlines can be entered if in clipboard string!
+	{
+		switch (cChar)
+		{
+		case 'V':
+			m_hGUICursor->Insert( pInputManager->GetClipboardString() );
+			return;
+		}
+		return;
+	}
+
+	m_hGUICursor->Insert( cChar );
 }
 
 glm::vec2 CTextInputHUDElement::CalculateGUITextCursorPosition( void ) const

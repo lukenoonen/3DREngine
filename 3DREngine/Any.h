@@ -9,6 +9,7 @@ public:
 	DECLARE_CLASS_NOBASE( CBaseAny )
 
 	CBaseAny();
+	virtual ~CBaseAny();
 
 	template <class T> bool Get( T &tValue ) const;
 	template <class T> bool Set( T tValue );
@@ -31,11 +32,12 @@ private:
 
 template <class T> bool CBaseAny::Get( T &tValue ) const
 {
-	CAny<T> *pThis = dynamic_cast<CAny<T> *>(this);
+	const CAny<T> *pThis = dynamic_cast<const CAny<T> *>(this);
 	if (!pThis)
 		return false;
-	
-	return pThis->GetValue( rValue );
+
+	pThis->GetInternal( tValue );
+	return true;
 }
 
 template <class T> bool CBaseAny::Set( T tValue )
@@ -44,7 +46,7 @@ template <class T> bool CBaseAny::Set( T tValue )
 	if (!pThis)
 		return false;
 
-	pThis->SetValue( tValue );
+	pThis->SetInternal( tValue );
 	return true;
 }
 

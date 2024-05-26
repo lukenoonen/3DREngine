@@ -6,7 +6,7 @@
 
 bool CC_PForward( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_forward, true );
 	return true;
@@ -15,7 +15,7 @@ CConCommand cc_pforward( "+forward", CC_PForward );
 
 bool CC_PBack( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_back, true );
 	return true;
@@ -24,7 +24,7 @@ CConCommand cc_pbackward( "+back", CC_PBack );
 
 bool CC_PLeft( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_left, true );
 	return true;
@@ -33,7 +33,7 @@ CConCommand cc_pleft( "+left", CC_PLeft );
 
 bool CC_PRight( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_right, true );
 	return true;
@@ -42,7 +42,7 @@ CConCommand cc_pright( "+right", CC_PRight );
 
 bool CC_PUp( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_up, true);
 	return true;
@@ -51,7 +51,7 @@ CConCommand cc_pup( "+up", CC_PUp );
 
 bool CC_PDown( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_down, true );
 	return true;
@@ -60,7 +60,7 @@ CConCommand cc_pdown( "+down", CC_PDown );
 
 bool CC_MForward( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_forward, false );
 	return true;
@@ -69,7 +69,7 @@ CConCommand cc_mforward( "-forward", CC_MForward );
 
 bool CC_MBack( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_back, false );
 	return true;
@@ -78,7 +78,7 @@ CConCommand cc_mback( "-back", CC_MBack );
 
 bool CC_MLeft( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_left, false );
 	return true;
@@ -87,7 +87,7 @@ CConCommand ccm_left( "-left", CC_MLeft );
 
 bool CC_MRight( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_right, false );
 	return true;
@@ -96,7 +96,7 @@ CConCommand cc_mright( "-right", CC_MRight );
 
 bool CC_MUp( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_up, false );
 	return true;
@@ -105,7 +105,7 @@ CConCommand cc_mup( "-up", CC_MUp );
 
 bool CC_MDown( void )
 {
-	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetPlayer( 0 ));
+	CTestPlayer *pTestPlayer = dynamic_cast<CTestPlayer *>(pEntityManager->GetLocalPlayer());
 	if (pTestPlayer)
 		pTestPlayer->SetMovement( EMovement::t_down, false );
 	return true;
@@ -125,6 +125,8 @@ CTestPlayer::CTestPlayer()
 	m_vec3Front = GetRotation() * g_vec3Front;
 	m_vec3Right = GetRotation() * g_vec3Right;
 	m_vec3Up = GetRotation() * g_vec3Up;
+
+	pEntityManager->SetLocalPlayer( this );
 }
 
 bool CTestPlayer::Init( void )

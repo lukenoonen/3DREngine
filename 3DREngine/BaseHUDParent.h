@@ -11,7 +11,7 @@ public:
 
 	CBaseHUDParent();
 
-	virtual void PostThink( void );
+	virtual void PreThink( void );
 
 	virtual void SetHUDCamera( CBasePlayerCamera *pHUDCamera );
 	virtual void PropagateSetHUDCamera( CBasePlayerCamera *pHUDCamera ) = 0;
@@ -37,10 +37,10 @@ public:
 
 private:
 	CBaseHUDElement *m_pPrevFocusedHUDElement;
-	CBaseHUDElement *m_pFocusedHUDElement;
+	CHandle<CBaseHUDElement> m_hFocusedHUDElement; // TODO: try making CHandle to account for deleted hud elements
 
 	CBaseHUDElement *m_pPrevHoveredHUDElement;
-	CBaseHUDElement *m_pHoveredHUDElement;
+	CHandle<CBaseHUDElement> m_hHoveredHUDElement;
 };
 
 #endif // BASEHUDPARENT_H

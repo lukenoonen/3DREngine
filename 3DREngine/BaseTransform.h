@@ -21,6 +21,8 @@ public:
 
 	virtual void PostThink( void );
 
+	virtual void OnRemove( void );
+
 	void SetPosition( const glm::vec3 &vec3Position );
 	void SetRotation( const glm::quat &qRotation );
 	void SetScale( const glm::vec3 &vec3Scale );

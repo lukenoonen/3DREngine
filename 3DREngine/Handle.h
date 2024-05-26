@@ -12,6 +12,7 @@ public:
 
 	CBaseHandle();
 	CBaseHandle( CBaseEntity *pEntity );
+	CBaseHandle( CBaseHandle &hOther );
 	virtual ~CBaseHandle();
 
 	void SetEntity( CBaseEntity *pEntity );
@@ -46,6 +47,7 @@ public:
 
 	CHandle();
 	CHandle( T *pEntity );
+	CHandle( CHandle<T> &hOther );
 
 	T *Get( void ) const;
 
@@ -66,6 +68,11 @@ template <class T> CHandle<T>::CHandle()
 }
 
 template <class T> CHandle<T>::CHandle( T *pEntity ) : BaseClass( pEntity )
+{
+
+}
+
+template <class T> CHandle<T>::CHandle( CHandle<T> &hOther ) : BaseClass( hOther )
 {
 
 }

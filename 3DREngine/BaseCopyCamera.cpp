@@ -1,5 +1,4 @@
 #include "BaseCopyCamera.h"
-#include "FramebufferColor.h"
 
 DEFINE_DATADESC( CBaseCopyCamera )
 
@@ -11,8 +10,6 @@ END_DATADESC()
 
 CBaseCopyCamera::CBaseCopyCamera()
 {
-	InitFramebuffer( new CFramebufferColor() );
-
 	m_flSizeQualityFactor = 1.0f;
 	m_flMSAALevelQualityFactor = 1.0f;
 }
@@ -58,6 +55,16 @@ void CBaseCopyCamera::Think( void )
 	m_hTargetCamera.Check();
 
 	BaseClass::Think();
+}
+
+CBaseFramebuffer *CBaseCopyCamera::GetFramebuffer( void )
+{
+	return &m_fFramebufferColor;
+}
+
+const CBaseFramebuffer *CBaseCopyCamera::GetFramebuffer( void ) const
+{
+	return &m_fFramebufferColor;
 }
 
 CBaseWorldCamera *CBaseCopyCamera::GetTargetCamera( void ) const

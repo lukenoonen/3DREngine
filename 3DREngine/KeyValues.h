@@ -13,7 +13,7 @@ public:
 	~CKeyValues();
 
 	template <class T> void Insert( const char *sKey, T tValue );
-	template <class T> bool Get( const char *sKey, T &tValue );
+	template <class T> bool Get( const char *sKey, T &tValue ) const;
 
 private:
 	std::unordered_map<const char *, CBaseAny *> m_mKeyValues;
@@ -28,9 +28,9 @@ template <class T> void CKeyValues::Insert( const char *sKey, T tValue )
 	m_mKeyValues[sKey] = new CAny<T>( tValue );
 }
 
-template <class T> bool CKeyValues::Get( const char *sKey, T &tValue )
+template <class T> bool CKeyValues::Get( const char *sKey, T &tValue ) const
 {
-	std::unordered_map<const char *, CBaseAny *>::iterator itSearch = m_mKeyValues.find( sKey );
+	std::unordered_map<const char *, CBaseAny *>::const_iterator itSearch = m_mKeyValues.find( sKey );
 	if (itSearch != m_mKeyValues.end())
 		return itSearch->second->Get( tValue );
 

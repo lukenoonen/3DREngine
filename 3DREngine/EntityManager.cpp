@@ -18,9 +18,230 @@ bool CC_CreateEntity( const CTextLine *pCommand )
 	if (!pCommand->GetValue( pTextBlock, 2 ))
 		return false;
 
-	return pEntityManager->AddEntityTest( sMapName, pTextBlock );
+	return pEntityManager->AddEntity( sMapName, pTextBlock );
 }
 CConCommand cc_createentity( "createentity", CC_CreateEntity );
+
+CEntityLoadGroup::CEntityLoadGroup()
+{
+	m_uiEntityCount = 0;
+}
+
+CEntityLoadGroup::~CEntityLoadGroup()
+{
+	for (unsigned int i = 0; i < m_pEntities.size(); i++)
+		delete m_pEntities[i];
+
+	for (unsigned int i = 0; i < m_pEntitiesToRemove.size(); i++)
+		delete m_pEntitiesToRemove[i];
+}
+
+void CEntityLoadGroup::ProcessAddedEntities( void )
+{
+
+}
+
+void CEntityLoadGroup::PreThink( void )
+{
+	for (unsigned int i = 0; i < m_uiEntityCount; i++)
+		m_pEntities[i]->PreThink();
+}
+
+void CEntityLoadGroup::Think( void )
+{
+	for (unsigned int i = 0; i < m_uiEntityCount; i++)
+		m_pEntities[i]->Think();
+}
+
+void CEntityLoadGroup::PostThink( void )
+{
+	for (unsigned int i = 0; i < m_uiEntityCount; i++)
+		m_pEntities[i]->PostThink();
+}
+
+void CEntityLoadGroup::PreRender( void )
+{
+	for (unsigned int i = 0; i < m_pDrawableEntities.size(); i++)
+		m_pDrawableEntities[i]->PreRender();
+}
+
+void CEntityLoadGroup::Render( void )
+{
+	for (unsigned int i = 0; i < m_pCameraEntities.size(); i++)
+	{
+		CBaseCamera *pCamera = m_pCameraEntities[i];
+		pEntityManager->SetCurrentCamera( pCamera );
+		if (pCamera->ShouldDraw())
+			pCamera->Render();
+	}
+}
+
+void CEntityLoadGroup::DrawUnlitEntities( void )
+{
+	for (unsigned int i = 0; i < m_pDrawableEntities.size(); i++)
+	{
+		CBaseDrawable *pDrawable = m_pDrawableEntities[i];
+		if (pDrawable->ShouldDraw())
+		{
+			pDrawable->PreDraw();
+			pDrawable->Draw();
+			pDrawable->PostDraw();
+		}
+	}
+}
+
+void CEntityLoadGroup::DrawLitEntities( void )
+{
+	for (unsigned int i = 0; i < m_pLightEntities.size(); i++)
+	{
+		CBaseLight *pLight = m_pLightEntities[i];
+		pEntityManager->SetCurrentLight( pLight );
+		if (pLight->ShouldDraw())
+		{
+			pLight->ActivateLight();
+			pEntityManager->DrawUnlitEntities();
+		}
+	}
+}
+
+#include <iostream>
+
+void CEntityLoadGroup::ProcessRemovedEntities( void )
+{
+	for (unsigned int i = 0; i < m_pEntitiesToRemove.size(); i++)
+	{
+		CBaseEntity *pEntityToRemove = m_pEntitiesToRemove[i];
+		std::cout << (pEntityToRemove->GetName() ? pEntityToRemove->GetName() : "NULL") << "\n";
+		pEntityToRemove->OnRemove(); // TODO: KEEP CLEANING!! TEMPORARY BTW
+		if (!pEntityToRemove->IsReferenced())
+		{
+			m_pEntitiesToRemove.erase( m_pEntitiesToRemove.begin() + i );
+			delete pEntityToRemove;
+		}
+	}
+}
+
+CBaseEntity *CEntityLoadGroup::GetEntityByName( const char *sName ) const
+{
+	for (unsigned int i = 0; i < m_pEntities.size(); i++)
+	{
+		CBaseEntity *pEntity = m_pEntities[i];
+		const char *sEntityName = pEntity->GetName();
+		if (sEntityName && UTIL_streq( sEntityName, sName ))
+			return pEntity;
+	}
+
+	return NULL;
+}
+
+CBaseEntity *CEntityLoadGroup::GetEntityByIndex( unsigned int uiIndex ) const
+{
+	if (m_pEntities.size() >= uiIndex)
+		return NULL;
+
+	return m_pEntities[uiIndex];
+}
+
+unsigned int CEntityLoadGroup::GetEntityIndex( const CBaseEntity *pEntity ) const
+{
+	for (unsigned int i = 0; i < m_pEntities.size(); i++)
+	{
+		if (m_pEntities[i] == pEntity)
+			return i;
+	}
+
+	return INVALID_INDEX;
+}
+
+void CEntityLoadGroup::AddEntity( CBaseEntity *pEntity )
+{
+	m_pEntities.push_back( pEntity );
+	pEntity->SetLoadGroup( this );
+}
+
+void CEntityLoadGroup::Flush( void )
+{
+	// TODO: what happens if UTIL_LinkData returns false?
+	for (unsigned int i = m_uiEntityCount; i < m_pEntities.size(); i++)
+		UTIL_LinkData( m_pEntities[i] );
+
+	for (unsigned int i = m_uiEntityCount; i < m_pEntities.size(); i++)
+		m_pEntities[i]->Init();
+
+	for (unsigned int i = m_uiEntityCount; i < m_pEntities.size(); i++)
+	{
+		CBaseEntity *pEntity = m_pEntities[i];
+
+		if (pEntity->IsCamera())
+			AddCamera( (CBaseCamera *)pEntity );
+		if (pEntity->IsDrawable())
+			AddDrawable( (CBaseDrawable *)pEntity );
+		if (pEntity->IsLight())
+			AddLight( (CBaseLight *)pEntity );
+	}
+
+	m_uiEntityCount = (unsigned int)m_pEntities.size();
+}
+
+void CEntityLoadGroup::RemoveEntity( CBaseEntity *pEntity )
+{
+	if (RemoveEntityImmediate( pEntity ))
+		m_pEntitiesToRemove.push_back( pEntity );
+}
+
+void CEntityLoadGroup::ChangeLoadGroup( CBaseEntity *pEntity )
+{
+	CEntityLoadGroup *pPrevLoadGroup = pEntity->GetLoadGroup();
+	if (pPrevLoadGroup)
+		pPrevLoadGroup->RemoveEntityImmediate( pEntity );
+
+	m_pEntities.insert( m_pEntities.begin() + m_uiEntityCount, pEntity );
+	m_uiEntityCount++;
+}
+
+bool CEntityLoadGroup::RemoveEntityImmediate( CBaseEntity *pEntity )
+{
+	unsigned int uiEntityIndex = GetEntityIndex( pEntity );
+	if (uiEntityIndex == INVALID_INDEX)
+		return false;
+
+	m_pEntities.erase( m_pEntities.begin() + uiEntityIndex );
+	m_uiEntityCount--;
+
+	if (pEntity->IsCamera())
+		m_pCameraEntities.erase( std::find( m_pCameraEntities.begin(), m_pCameraEntities.end(), (CBaseCamera *)pEntity ) );
+	if (pEntity->IsDrawable())
+		m_pDrawableEntities.erase( std::find( m_pDrawableEntities.begin(), m_pDrawableEntities.end(), (CBaseDrawable *)pEntity ) );
+	if (pEntity->IsLight())
+		m_pLightEntities.erase( std::find( m_pLightEntities.begin(), m_pLightEntities.end(), (CBaseLight *)pEntity ) );
+
+	return true;
+}
+
+void CEntityLoadGroup::AddCamera( CBaseCamera *pCamera )
+{
+	int iCameraPriority = pCamera->GetPriority();
+	for (unsigned int i = 0; i < m_pCameraEntities.size(); i++)
+	{
+		if (iCameraPriority <= m_pCameraEntities[i]->GetPriority())
+		{
+			m_pCameraEntities.insert( m_pCameraEntities.begin() + i, pCamera );
+			return;
+		}
+	}
+
+	m_pCameraEntities.push_back( pCamera );
+}
+
+void CEntityLoadGroup::AddDrawable( CBaseDrawable *pDrawable )
+{
+	m_pDrawableEntities.push_back( pDrawable );
+}
+
+void CEntityLoadGroup::AddLight( CBaseLight *pLight )
+{
+	m_pLightEntities.push_back( pLight );
+}
 
 std::vector<CBaseEntityFactory *> *CEntityManager::s_pEntityFactories = NULL;
 
@@ -28,8 +249,12 @@ std::vector<CEntityFlag *> *CEntityManager::s_pEntityFlags = NULL;
 
 CEntityManager::CEntityManager()
 {
-	m_uiEntityCount = 0;
 
+	m_LoadGroups.emplace_back();
+	m_pGlobalLoadGroup = &m_LoadGroups.back();
+	m_pActiveLoadGroup = NULL;
+
+	m_pLocalPlayer = NULL;
 	m_pCurrentCamera = NULL;
 	m_pCurrentLight = NULL;
 
@@ -42,68 +267,34 @@ CEntityManager::CEntityManager()
 
 CEntityManager::~CEntityManager()
 {
-	ClearEntities();
-
 	delete m_pEntityFactories;
-
 	delete m_pEntityFlags;
 }
 
-#include <iostream>
-
 void CEntityManager::OnLoop( void )
 {
-	// TODO: formalise the way newly-added entities are handled (BAD LINKING!!!! FIX IT!!!!)
-	if (m_uiEntityCount != m_pEntities.size())
-	{
-		for (unsigned int i = m_uiEntityCount; i < m_pEntities.size(); i++)
-		{
-			CBaseEntity *pEntity = m_pEntities[i];
+	FlushLoadGroup();
 
-			if (pEntity->IsCamera())
-				AddCamera( (CBaseCamera *)pEntity );
-			if (pEntity->IsDrawable())
-				AddDrawable( (CBaseDrawable *)pEntity );
-			if (pEntity->IsLight())
-				AddLight( (CBaseLight *)pEntity );
-			if (pEntity->IsPlayer())
-				AddPlayer( (CBasePlayer *)pEntity );
-		}
+	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
+		m_LoadGroups[i].ProcessAddedEntities();
 
-		for (unsigned int i = m_uiEntityCount; i < m_pEntities.size(); i++)
-			UTIL_LinkData( m_pEntities[i] );
+	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
+		m_LoadGroups[i].PreThink();
 
-		for (unsigned int i = m_uiEntityCount; i < m_pEntities.size(); i++)
-			m_pEntities[i]->Init();
+	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
+		m_LoadGroups[i].Think();
 
-		m_uiEntityCount = (unsigned int)m_pEntities.size();
-	}
+	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
+		m_LoadGroups[i].PostThink();
 
-	for (unsigned int i = 0; i < m_uiEntityCount; i++)
-		m_pEntities[i]->PreThink();
+	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
+		m_LoadGroups[i].PreRender();
 
-	for (unsigned int i = 0; i < m_uiEntityCount; i++)
-		m_pEntities[i]->Think();
+	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
+		m_LoadGroups[i].Render();
 
-	for (unsigned int i = 0; i < m_uiEntityCount; i++)
-		m_pEntities[i]->PostThink();
-
-	for (unsigned int i = 0; i < m_pDrawableEntities.size(); i++)
-		m_pDrawableEntities[i]->PreRender();
-
-	for (unsigned int i = 0; i < m_pCameraEntities.size(); i++)
-	{
-		m_pCurrentCamera = m_pCameraEntities[i];
-		if (m_pCurrentCamera->ShouldDraw())
-			m_pCurrentCamera->Render();
-	}
-
-	for (unsigned int i = 0; i < m_pEntitiesToRemove.size(); i++)
-	{
-		CBaseEntity *pEntityToRemove = m_pEntitiesToRemove[i];
-		if (!pEntityToRemove->IsReferenced())
-			delete pEntityToRemove;
-	}
+	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
+		m_LoadGroups[i].ProcessRemovedEntities();
 }
 
 void CEntityManager::DrawEntities( void )
@@ -119,96 +310,65 @@ void CEntityManager::DrawEntities( void )
 
 void CEntityManager::DrawUnlitEntities( void )
 {
-	for (unsigned int i = 0; i < m_pDrawableEntities.size(); i++)
-	{
-		CBaseDrawable *pDrawable = m_pDrawableEntities[i];
-		if (pDrawable->ShouldDraw())
-		{
-			pDrawable->PreDraw();
-			pDrawable->Draw();
-			pDrawable->PostDraw();
-		}
-	}
+	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
+		m_LoadGroups[i].DrawUnlitEntities();
 }
 
 void CEntityManager::DrawLitEntities( void )
 {
-	for (unsigned int i = 0; i < m_pLightEntities.size(); i++)
-	{
-		m_pCurrentLight = m_pLightEntities[i];
-		if (!m_pCurrentLight->ShouldDraw())
-			continue;
-
-		m_pCurrentLight->ActivateLight();
-		for (unsigned int j = 0; j < m_pDrawableEntities.size(); j++)
-		{
-			CBaseDrawable *pDrawable = m_pDrawableEntities[j];
-			if (!pDrawable->ShouldDraw())
-				continue;
-
-			pDrawable->PreDraw();
-			pDrawable->Draw();
-			pDrawable->PostDraw();
-		}
-	}
+	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
+		m_LoadGroups[i].DrawLitEntities();
 
 	m_pCurrentLight = NULL;
 }
 
-void CEntityManager::AddEntity( CBaseEntity *pEntity )
+void CEntityManager::CreateLoadGroup( void )
 {
-	m_pEntities.push_back( pEntity );
+	if (m_pActiveLoadGroup)
+		m_pActiveLoadGroup->Flush();
+
+	m_LoadGroups.emplace_back();
+	m_pActiveLoadGroup = &m_LoadGroups.back();
 }
 
-void CEntityManager::RemoveEntity( CBaseEntity *pEntity )
+void CEntityManager::FlushLoadGroup( void )
 {
-	for (unsigned int i = 0; i < m_pEntities.size(); i++)
+	if (m_pActiveLoadGroup)
 	{
-		if (m_pEntities[i] == pEntity)
-		{
-			m_pEntities.erase( m_pEntities.begin() + i );
-			m_uiEntityCount--;
-
-			m_pEntitiesToRemove.push_back( pEntity );
-
-			if (pEntity->IsCamera())
-			{
-				for (unsigned int j = 0; j < m_pCameraEntities.size(); j++)
-				{
-					if (m_pCameraEntities[j] == pEntity)
-						m_pCameraEntities.erase( m_pCameraEntities.begin() + j );
-				}
-			}
-			if (pEntity->IsDrawable())
-			{
-				for (unsigned int j = 0; j < m_pDrawableEntities.size(); j++)
-				{
-					if (m_pDrawableEntities[j] == pEntity)
-						m_pDrawableEntities.erase( m_pDrawableEntities.begin() + j );
-				}
-			}
-			if (pEntity->IsLight())
-			{
-				for (unsigned int j = 0; j < m_pLightEntities.size(); j++)
-				{
-					if (m_pLightEntities[j] == pEntity)
-						m_pLightEntities.erase( m_pLightEntities.begin() + j );
-				}
-			}
-			if (pEntity->IsPlayer())
-			{
-				for (unsigned int j = 0; j < m_pPlayerEntities.size(); j++)
-				{
-					if (m_pPlayerEntities[j] == pEntity)
-						m_pPlayerEntities.erase( m_pPlayerEntities.begin() + j );
-				}
-			}
-
-			pEntity->Remove();
-		}
+		m_pActiveLoadGroup->Flush();
+		m_pActiveLoadGroup = NULL;
 	}
 }
 
+void CEntityManager::FlushLoadGroup( CEntityLoadGroup *pLoadGroup )
+{
+	if (!pLoadGroup)
+		pLoadGroup = m_pGlobalLoadGroup;
+
+	pLoadGroup->Flush();
+}
+
+CBaseEntity *CEntityManager::AddEntity( const char *sMapName, const CTextBlock *pTextBlock )
+{
+	CBaseEntity *pEntity = CreateEntity( sMapName, pTextBlock );
+	if (!pEntity)
+		return NULL;
+
+	AddEntity( pEntity );
+	return pEntity;
+}
+
+CBaseEntity *CEntityManager::AddEntity( const char *sMapName, const CTextBlock *pTextBlock, CEntityLoadGroup *pLoadGroup )
+{
+	CBaseEntity *pEntity = CreateEntity( sMapName, pTextBlock );
+	if (!pEntity)
+		return NULL;
+
+	AddEntity( pEntity, pLoadGroup );
+	return pEntity;
+}
+
+/*
 void CEntityManager::ClearEntities( void ) // TODO: FIX THIS!
 {
 	for (unsigned int i = 0; i < m_pEntities.size(); i++)
@@ -226,66 +386,37 @@ void CEntityManager::ClearEntities( void ) // TODO: FIX THIS!
 	m_pLightEntities.clear();
 	m_pCameraEntities.clear();
 	m_pDrawableEntities.clear();
-}
+}*/
 
-CBaseEntity *CEntityManager::GetEntityByName( const char *sName ) // TODO: figure out a good way to search through only the current load, like GetEntityByIndex
+CBaseEntity *CEntityManager::GetEntityByName( const char *sName ) const
 {
-	for (unsigned int i = 0; i < m_pEntities.size(); i++)
-	{
-		CBaseEntity *pEntity = m_pEntities[i];
-		const char *sEntityName = pEntity->GetName();
-		if (sEntityName && UTIL_streq( sEntityName, sName ))
-			return pEntity;
-	}
-
-	return NULL;
-}
-
-CBaseEntity *CEntityManager::GetEntityByFileName( const char *sFileName )
-{
-	for (unsigned int i = 0; i < m_pEntities.size(); i++)
-	{
-		CBaseEntity *pEntity = m_pEntities[i];
-		if (UTIL_streq( pEntity->GetFileName(), sFileName ))
-			return pEntity;
-	}
-
-	return NULL;
-}
-
-CBaseEntity *CEntityManager::GetEntityByMapName( const char *sMapName )
-{
-	for (unsigned int i = 0; i < m_pEntities.size(); i++)
-	{
-		CBaseEntity *pEntity = m_pEntities[i];
-		if (UTIL_streq( pEntity->GetMapName(), sMapName ))
-			return pEntity;
-	}
-
-	return NULL;
-}
-
-CBaseEntity *CEntityManager::GetEntityByIndex( unsigned int uiIndex )
-{
-	if (uiIndex == 0)
+	if (!m_pActiveLoadGroup)
 		return NULL;
 
-	uiIndex += m_uiEntityCount - 1;
-	if (m_pEntities.size() >= uiIndex)
-		return NULL;
-
-	return m_pEntities[uiIndex];
+	return m_pActiveLoadGroup->GetEntityByName( sName );
 }
 
-unsigned int CEntityManager::GetEntityIndex( CBaseEntity *pEntity )
+CBaseEntity *CEntityManager::GetEntityByIndex( unsigned int uiIndex ) const
 {
-	for (unsigned int i = 0; i < m_pEntities.size(); i++)
-	{
-		if (m_pEntities[i] == pEntity)
-			return i + 1;
-	}
+	if (!m_pActiveLoadGroup)
+		return NULL;
 
-	return 0;
+	return m_pActiveLoadGroup->GetEntityByIndex( uiIndex );
+}
+
+void CEntityManager::SetLocalPlayer( CBasePlayer *pPlayer )
+{
+	m_pLocalPlayer = pPlayer;
+}
+
+CBasePlayer *CEntityManager::GetLocalPlayer( void ) const
+{
+	return m_pLocalPlayer;
+}
+
+void CEntityManager::SetCurrentCamera( CBaseCamera *pCamera )
+{
+	m_pCurrentCamera = pCamera;
 }
 
 CBaseCamera *CEntityManager::GetCurrentCamera( void ) const
@@ -293,14 +424,14 @@ CBaseCamera *CEntityManager::GetCurrentCamera( void ) const
 	return m_pCurrentCamera;
 }
 
+void CEntityManager::SetCurrentLight( CBaseLight *pLight )
+{
+	m_pCurrentLight = pLight;
+}
+
 CBaseLight *CEntityManager::GetCurrentLight( void ) const
 {
 	return m_pCurrentLight;
-}
-
-CBasePlayer *CEntityManager::GetPlayer( unsigned int uiIndex )
-{
-	return m_pPlayerEntities[uiIndex];
 }
 
 void CEntityManager::AddEntityFactory( CBaseEntityFactory *pEntityFactory )
@@ -318,23 +449,6 @@ void CEntityManager::AddEntityFactory( CBaseEntityFactory *pEntityFactory )
 	}
 
 	s_pEntityFactories->push_back( pEntityFactory );
-}
-
-bool CEntityManager::AddEntityTest( const char *sMapName, const CTextBlock *pTextBlock )
-{
-	CBaseEntity *pEntity = CreateEntity( sMapName );
-	if (!pEntity)
-		return false;
-
-	bool bResult = UTIL_LoadTextData( pEntity, pTextBlock );
-	if (!bResult)
-	{
-		delete pEntity;
-		return false;
-	}
-
-	AddEntity( pEntity );
-	return true;
 }
 
 void CEntityManager::AddFlag( CEntityFlag *pEntityFlag )
@@ -357,46 +471,20 @@ int CEntityManager::GetFlag( const char *sKey ) const
 	return -1;
 }
 
-void CEntityManager::AddCamera( CBaseCamera *pCamera )
+void CEntityManager::AddEntity( CBaseEntity *pEntity )
 {
-	int iCameraPriority = pCamera->GetPriority();
-	for (unsigned int i = 0; i < m_pCameraEntities.size(); i++)
-	{
-		if (iCameraPriority <= m_pCameraEntities[i]->GetPriority())
-		{
-			m_pCameraEntities.insert( m_pCameraEntities.begin() + i, pCamera );
-			return;
-		}
-	}
+	if (!m_pActiveLoadGroup)
+		m_pActiveLoadGroup = m_pGlobalLoadGroup;
 
-	m_pCameraEntities.push_back( pCamera );
+	m_pActiveLoadGroup->AddEntity( pEntity );
 }
 
-void CEntityManager::AddDrawable( CBaseDrawable *pDrawable )
+void CEntityManager::AddEntity( CBaseEntity *pEntity, CEntityLoadGroup *pLoadGroup )
 {
-	m_pDrawableEntities.push_back( pDrawable );
-}
+	if (!pLoadGroup)
+		pLoadGroup = m_pGlobalLoadGroup;
 
-void CEntityManager::AddLight( CBaseLight *pLight )
-{
-	m_pLightEntities.push_back( pLight );
-}
-
-void CEntityManager::AddPlayer( CBasePlayer *pPlayer )
-{
-	m_pPlayerEntities.push_back( pPlayer );
-}
-
-CBaseEntity *CEntityManager::CreateEntity( const char *sMapName )
-{
-	for (unsigned int i = 0; i < m_pEntityFactories->size(); i++)
-	{
-		CBaseEntityFactory *pEntityFactory = (*m_pEntityFactories)[i];
-		if (UTIL_streq( pEntityFactory->GetMapName(), sMapName ))
-			return pEntityFactory->CreateEntity();
-	}
-
-	return NULL;
+	pLoadGroup->AddEntity( pEntity );
 }
 
 CBaseEntity *CEntityManager::CreateEntity( unsigned int uiEntityIndex )
@@ -405,6 +493,32 @@ CBaseEntity *CEntityManager::CreateEntity( unsigned int uiEntityIndex )
 		return NULL;
 
 	return (*m_pEntityFactories)[uiEntityIndex]->CreateEntity();
+}
+
+CBaseEntity *CEntityManager::CreateEntity( const char *sMapName, const CTextBlock *pTextBlock )
+{
+	CBaseEntity *pEntity = NULL;
+	for (unsigned int i = 0; i < m_pEntityFactories->size(); i++)
+	{
+		CBaseEntityFactory *pEntityFactory = (*m_pEntityFactories)[i];
+		if (UTIL_streq( pEntityFactory->GetMapName(), sMapName ))
+		{
+			pEntity = pEntityFactory->CreateEntity();
+			break;
+		}
+	}
+
+	if (!pEntity)
+		return NULL;
+
+	bool bResult = UTIL_LoadTextData( pEntity, pTextBlock );
+	if (!bResult)
+	{
+		delete pEntity;
+		return NULL;
+	}
+
+	return pEntity;
 }
 
 CBaseEntity *CEntityManager::LoadEntity( const char *sFileName )

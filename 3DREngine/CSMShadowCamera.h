@@ -3,6 +3,7 @@
 
 #include "Global.h"
 #include "BaseShadowCamera.h"
+#include "FramebufferShadowCSM.h"
 
 class CCSMShadowCamera : public CBaseShadowCamera
 {
@@ -20,6 +21,9 @@ public:
 	virtual void Think( void );
 
 	virtual void ActivateLight( void );
+
+	virtual CBaseFramebuffer *GetFramebuffer( void );
+	virtual const CBaseFramebuffer *GetFramebuffer( void ) const;
 
 	void SetBlendDistance( float flBlendDistance );
 	void SetDistanceFactor( float flDistanceFactor );
@@ -49,6 +53,8 @@ private:
 	void CalculateBlurScale( void );
 
 private:
+	CFramebufferShadowCSM m_fFramebufferShadowCSM;
+
 	CMonitoredValue<float> m_flBlendDistance;
 	CMonitoredValue<float> m_flDistanceFactor;
 	CMonitoredValue<float> m_flInitialDistance;

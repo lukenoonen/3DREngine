@@ -4,12 +4,68 @@
 #include "Global.h"
 #include "EntityFactory.h"
 #include "EntityFlag.h"
+#include "KeyValues.h"
 
 class CBaseEntity;
 class CBasePlayer;
 class CBaseDrawable;
 class CBaseLight;
 class CBaseCamera;
+
+#define INVALID_INDEX ((unsigned int)-1)
+
+class CEntityLoadGroup
+{
+public:
+	DECLARE_CLASS_NOBASE( CEntityLoadGroup )
+
+	CEntityLoadGroup();
+	~CEntityLoadGroup();
+
+	void ProcessAddedEntities( void );
+
+	void PreThink( void );
+	void Think( void );
+	void PostThink( void );
+
+	void PreRender( void );
+	void Render( void );
+
+	void DrawUnlitEntities( void );
+
+	void DrawLitEntities( void );
+
+	void ProcessRemovedEntities( void );
+
+	CBaseEntity *GetEntityByName( const char *sName ) const;
+	CBaseEntity *GetEntityByIndex( unsigned int uiIndex ) const;
+
+	unsigned int GetEntityIndex( const CBaseEntity *pEntity ) const;
+
+	void AddEntity( CBaseEntity *pEntity );
+	void Flush( void );
+
+	void RemoveEntity( CBaseEntity *pEntity );
+
+	void ChangeLoadGroup( CBaseEntity *pEntity );
+
+private:
+	bool RemoveEntityImmediate( CBaseEntity *pEntity );
+
+	void AddCamera( CBaseCamera *pCamera );
+	void AddDrawable( CBaseDrawable *pDrawable );
+	void AddLight( CBaseLight *pLight );
+
+private:
+	std::vector<CBaseEntity *> m_pEntities;
+	unsigned int m_uiEntityCount;
+
+	std::vector<CBaseEntity *> m_pEntitiesToRemove;
+
+	std::vector<CBaseCamera *> m_pCameraEntities;
+	std::vector<CBaseDrawable *> m_pDrawableEntities;
+	std::vector<CBaseLight *> m_pLightEntities;
+};
 
 class CEntityManager
 {
@@ -25,57 +81,50 @@ public:
 	void DrawUnlitEntities( void );
 	void DrawLitEntities( void );
 
-	void AddEntity( CBaseEntity *pEntity );
-	void RemoveEntity( CBaseEntity *pEntity );
+	void CreateLoadGroup( void );
 
-	void ClearEntities( void );
+	CBaseEntity *AddEntity( const char *sMapName, const CTextBlock *pTextBlock );
+	CBaseEntity *AddEntity( const char *sMapName, const CTextBlock *pTextBlock, CEntityLoadGroup *pLoadGroup );
 
-	// TODO: fix this, figure out a good way to handle the case where there are multiple entities of the same name
-	// TODO: also remember that a load group should only look through itself for entities
-	CBaseEntity *GetEntityByName( const char *sName );
-	CBaseEntity *GetEntityByFileName( const char *sFileName );
-	CBaseEntity *GetEntityByMapName( const char *sMapName );
+	template <class T> T *AddEntity( const CKeyValues *pKeyValues );
+	template <class T> T *AddEntity( const CKeyValues *pKeyValues, CEntityLoadGroup *pLoadGroup );
 
-	CBaseEntity *GetEntityByIndex( unsigned int uiIndex );
-	unsigned int GetEntityIndex( CBaseEntity *pEntity );
+	void FlushLoadGroup( void );
+	void FlushLoadGroup( CEntityLoadGroup *pLoadGroup );
 
+	CBaseEntity *GetEntityByName( const char *sName ) const;
+	CBaseEntity *GetEntityByIndex( unsigned int uiIndex ) const;
+
+	void SetLocalPlayer( CBasePlayer *pPlayer );
+	CBasePlayer *GetLocalPlayer( void ) const;
+
+	void SetCurrentCamera( CBaseCamera *pCamera );
 	CBaseCamera *GetCurrentCamera( void ) const;
+
+	void SetCurrentLight( CBaseLight *pLight );
 	CBaseLight *GetCurrentLight( void ) const;
 
-	// TODO: figure out a better solution to this
-	CBasePlayer *GetPlayer( unsigned int uiIndex );
-
 	static void AddEntityFactory( CBaseEntityFactory *pEntityFactory ); // TODO: Consider cleaning this up
-
-	bool AddEntityTest( const char *sMapName, const CTextBlock *pTextBlock );
-
 	static void AddFlag( CEntityFlag *pEntityFlag );
 
 	int GetFlag( const char *sKey ) const;
 
 private:
-	void AddCamera( CBaseCamera *pCamera );
-	void AddDrawable( CBaseDrawable *pDrawable );
-	void AddLight( CBaseLight *pLight );
-	void AddPlayer( CBasePlayer *pPlayer );
+	void AddEntity( CBaseEntity *pEntity );
+	void AddEntity( CBaseEntity *pEntity, CEntityLoadGroup *pLoadGroup );
 
-	CBaseEntity *CreateEntity( const char *sMapName );
 	CBaseEntity *CreateEntity( unsigned int uiEntityIndex );
+	CBaseEntity *CreateEntity( const char *sMapName, const CTextBlock *pTextBlock );
+	template <class T> T *CreateEntity( const CKeyValues *pKeyValues );
 
 	CBaseEntity *LoadEntity( const char *sFileName );
 
 private:
-	std::vector<CBaseEntity *> m_pEntities;
-	unsigned int m_uiEntityCount;
+	std::vector<CEntityLoadGroup> m_LoadGroups;
+	CEntityLoadGroup *m_pGlobalLoadGroup;
+	CEntityLoadGroup *m_pActiveLoadGroup;
 
-	std::vector<CBaseEntity *> m_pEntitiesToRemove;
-
-	// TODO: maybe phase these out?
-	std::vector<CBaseCamera *> m_pCameraEntities;
-	std::vector<CBaseDrawable *> m_pDrawableEntities;
-	std::vector<CBaseLight *> m_pLightEntities;
-	std::vector<CBasePlayer *> m_pPlayerEntities;
-
+	CBasePlayer *m_pLocalPlayer;
 	CBaseCamera *m_pCurrentCamera;
 	CBaseLight *m_pCurrentLight;
 
@@ -85,5 +134,39 @@ private:
 	static std::vector<CEntityFlag *> *s_pEntityFlags; // TODO: optimise the use of vector vs other things (not just this)
 	std::vector<CEntityFlag *> *m_pEntityFlags;
 };
+
+template <class T> T *CEntityManager::AddEntity( const CKeyValues *pKeyValues )
+{
+	T *pEntity = CreateEntity<T>( pKeyValues );
+	if (!pEntity)
+		return NULL;
+
+	AddEntity( pEntity );
+	return pEntity;
+}
+
+template <class T> T *CEntityManager::AddEntity( const CKeyValues *pKeyValues, CEntityLoadGroup *pLoadGroup )
+{
+	T *pEntity = CreateEntity<T>( pKeyValues );
+	if (!pEntity)
+		return NULL;
+
+	AddEntity( pEntity, pLoadGroup );
+	return pEntity;
+}
+
+template <class T> T *CEntityManager::CreateEntity( const CKeyValues *pKeyValues )
+{
+	T *pEntity = new T();
+
+	bool bResult = UTIL_LoadKVData( pEntity, pKeyValues );
+	if (!bResult)
+	{
+		delete pEntity;
+		return NULL;
+	}
+
+	return pEntity;
+}
 
 #endif // ENTITYMANAGER_H

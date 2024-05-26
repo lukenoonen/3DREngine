@@ -78,6 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)Shared\include;$(ProjectDir)include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Shared\lib;$(ProjectDir)lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -121,10 +123,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>FileReader.lib;TextReader.lib;glfw3.lib;opengl32.lib;legacy_stdio_definitions.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -183,11 +187,11 @@
     <ClCompile Include="BaseShadowCamera.cpp" />
     <ClCompile Include="BaseSprite.cpp" />
     <ClCompile Include="BaseTransform.cpp" />
-    <ClCompile Include="BaseTransform2D.cpp" />
     <ClCompile Include="BaseWorld2D.cpp" />
     <ClCompile Include="BaseWorld3D.cpp" />
     <ClCompile Include="BaseWorldCamera.cpp" />
     <ClCompile Include="CameraAnchor.cpp" />
+    <ClCompile Include="GUILog.cpp" />
     <ClCompile Include="KeyValues.cpp" />
     <ClCompile Include="DraggableHUDElement.cpp" />
     <ClCompile Include="FramebufferDefault.cpp" />
@@ -246,6 +250,7 @@
     <ClCompile Include="StaticProp.cpp" />
     <ClCompile Include="TestPlayer.cpp" />
     <ClCompile Include="TextInputHUDElement.cpp" />
+    <ClCompile Include="TextInputLineHUDElement.cpp" />
     <ClCompile Include="TextMaterial.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureResource.cpp" />
@@ -290,10 +295,10 @@
     <ClInclude Include="BaseShadowCamera.h" />
     <ClInclude Include="BaseSprite.h" />
     <ClInclude Include="BaseTransform.h" />
-    <ClInclude Include="BaseTransform2D.h" />
     <ClInclude Include="BaseWorld2D.h" />
     <ClInclude Include="BaseWorld3D.h" />
     <ClInclude Include="BaseWorldCamera.h" />
+    <ClInclude Include="GUILog.h" />
     <ClInclude Include="KeyValues.h" />
     <ClInclude Include="DraggableHUDElement.h" />
     <ClInclude Include="FramebufferDefault.h" />
@@ -352,6 +357,7 @@
     <ClInclude Include="StaticProp.h" />
     <ClInclude Include="TestPlayer.h" />
     <ClInclude Include="TextInputHUDElement.h" />
+    <ClInclude Include="TextInputLineHUDElement.h" />
     <ClInclude Include="TextMaterial.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureResource.h" />

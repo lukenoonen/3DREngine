@@ -10,14 +10,6 @@ END_DATADESC()
 CBaseCamera::CBaseCamera()
 {
 	m_iPriority = 0;
-
-	m_pFramebuffer = NULL;
-}
-
-CBaseCamera::~CBaseCamera()
-{
-	if (m_pFramebuffer)
-		delete m_pFramebuffer;
 }
 
 bool CBaseCamera::Init( void )
@@ -25,8 +17,9 @@ bool CBaseCamera::Init( void )
 	if (!BaseClass::Init())
 		return false;
 
-	if (m_pFramebuffer)
-		m_pFramebuffer->Init();
+	CBaseFramebuffer *pFramebuffer = GetFramebuffer();
+	if (pFramebuffer)
+		pFramebuffer->Init();
 
 	UpdateView();
 	UpdateProjection();
@@ -37,8 +30,9 @@ bool CBaseCamera::Init( void )
 
 void CBaseCamera::Think( void )
 {
-	if (m_pFramebuffer)
-		m_pFramebuffer->Think();
+	CBaseFramebuffer *pFramebuffer = GetFramebuffer();
+	if (pFramebuffer)
+		pFramebuffer->Think();
 
 	bool bUpdateTotal = false;
 	if (ShouldUpdateView())
@@ -65,14 +59,16 @@ bool CBaseCamera::IsCamera( void ) const
 
 void CBaseCamera::Render( void )
 {
-	pRenderManager->SetFramebuffer( m_pFramebuffer );
+	CBaseFramebuffer *pFramebuffer = GetFramebuffer();
+	pRenderManager->SetFramebuffer( pFramebuffer );
 	PerformRender();
 	pRenderManager->ClearFramebuffer();
 }
 
 int CBaseCamera::Bind( void )
 {
-	return m_pFramebuffer != NULL ? m_pFramebuffer->Bind() : -1; // TODO: see if there is a better default number than this
+	CBaseFramebuffer *pFramebuffer = GetFramebuffer();
+	return pFramebuffer != NULL ? pFramebuffer->Bind() : -1; // TODO: see if there is a better default number than this
 }
 
 int CBaseCamera::GetPriority( void ) const
@@ -80,14 +76,14 @@ int CBaseCamera::GetPriority( void ) const
 	return m_iPriority;
 }
 
-void CBaseCamera::InitFramebuffer( CBaseFramebuffer *pFramebuffer )
+CBaseFramebuffer *CBaseCamera::GetFramebuffer( void ) 
 {
-	m_pFramebuffer = pFramebuffer;
+	return NULL;
 }
 
-CBaseFramebuffer *CBaseCamera::GetFramebuffer( void ) const
+const CBaseFramebuffer *CBaseCamera::GetFramebuffer( void ) const
 {
-	return m_pFramebuffer;
+	return NULL;
 }
 
 const glm::vec3 &CBaseCamera::GetCameraPosition( void ) const

@@ -21,6 +21,8 @@ public:
 
 	virtual void Think( void );
 
+	virtual void Remove( void );
+
 	virtual void OnClick( void );
 	virtual void OnRelease( void );
 
@@ -29,6 +31,12 @@ public:
 
 	virtual void OnHover( void );
 	virtual void OnUnhover( void );
+
+	void ClearText( void );
+	const char *GetText( void );
+
+protected:
+	virtual void ProcessInput( unsigned int uiChar, int iMods );
 
 private:
 	glm::vec2 CalculateGUITextCursorPosition( void ) const;

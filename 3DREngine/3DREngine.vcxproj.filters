@@ -329,9 +329,6 @@
     <ClCompile Include="TextMaterial.cpp">
       <Filter>Source Files\Entity\Asset</Filter>
     </ClCompile>
-    <ClCompile Include="BaseTransform2D.cpp">
-      <Filter>Source Files\Entity</Filter>
-    </ClCompile>
     <ClCompile Include="BaseWorld2D.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
@@ -448,6 +445,12 @@
     </ClCompile>
     <ClCompile Include="KeyValues.cpp">
       <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="GUILog.cpp">
+      <Filter>Source Files\Entity\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="TextInputLineHUDElement.cpp">
+      <Filter>Source Files\Entity\HUD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -640,9 +643,6 @@
     <ClInclude Include="TextMaterial.h">
       <Filter>Header Files\Entity\Asset</Filter>
     </ClInclude>
-    <ClInclude Include="BaseTransform2D.h">
-      <Filter>Header Files\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="BaseWorld2D.h">
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
@@ -768,6 +768,12 @@
     </ClInclude>
     <ClInclude Include="KeyValues.h">
       <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="GUILog.h">
+      <Filter>Header Files\Entity\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="TextInputLineHUDElement.h">
+      <Filter>Header Files\Entity\HUD</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

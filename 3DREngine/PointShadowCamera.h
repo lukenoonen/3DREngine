@@ -3,6 +3,7 @@
 
 #include "Global.h"
 #include "BaseShadowCamera.h"
+#include "FramebufferShadowCubemap.h"
 
 class CPointShadowCamera : public CBaseShadowCamera
 {
@@ -16,6 +17,9 @@ public:
 	CPointShadowCamera();
 
 	virtual void ActivateLight( void );
+
+	virtual CBaseFramebuffer *GetFramebuffer( void );
+	virtual const CBaseFramebuffer *GetFramebuffer( void ) const;
 
 	void SetNear( float flNear );
 	void SetFar( float flFar );
@@ -37,6 +41,8 @@ protected:
 	virtual void UpdateTotal( void );
 
 private:
+	CFramebufferShadowCubemap m_fFramebufferShadowCubemap;
+
 	CMonitoredValue<float> m_flNear;
 	CMonitoredValue<float> m_flFar;
 

@@ -7,7 +7,6 @@ DEFINE_DATADESC( CBaseTransform )
 	DEFINE_FIELD( DataField, CMonitoredValue<glm::quat>, m_qRotation, "rotation", FL_NONE )
 	DEFINE_FIELD( DataField, CMonitoredValue<glm::vec3>, m_vec3Scale, "scale", FL_NONE )
 	DEFINE_FIELD( LinkedDataField, CHandle<CBaseTransform>, m_hParent, "parent", FL_NONE )
-	// DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseTransform>, m_hChildren, "children", FL_NONE )
 
 END_DATADESC()
 
@@ -50,6 +49,16 @@ void CBaseTransform::PostThink( void )
 	}
 
 	BaseClass::PostThink();
+}
+
+void CBaseTransform::OnRemove( void )
+{
+	m_hParent.Check();
+
+	for (unsigned int i = 0; i < m_hChildren.size(); i++)
+		m_hChildren[i].Check();
+
+	BaseClass::OnRemove();
 }
 
 void CBaseTransform::SetPosition( const glm::vec3 &vec3Position )
@@ -162,7 +171,7 @@ void CBaseTransform::SetParentRelative( CBaseTransform *pParent )
 
 void CBaseTransform::AddChild( CBaseTransform *pChild )
 {
-	m_hChildren.push_back( pChild );
+	m_hChildren.emplace_back( pChild );
 }
 
 void CBaseTransform::RemoveChild( CBaseTransform *pChild )

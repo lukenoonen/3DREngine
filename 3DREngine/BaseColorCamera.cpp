@@ -1,13 +1,22 @@
 #include "BaseColorCamera.h"
-#include "FramebufferColor.h"
 
 DEFINE_DATADESC( CBaseColorCamera )
 
-	DEFINE_FIELD( EmbeddedDataField, CFramebufferColor, m_pFramebuffer, "framebuffer", FL_NONE )
+	DEFINE_FIELD( EmbeddedDataField, CFramebufferColor, m_fFramebufferColor, "framebuffer", FL_NONE )
 
 END_DATADESC()
 
 CBaseColorCamera::CBaseColorCamera()
 {
-	InitFramebuffer( new CFramebufferColor() );
+
+}
+
+CBaseFramebuffer *CBaseColorCamera::GetFramebuffer( void )
+{
+	return &m_fFramebufferColor;
+}
+
+const CBaseFramebuffer *CBaseColorCamera::GetFramebuffer( void ) const
+{
+	return &m_fFramebufferColor;
 }

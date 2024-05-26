@@ -243,7 +243,8 @@ void CGUITextGeneration::CalculateMinMax( char cChar, float flPosition, float fl
 
 CGUITextData::CGUITextData()
 {
-
+	m_glVAO = 0;
+	m_glVBO = 0;
 }
 
 void CGUITextData::Reset( void )
@@ -307,9 +308,16 @@ void CGUITextData::CreateText( void )
 
 void CGUITextData::DeleteText( void )
 {
-	// TODO: See if checks for == 0 should be put back
-	glDeleteVertexArrays( 1, &m_glVAO );
-	glDeleteBuffers( 1, &m_glVBO );
+	if (m_glVAO != 0)
+	{
+		glDeleteVertexArrays( 1, &m_glVAO );
+		m_glVAO = 0;
+	}
+	if (m_glVBO != 0)
+	{
+		glDeleteBuffers( 1, &m_glVBO );
+		m_glVBO = 0;
+	}
 }
 
 void CGUITextData::Draw( void )
@@ -373,6 +381,9 @@ CGUIText::CGUIText()
 
 CGUIText::~CGUIText()
 {
+	if (m_sText)
+		delete[] m_sText;
+
 	DeleteText();
 }
 
@@ -382,15 +393,10 @@ bool CGUIText::Init( void )
 		return false;
 
 	if (m_sText)
-	{
-		const char *pSearch = m_sText;
-		while (*pSearch) m_cText.push_back( *pSearch++ );
-		delete[] m_sText;
-	}
+		SetText( m_sText );
+	else
+		SetText( "" );
 
-	m_cText.push_back( '\0' );
-
-	CalculateText();
 	return true;
 }
 
@@ -509,6 +515,28 @@ float CGUIText::GetCharOffset( unsigned int uiLine, unsigned int uiChar ) const
 float CGUIText::GetPointSize( void ) const
 {
 	return m_tTextInfo.GetPointSize();
+}
+
+const char *CGUIText::GetText( void )
+{
+	if (m_sText)
+		delete[] m_sText;
+
+	unsigned int uiFullTextSize = (unsigned int)m_cText.size();
+	m_sText = new char[uiFullTextSize];
+	for (unsigned int i = 0; i < uiFullTextSize; i++)
+		m_sText[i] = m_cText[i];
+
+	return m_sText;
+}
+
+void CGUIText::SetText( const char *sText )
+{
+	m_cText.clear();
+	const char *pSearch = sText;
+	while (*pSearch) m_cText.push_back( *pSearch++ );
+	m_cText.push_back( '\0' );
+	RecalculateText();
 }
 
 void CGUIText::RecalculateText( void )

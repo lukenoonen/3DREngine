@@ -5,6 +5,8 @@
 
 END_DATADESC()*/
 
+#include "KeyValues.h"
+
 DEFINE_LINKED_CLASS( CGUICursor, cursor_gui )
 
 CGUICursor::CGUICursor()
@@ -69,6 +71,15 @@ bool CGUICursor::IsIndexWithinBounds( void ) const
 bool CGUICursor::IsCursorWithinBounds( void ) const
 {
 	return m_vec2CursorPosition.y < (int)m_pGUIText->GetLineCount() && m_vec2CursorPosition.x <= (int)m_pGUIText->GetCharCount( m_vec2CursorPosition.y );
+}
+
+void CGUICursor::MoveToStart( bool bHighlight /* = false */ )
+{
+	m_uiCursorIndex = 0;
+	m_vec2CursorPosition = g_ivec2Zero;
+	CalculateShouldDisplay();
+	if (!bHighlight)
+		PreventHighlight();
 }
 
 void CGUICursor::MoveHorizontal( int iDelta, bool bHighlight /* = false */ )

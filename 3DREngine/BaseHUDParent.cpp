@@ -3,46 +3,22 @@
 
 CBaseHUDParent::CBaseHUDParent()
 {
-	m_pPrevHoveredHUDElement = NULL;
-	m_pHoveredHUDElement = NULL;
+	m_pPrevFocusedHUDElement = NULL;
+	m_hFocusedHUDElement = NULL;
 
 	m_pPrevHoveredHUDElement = NULL;
-	m_pHoveredHUDElement = NULL;
+	m_hHoveredHUDElement = NULL;
 }
 
-void CBaseHUDParent::PostThink( void )
+void CBaseHUDParent::PreThink( void )
 {
-	/*if (!pInputManager->IsCursorLocked())
-	{
-		if (m_pHoveredHUDElement && !m_pHoveredHUDElement->HasHover())
-			m_pHoveredHUDElement = NULL;
+	if (!m_hFocusedHUDElement.Check())
+		m_pPrevFocusedHUDElement = NULL;
 
-		if (m_pFocusedHUDElement && !m_pFocusedHUDElement->HasFocus())
-			m_pFocusedHUDElement = NULL;
-	}
-	else
-	{
-		if (m_pHoveredHUDElement)
-		{
-			if (m_pHoveredHUDElement->HasHover())
-				m_pHoveredHUDElement->Unhover();
+	if (!m_hHoveredHUDElement.Check())
+		m_pPrevHoveredHUDElement = NULL;
 
-			m_pHoveredHUDElement = NULL;
-		}
-
-		if (m_pFocusedHUDElement)
-		{
-			if (m_pFocusedHUDElement->IsClicked())
-				m_pFocusedHUDElement->Release();
-
-			if (m_pFocusedHUDElement->HasFocus())
-				m_pFocusedHUDElement->LoseFocus();
-
-			m_pFocusedHUDElement = NULL;
-		}
-	}*/
-
-	BaseClass::PostThink();
+	BaseClass::PreThink();
 }
 
 void CBaseHUDParent::SetHUDCamera( CBasePlayerCamera *pHUDCamera )
@@ -58,12 +34,16 @@ CBaseHUDElement *CBaseHUDParent::GetMouseOver( EMouseOverType eMouseOverType)
 	switch (eMouseOverType)
 	{
 	case EMouseOverType::t_focus:
-		m_pPrevFocusedHUDElement = m_pFocusedHUDElement;
-		m_pFocusedHUDElement = pMouseOver;
+		if (m_pPrevFocusedHUDElement != m_hFocusedHUDElement)
+			m_pPrevFocusedHUDElement = m_hFocusedHUDElement;
+		if (pMouseOver != m_hFocusedHUDElement)
+			m_hFocusedHUDElement = pMouseOver;
 		break;
 	case EMouseOverType::t_hover:
-		m_pPrevHoveredHUDElement = m_pHoveredHUDElement;
-		m_pHoveredHUDElement = pMouseOver;
+		if (m_pPrevHoveredHUDElement != m_hHoveredHUDElement)
+			m_pPrevHoveredHUDElement = m_hHoveredHUDElement;
+		if (pMouseOver != m_hHoveredHUDElement)
+			m_hHoveredHUDElement = pMouseOver;
 		break;
 	}
 
@@ -77,29 +57,29 @@ CBaseHUDElement *CBaseHUDParent::PersonalGetMouseOver( EMouseOverType eMouseOver
 
 void CBaseHUDParent::PropagateClick( void )
 {
-	if (m_pFocusedHUDElement)
+	if (m_hFocusedHUDElement)
 	{
-		m_pFocusedHUDElement->PropagateClick();
-		m_pFocusedHUDElement->Click();
+		m_hFocusedHUDElement->PropagateClick();
+		m_hFocusedHUDElement->Click();
 	}
 }
 
 void CBaseHUDParent::PropagateRelease( void )
 {
-	if (m_pFocusedHUDElement)
+	if (m_hFocusedHUDElement)
 	{
-		m_pFocusedHUDElement->PropagateRelease();
-		m_pFocusedHUDElement->Release();
+		m_hFocusedHUDElement->PropagateRelease();
+		m_hFocusedHUDElement->Release();
 	}
 }
 
 void CBaseHUDParent::PropagateGainFocus( void )
 {
-	if (m_pFocusedHUDElement)
+	if (m_hFocusedHUDElement)
 	{
-		m_pFocusedHUDElement->PropagateGainFocus();
-		if (m_pFocusedHUDElement != m_pPrevFocusedHUDElement)
-			m_pFocusedHUDElement->GainFocus();
+		m_hFocusedHUDElement->PropagateGainFocus();
+		if (m_hFocusedHUDElement != m_pPrevFocusedHUDElement)
+			m_hFocusedHUDElement->GainFocus();
 	}
 }
 
@@ -108,18 +88,18 @@ void CBaseHUDParent::PropagateLoseFocus( void )
 	if (m_pPrevFocusedHUDElement)
 	{
 		m_pPrevFocusedHUDElement->PropagateLoseFocus();
-		if (m_pPrevFocusedHUDElement != m_pFocusedHUDElement)
+		if (m_pPrevFocusedHUDElement != m_hFocusedHUDElement)
 			m_pPrevFocusedHUDElement->LoseFocus();
 	}
 }
 
 void CBaseHUDParent::PropagateHover( void )
 {
-	if (m_pHoveredHUDElement)
+	if (m_hHoveredHUDElement)
 	{
-		m_pHoveredHUDElement->PropagateHover();
-		if (m_pHoveredHUDElement != m_pPrevHoveredHUDElement)
-			m_pHoveredHUDElement->Hover();
+		m_hHoveredHUDElement->PropagateHover();
+		if (m_hHoveredHUDElement != m_pPrevHoveredHUDElement)
+			m_hHoveredHUDElement->Hover();
 	}
 }
 
@@ -128,17 +108,17 @@ void CBaseHUDParent::PropagateUnhover( void )
 	if (m_pPrevHoveredHUDElement)
 	{
 		m_pPrevHoveredHUDElement->PropagateUnhover();
-		if (m_pPrevHoveredHUDElement != m_pHoveredHUDElement)
+		if (m_pPrevHoveredHUDElement != m_hHoveredHUDElement)
 			m_pPrevHoveredHUDElement->Unhover();
 	}
 }
 
 void CBaseHUDParent::ClearFocus( void )
 {
-	if (m_pFocusedHUDElement)
+	if (m_hFocusedHUDElement)
 	{
-		m_pFocusedHUDElement->ClearFocus();
-		m_pFocusedHUDElement = NULL;
+		m_hFocusedHUDElement->ClearFocus();
+		m_hFocusedHUDElement = NULL;
 		m_pPrevFocusedHUDElement = NULL;
 		LoseFocus();
 	}
@@ -147,10 +127,10 @@ void CBaseHUDParent::ClearFocus( void )
 
 void CBaseHUDParent::ClearHover( void )
 {
-	if (m_pHoveredHUDElement)
+	if (m_hHoveredHUDElement)
 	{
-		m_pHoveredHUDElement->ClearHover();
-		m_pHoveredHUDElement = NULL;
+		m_hHoveredHUDElement->ClearHover();
+		m_hHoveredHUDElement = NULL;
 		m_pPrevHoveredHUDElement = NULL;
 	}
 	BaseClass::ClearHover();
@@ -158,9 +138,9 @@ void CBaseHUDParent::ClearHover( void )
 
 bool CBaseHUDParent::FocusCheck( void )
 {
-	if (m_pFocusedHUDElement && !m_pFocusedHUDElement->FocusCheck())
+	if (m_hFocusedHUDElement && !m_hFocusedHUDElement->FocusCheck())
 	{
-		m_pFocusedHUDElement = NULL;
+		m_hFocusedHUDElement = NULL;
 		m_pPrevFocusedHUDElement = NULL;
 		LoseFocus();
 		return false;
@@ -170,9 +150,9 @@ bool CBaseHUDParent::FocusCheck( void )
 
 bool CBaseHUDParent::HoverCheck( void )
 {
-	if (m_pHoveredHUDElement && !m_pHoveredHUDElement->HoverCheck())
+	if (m_hHoveredHUDElement && !m_hHoveredHUDElement->HoverCheck())
 	{
-		m_pHoveredHUDElement = NULL;
+		m_hHoveredHUDElement = NULL;
 		m_pPrevHoveredHUDElement = NULL;
 		Unhover();
 		return false;

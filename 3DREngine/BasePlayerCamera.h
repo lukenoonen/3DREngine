@@ -11,7 +11,8 @@ public:
 
 	CBasePlayerCamera();
 
-	virtual CBaseFramebuffer *GetFramebuffer( void ) const;
+	virtual CBaseFramebuffer *GetFramebuffer( void );
+	virtual const CBaseFramebuffer *GetFramebuffer( void ) const;
 };
 
 #endif // BASEPLAYERCAMERA_H

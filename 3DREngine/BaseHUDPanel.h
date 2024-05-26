@@ -4,7 +4,8 @@
 #include "Global.h"
 #include "BaseHUDParent.h"
 #include "DraggableHUDElement.h"
-#include "TextInputHUDElement.h"
+#include "TextInputLineHUDElement.h"
+#include "GUILog.h"
 
 class CBaseHUDPanel : public CBaseHUDParent
 {
@@ -16,9 +17,12 @@ public:
 	DECLARE_LINKED_CLASS()
 
 	CBaseHUDPanel();
-	virtual ~CBaseHUDPanel();
 
 	virtual bool Init( void );
+
+	virtual void PostThink( void );
+
+	virtual void Remove( void );
 
 	virtual void PropagateSetHUDCamera( CBasePlayerCamera *pHUDCamera );
 
@@ -26,7 +30,8 @@ public:
 
 private:
 	CHandle<CDraggableHUDElement> m_hDraggable;
-	CHandle<CTextInputHUDElement> m_hTextInput;
+	CHandle<CTextInputLineHUDElement> m_hTextInputLine;
+	CHandle<CGUILog> m_hGUILog;
 };
 
 #endif // BASEHUDPANEL_H

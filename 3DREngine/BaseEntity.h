@@ -25,6 +25,10 @@ public:
 	virtual void Think( void );
 	virtual void PostThink( void );
 
+	virtual void Remove( void );
+	virtual void OnRemove( void );
+	bool IsRemoved( void ) const;
+
 	virtual bool IsPlayer( void ) const;
 	virtual bool IsLight( void ) const;
 	virtual bool IsCamera( void ) const;
@@ -38,8 +42,12 @@ public:
 	void AddFlags( int iFlags );
 	void RemoveFlags( int iFlags );
 
-	void Remove( void );
-	bool IsRemoved( void ) const;
+	int GetFlags( void ) const;
+
+	CEntityLoadGroup *GetLoadGroup( void ) const;
+	void SetLoadGroup( CEntityLoadGroup *pLoadGroup );
+
+	unsigned int GetLoadIndex( void ) const;
 
 private:
 	char *m_sName;
@@ -48,6 +56,8 @@ private:
 	int m_iFlags;
 
 	bool m_bRemoved;
+
+	CEntityLoadGroup *m_pLoadGroup;
 };
 
 #endif // BASEENTITY_H

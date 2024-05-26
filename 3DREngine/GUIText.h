@@ -157,6 +157,9 @@ public:
 
 	float GetPointSize( void ) const;
 
+	void SetText( const char *sText );
+	const char *GetText( void );
+
 private:
 	void RecalculateText( void );
 	void CalculateText( void );

@@ -19,7 +19,6 @@ public:
 	DECLARE_DATADESC()
 
 	CBaseCamera();
-	virtual ~CBaseCamera();
 
 	virtual bool Init( void );
 
@@ -33,8 +32,8 @@ public:
 
 	int GetPriority( void ) const;
 
-	void InitFramebuffer( CBaseFramebuffer *pFramebuffer );
-	virtual CBaseFramebuffer *GetFramebuffer( void ) const;
+	virtual CBaseFramebuffer *GetFramebuffer( void );
+	virtual const CBaseFramebuffer *GetFramebuffer( void ) const;
 
 	virtual const glm::vec3 &GetCameraPosition( void ) const;
 	virtual const glm::quat &GetCameraRotation( void ) const;
@@ -53,9 +52,6 @@ protected:
 	virtual void UpdateProjection( void ) = 0;
 
 	virtual void UpdateTotal( void ) = 0;
-
-protected:
-	CBaseFramebuffer *m_pFramebuffer;
 
 private:
 	int m_iPriority;

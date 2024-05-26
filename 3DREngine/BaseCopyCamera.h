@@ -2,6 +2,7 @@
 #define BASECOPYCAMERA_H
 
 #include "BaseWorldCamera.h"
+#include "FramebufferColor.h"
 
 class CBaseCopyCamera : public CBaseWorldCamera
 {
@@ -16,10 +17,15 @@ public:
 
 	virtual void Think( void );
 
+	virtual CBaseFramebuffer *GetFramebuffer( void );
+	virtual const CBaseFramebuffer *GetFramebuffer( void ) const;
+
 protected:
 	CBaseWorldCamera *GetTargetCamera( void ) const;
 
 private:
+	CFramebufferColor m_fFramebufferColor;
+
 	CHandle<CBaseWorldCamera> m_hTargetCamera;
 
 	CMonitoredValue<float> m_flSizeQualityFactor;

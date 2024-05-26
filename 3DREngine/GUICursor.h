@@ -24,6 +24,7 @@ public:
 	bool IsIndexWithinBounds( void ) const;
 	bool IsCursorWithinBounds( void ) const;
 
+	void MoveToStart( bool bHighlight = false );
 	void MoveHorizontal( int iDelta, bool bHighlight = false );
 	void MoveVertical( int iDelta, bool bHighlight = false );
 

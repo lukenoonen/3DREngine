@@ -25,8 +25,17 @@ bool CMasterHUDElement::Init( void )
 	return true;
 }
 
+#include <iostream>
+#include "TimeManager.h"
+
 void CMasterHUDElement::PreThink( void )
 {
+	for (unsigned int i = 0; i < m_hHUDChildren.size(); i++)
+	{
+		if (!m_hHUDChildren[i].Check())
+			m_hHUDChildren.erase( m_hHUDChildren.begin() + i-- );
+	}
+
 	if (pInputManager->IsCursorLocked())
 	{
 		ClearHover();

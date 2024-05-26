@@ -61,7 +61,9 @@ public:
 	void AddDrawFlags( int iDrawFlags );
 	void RemoveDrawFlags( int iDrawFlags );
 
-public:
+	int GetDrawFlags( void ) const;
+
+private:
 	int m_iDrawFlags;
 };
 

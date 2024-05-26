@@ -47,6 +47,27 @@ void CBaseEntity::PostThink( void )
 
 }
 
+void CBaseEntity::Remove( void )
+{
+	if (!m_bRemoved)
+	{
+		m_pLoadGroup->RemoveEntity( this );
+		m_bRemoved = true;
+
+		OnRemove();
+	}
+}
+
+void CBaseEntity::OnRemove( void )
+{
+
+}
+
+bool CBaseEntity::IsRemoved( void ) const
+{
+	return m_bRemoved;
+}
+
 bool CBaseEntity::IsPlayer( void ) const
 {
 	return false;
@@ -97,12 +118,24 @@ void CBaseEntity::RemoveFlags( int iFlags )
 	m_iFlags &= ~iFlags;
 }
 
-void CBaseEntity::Remove( void )
+int CBaseEntity::GetFlags( void ) const
 {
-	m_bRemoved = true;
+	return m_iFlags;
 }
 
-bool CBaseEntity::IsRemoved( void ) const
+CEntityLoadGroup *CBaseEntity::GetLoadGroup( void ) const
 {
-	return m_bRemoved;
+	return m_pLoadGroup;
+}
+
+void CBaseEntity::SetLoadGroup( CEntityLoadGroup *pLoadGroup )
+{
+	if (m_pLoadGroup) // TODO: refactor
+		pLoadGroup->ChangeLoadGroup( this );
+	m_pLoadGroup = pLoadGroup;
+}
+
+unsigned int CBaseEntity::GetLoadIndex( void ) const
+{
+	return m_pLoadGroup->GetEntityIndex( this );
 }

@@ -216,9 +216,7 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedDataField )
 		if (!pTextBlock->GetValue( pEmbeddedTextBlock, 1, m_sName ))
 			return false;
 
-		T *&pEmbeddedData = GET_DATA( pData, m_uiOffset, T * ); // TODO: test that this works, remove current allocations
-		pEmbeddedData = new T();
-		return UTIL_LoadTextData( pEmbeddedData, pEmbeddedTextBlock );
+		return UTIL_LoadTextData( GET_DATA_ADDRESS( pData, m_uiOffset, T ), pEmbeddedTextBlock );
 	}
 
 	DEFINE_FIELDTYPE_LOAD_KV( pData, pKV )
@@ -230,7 +228,7 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedDataField )
 		if (!pKV->Get( m_sName, pEmbeddedKV ))
 			return false;
 
-		return UTIL_LoadKVData( GET_DATA( pData, m_uiOffset, T * ), pEmbeddedKV );
+		return UTIL_LoadKVData( GET_DATA_ADDRESS( pData, m_uiOffset, T ), pEmbeddedKV );
 	}
 
 END_FIELDTYPE()
@@ -334,14 +332,14 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 
 	DEFINE_FIELDTYPE_SAVE( pData )
 	{
-		std::vector<T *> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T *> );
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
 		unsigned int uiSize = (unsigned int)vecData.size();
 		if (!pFileManager->Write( uiSize ))
 			return false;
 
 		for (unsigned int i = 0; i < uiSize; i++)
 		{
-			if (!UTIL_SaveData( vecData[i] ))
+			if (!UTIL_SaveData( &vecData[i] ))
 				return false;
 		}
 
@@ -354,11 +352,11 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 		if (!pFileManager->Read( uiSize ))
 			return false;
 
-		std::vector<T *> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T *> );
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
 		vecData.resize( uiSize );
 		for (unsigned int i = 0; i < uiSize; i++)
 		{
-			if (!UTIL_LoadData( vecData[i] ))
+			if (!UTIL_LoadData( &vecData[i] ))
 				return false;
 		}
 
@@ -374,7 +372,7 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 		if (!pTextBlock->GetValue( pTextLine, 1, m_sName ))
 			return false;
 
-		std::vector<T *> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T *> );
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
 		vecData.resize( pTextLine->GetTextItemCount() );
 		for (unsigned int i = 0; i < vecData.size(); i++)
 		{
@@ -382,7 +380,7 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 			if (!pTextLine->GetValue( pEmbeddedTextBlock, i ))
 				return false;
 
-			if (!UTIL_LoadTextData( vecData[i], pEmbeddedTextBlock ))
+			if (!UTIL_LoadTextData( &vecData[i], pEmbeddedTextBlock ))
 				return false;
 		}
 
@@ -394,7 +392,7 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 		if (!m_sName)
 			return false;
 
-		std::vector<T *> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T *> );
+		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
 		std::vector<CKeyValues *> vecKeyValues;
 		if (!pKV->Get( m_sName, vecKeyValues ))
 			return false;
@@ -402,10 +400,11 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 		vecData.resize( vecKeyValues.size() );
 		for (unsigned int i = 0; i < vecKeyValues.size(); i++)
 		{
-			if (!UTIL_LoadKVData( vecData[i], ))
+			if (!UTIL_LoadKVData( &vecData[i], vecKeyValues[i] ))
+				return false;
 		}
 
-		return pKV->Get( m_sName, vecData );
+		return true;
 	}
 
 END_FIELDTYPE()
@@ -476,6 +475,14 @@ DEFINE_FIELDTYPE_NOBASE( T, FlagDataField )
 		}
 		
 		return true;
+	}
+
+	DEFINE_FIELDTYPE_LOAD_KV( pData, pKV )
+	{
+		if (!m_sName)
+			return false;
+
+		return pKV->Get( m_sName, GET_DATA( pData, m_uiOffset, T ) );
 	}
 
 END_FIELDTYPE()

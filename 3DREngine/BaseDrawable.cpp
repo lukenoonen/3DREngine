@@ -60,3 +60,8 @@ void CBaseDrawable::RemoveDrawFlags( int iDrawFlags )
 {
 	m_iDrawFlags &= ~iDrawFlags;
 }
+
+int CBaseDrawable::GetDrawFlags( void ) const
+{
+	return m_iDrawFlags;
+}

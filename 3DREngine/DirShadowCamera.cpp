@@ -1,11 +1,10 @@
 #include "DirShadowCamera.h"
 #include "RenderManager.h"
 #include "EntityManager.h"
-#include "FramebufferShadow.h"
 
 DEFINE_DATADESC( CDirShadowCamera )
 
-	DEFINE_FIELD( EmbeddedDataField, CFramebufferShadow, m_pFramebuffer, "framebuffer", FL_NONE )
+	DEFINE_FIELD( EmbeddedDataField, CFramebufferShadow, m_fFramebufferShadow, "framebuffer", FL_NONE )
 
 	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flWidth, "width", FL_NONE )
 	DEFINE_FIELD( DataField, CMonitoredValue<float>, m_flNear, "near", FL_NONE )
@@ -18,8 +17,6 @@ DEFINE_LINKED_CLASS( CDirShadowCamera, camera_shadow_dir )
 
 CDirShadowCamera::CDirShadowCamera()
 {
-	InitFramebuffer( new CFramebufferShadow() );
-
 	m_flWidth = 16.0f;
 	m_flNear = -16.0f;
 	m_flFar = 16.0f;
@@ -49,6 +46,16 @@ void CDirShadowCamera::ActivateLight( void )
 	pRenderManager->SetUniformBufferObject( EUniformBufferObjects::t_shadow, 0, 0, 1, &m_matTotal);
 
 	BaseClass::ActivateLight();
+}
+
+CBaseFramebuffer *CDirShadowCamera::GetFramebuffer( void )
+{
+	return &m_fFramebufferShadow;
+}
+
+const CBaseFramebuffer *CDirShadowCamera::GetFramebuffer( void ) const
+{
+	return &m_fFramebufferShadow;
 }
 
 void CDirShadowCamera::SetWidth( float flWidth )
@@ -112,7 +119,7 @@ bool CDirShadowCamera::ShouldUpdateProjection( void ) const
 
 void CDirShadowCamera::UpdateProjection( void )
 {
-	const glm::ivec2 &vec2Size = m_pFramebuffer->GetSize();
+	const glm::ivec2 &vec2Size = m_fFramebufferShadow.GetSize();
 	float flHeight = m_flWidth.Get() * vec2Size.y / vec2Size.x;
 	m_matProjection = glm::ortho( -m_flWidth.Get(), m_flWidth.Get(), -flHeight, flHeight, m_flNear.Get(), m_flFar.Get() );
 }

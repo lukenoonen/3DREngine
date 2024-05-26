@@ -3,11 +3,10 @@
 #include "RenderManager.h"
 #include "EntityManager.h"
 #include "BasePlayer.h"
-#include "FramebufferShadowCSM.h"
 
 DEFINE_DATADESC( CCSMShadowCamera )
 
-	DEFINE_FIELD( EmbeddedDataField, CFramebufferShadowCSM, m_pFramebuffer, "framebuffer", FL_NONE )
+	DEFINE_FIELD( EmbeddedDataField, CFramebufferShadowCSM, m_fFramebufferShadowCSM, "framebuffer", FL_NONE )
 
 	DEFINE_FIELD( DataField, float, m_flBlendDistance, "blenddistance", FL_NONE )
 	DEFINE_FIELD( DataField, float, m_flDistanceFactor, "distancefactor", FL_NONE )
@@ -22,8 +21,6 @@ DEFINE_LINKED_CLASS( CCSMShadowCamera, camera_shadow_csm )
 
 CCSMShadowCamera::CCSMShadowCamera()
 {
-	m_pFramebuffer = new CFramebufferShadowCSM();
-
 	m_flBlendDistance = 6.0f;
 	m_flDistanceFactor = 4.0f;
 	m_flInitialDistance = 6.0f;
@@ -73,6 +70,16 @@ void CCSMShadowCamera::ActivateLight( void )
 	BaseClass::ActivateLight();
 }
 
+CBaseFramebuffer *CCSMShadowCamera::GetFramebuffer( void )
+{
+	return &m_fFramebufferShadowCSM;
+}
+
+const CBaseFramebuffer *CCSMShadowCamera::GetFramebuffer( void ) const
+{
+	return &m_fFramebufferShadowCSM;
+}
+
 void CCSMShadowCamera::SetBlendDistance( float flBlendDistance )
 {
 	m_flBlendDistance = flBlendDistance;
@@ -120,7 +127,7 @@ const glm::mat4 &CCSMShadowCamera::GetTotal( void ) const
 
 void CCSMShadowCamera::PerformRender( void )
 {
-	float flShadowSize = (float)m_pFramebuffer->GetSize().x;
+	float flShadowSize = (float)m_fFramebufferShadowCSM.GetSize().x;
 
 	pRenderManager->SetRenderPass( ERenderPass::t_shadowcsm );
 
@@ -164,27 +171,27 @@ void CCSMShadowCamera::CalculateRadius( void )
 
 bool CCSMShadowCamera::ShouldUpdateView( void ) const
 {
-	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetPlayer( 0 )->GetCamera();
+	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetLocalPlayer()->GetCamera();
 	return pPlayerCamera->PositionUpdated() || RotationUpdated();
 }
 
 void CCSMShadowCamera::UpdateView( void )
 {
-	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetPlayer( 0 )->GetCamera();
+	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetLocalPlayer()->GetCamera();
 	m_matView = glm::lookAt( pPlayerCamera->GetPosition() - GetRotation() * g_vec3Front, pPlayerCamera->GetPosition(), g_vec3Up );
 }
 
 bool CCSMShadowCamera::ShouldUpdateProjection( void ) const
 {
-	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetPlayer( 0 )->GetCamera();
+	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetLocalPlayer()->GetCamera();
 	return m_bUpdateProjection || pPlayerCamera->PositionUpdated() || pPlayerCamera->RotationUpdated() || RotationUpdated();
 }
 
 void CCSMShadowCamera::UpdateProjection( void )
 {
-	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetPlayer( 0 )->GetCamera();
+	CBasePlayerCamera *pPlayerCamera = pEntityManager->GetLocalPlayer()->GetCamera();
 
-	float flShadowSize = (float)m_pFramebuffer->GetSize().x;
+	float flShadowSize = (float)m_fFramebufferShadowCSM.GetSize().x;
 
 	for (unsigned char i = 0; i < 4; i++)
 	{

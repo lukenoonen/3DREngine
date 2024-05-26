@@ -4,3 +4,8 @@ CBaseAny::CBaseAny()
 {
 
 }
+
+CBaseAny::~CBaseAny()
+{
+
+}

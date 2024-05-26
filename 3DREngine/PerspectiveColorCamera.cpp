@@ -41,6 +41,7 @@ bool CPerspectiveColorCamera::ShouldUpdateProjection( void ) const
 
 glm::mat4 CPerspectiveColorCamera::CalculateProjection( void ) const
 {
-	const glm::ivec2 &vec2Size = m_pFramebuffer->GetSize();
+	const CBaseFramebuffer *pFramebuffer = GetFramebuffer();
+	const glm::ivec2 &vec2Size = pFramebuffer->GetSize();
 	return glm::perspective( m_flFOV.Get(), (float)vec2Size.x / (float)vec2Size.y, m_flNear.Get(), m_flFar.Get() );
 }
