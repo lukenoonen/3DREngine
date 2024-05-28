@@ -53,19 +53,17 @@ void CBaseEntity::Remove( void )
 	{
 		m_pLoadGroup->RemoveEntity( this );
 		m_bRemoved = true;
-
-		OnRemove();
 	}
-}
-
-void CBaseEntity::OnRemove( void )
-{
-
 }
 
 bool CBaseEntity::IsRemoved( void ) const
 {
 	return m_bRemoved;
+}
+
+void CBaseEntity::CleanUp( void )
+{
+
 }
 
 bool CBaseEntity::IsPlayer( void ) const

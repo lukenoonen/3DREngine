@@ -42,23 +42,26 @@ void CBaseTransform::PostThink( void )
 {
 	m_hParent.Check();
 
-	for (unsigned int i = 0; i < m_hChildren.size(); i++)
+	std::list<CHandle<CBaseTransform>>::iterator it = m_hChildren.begin();
+	while (it != m_hChildren.end())
 	{
-		if (!m_hChildren[i].Check())
-			m_hChildren.erase( m_hChildren.begin() + i-- ); // TODO: verify that every time something is erased like this it accounts for the deleted element
+		if (!it->Check())
+		{
+			it = m_hChildren.erase( it );
+			continue;
+		}
+		it++;
 	}
 
 	BaseClass::PostThink();
 }
 
-void CBaseTransform::OnRemove( void )
+void CBaseTransform::CleanUp( void )
 {
 	m_hParent.Check();
+	m_hChildren.clear();
 
-	for (unsigned int i = 0; i < m_hChildren.size(); i++)
-		m_hChildren[i].Check();
-
-	BaseClass::OnRemove();
+	BaseClass::CleanUp();
 }
 
 void CBaseTransform::SetPosition( const glm::vec3 &vec3Position )
@@ -81,10 +84,12 @@ void CBaseTransform::AddPosition( const glm::vec3 &vec3Position )
 	m_vec3Position = GetPosition() + vec3Position;
 	if (!m_hChildren.empty())
 	{
-		for (unsigned int i = 0; i < m_hChildren.size(); i++)
+		std::list<CHandle<CBaseTransform>>::iterator it;
+		for (it = m_hChildren.begin(); it != m_hChildren.end(); it++)
 		{
-			if (m_hChildren[i]->HasFlags( fl_parentposition.GetFlag() ))
-				m_hChildren[i]->AddParentPosition( vec3Position );
+			CBaseTransform *pChild = *it;
+			if (pChild->HasFlags( fl_parentposition.GetFlag() ))
+				pChild->AddParentPosition( vec3Position );
 		}
 	}
 }
@@ -99,10 +104,12 @@ void CBaseTransform::AddRotation( const glm::quat &qRotation )
 
 		glm::quat qRotationDelta = GetRotation() * qRotationInverse;
 
-		for (unsigned int i = 0; i < m_hChildren.size(); i++)
+		std::list<CHandle<CBaseTransform>>::iterator it;
+		for (it = m_hChildren.begin(); it != m_hChildren.end(); it++)
 		{
-			if (m_hChildren[i]->HasFlags( fl_parentrotation.GetFlag() ))
-				m_hChildren[i]->AddParentRotation( GetPosition(), GetRotation(), qRotationInverse, qRotationDelta );
+			CBaseTransform *pChild = *it;
+			if (pChild->HasFlags( fl_parentrotation.GetFlag() ))
+				pChild->AddParentRotation( GetPosition(), GetRotation(), qRotationInverse, qRotationDelta );
 		}
 	}
 	else
@@ -116,10 +123,12 @@ void CBaseTransform::AddScale( const glm::vec3 &vec3Scale )
 	m_vec3Scale = GetScale() * vec3Scale;
 	if (!m_hChildren.empty())
 	{
-		for (unsigned int i = 0; i < m_hChildren.size(); i++)
+		std::list<CHandle<CBaseTransform>>::iterator it;
+		for (it = m_hChildren.begin(); it != m_hChildren.end(); it++)
 		{
-			if (m_hChildren[i]->HasFlags( fl_parentscale.GetFlag() ))
-				m_hChildren[i]->AddParentScale( vec3Scale, GetPosition(), GetScale() );
+			CBaseTransform *pChild = *it;
+			if (pChild->HasFlags( fl_parentscale.GetFlag() ))
+				pChild->AddParentScale( vec3Scale, GetPosition(), GetScale() );
 		}
 	}
 }
@@ -176,14 +185,7 @@ void CBaseTransform::AddChild( CBaseTransform *pChild )
 
 void CBaseTransform::RemoveChild( CBaseTransform *pChild )
 {
-	for (unsigned int i = 0; i < m_hChildren.size(); i++)
-	{
-		if (m_hChildren[i] == pChild)
-		{
-			m_hChildren.erase( m_hChildren.begin() + i );
-			break;
-		}
-	}
+	m_hChildren.remove( pChild );
 }
 
 bool CBaseTransform::PositionUpdated( void ) const

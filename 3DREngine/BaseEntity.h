@@ -26,8 +26,9 @@ public:
 	virtual void PostThink( void );
 
 	virtual void Remove( void );
-	virtual void OnRemove( void );
 	bool IsRemoved( void ) const;
+
+	virtual void CleanUp( void );
 
 	virtual bool IsPlayer( void ) const;
 	virtual bool IsLight( void ) const;

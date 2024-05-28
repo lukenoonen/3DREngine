@@ -8,6 +8,8 @@
 #include "BaseLight.h"
 #include "BaseCamera.h"
 
+#include <iostream>
+
 bool CC_CreateEntity( const CTextLine *pCommand )
 {
 	const char *sMapName;
@@ -104,15 +106,15 @@ void CEntityLoadGroup::DrawLitEntities( void )
 	}
 }
 
-#include <iostream>
-
 void CEntityLoadGroup::ProcessRemovedEntities( void )
 {
 	for (unsigned int i = 0; i < m_pEntitiesToRemove.size(); i++)
+		m_pEntitiesToRemove[i]->CleanUp();
+
+	for (unsigned int i = 0; i < m_pEntitiesToRemove.size(); i++)
 	{
 		CBaseEntity *pEntityToRemove = m_pEntitiesToRemove[i];
-		std::cout << (pEntityToRemove->GetName() ? pEntityToRemove->GetName() : "NULL") << "\n";
-		pEntityToRemove->OnRemove(); // TODO: KEEP CLEANING!! TEMPORARY BTW
+		std::cout << "Trying to remove " << (pEntityToRemove->GetName() ? pEntityToRemove->GetName() : "NULL") << "\n";
 		if (!pEntityToRemove->IsReferenced())
 		{
 			m_pEntitiesToRemove.erase( m_pEntitiesToRemove.begin() + i );
@@ -249,6 +251,7 @@ std::vector<CEntityFlag *> *CEntityManager::s_pEntityFlags = NULL;
 
 CEntityManager::CEntityManager()
 {
+	m_bClearing = false;
 
 	m_LoadGroups.emplace_back();
 	m_pGlobalLoadGroup = &m_LoadGroups.back();
@@ -267,6 +270,8 @@ CEntityManager::CEntityManager()
 
 CEntityManager::~CEntityManager()
 {
+	Clear();
+
 	delete m_pEntityFactories;
 	delete m_pEntityFlags;
 }
@@ -320,6 +325,20 @@ void CEntityManager::DrawLitEntities( void )
 		m_LoadGroups[i].DrawLitEntities();
 
 	m_pCurrentLight = NULL;
+}
+
+void CEntityManager::Clear( void )
+{
+	m_bClearing = true;
+
+	m_LoadGroups.clear();
+
+	m_bClearing = false;
+}
+
+bool CEntityManager::IsClearing( void ) const
+{
+	return m_bClearing;
 }
 
 void CEntityManager::CreateLoadGroup( void )

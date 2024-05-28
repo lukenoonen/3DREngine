@@ -4,37 +4,66 @@
 
 CBaseHandle::CBaseHandle()
 {
-	m_ucActiveData = 0;
-	m_uData.pEntity = NULL;
+	SetEntityInternal( NULL );
 }
 
 CBaseHandle::CBaseHandle( CBaseEntity *pEntity )
 {
-	if (pEntity)
-		pEntity->Reference();
-
-	m_ucActiveData = 0;
-	m_uData.pEntity = pEntity;
+	SetEntityInternal( pEntity );
 }
 
 CBaseHandle::CBaseHandle( CBaseHandle &hOther )
 {
-	m_ucActiveData = 3;
-	switch (hOther.m_ucActiveData)
-	{
-	case 0:
-		SetEntity( hOther.m_uData.pEntity );
-		break;
-	case 1:
-		SetName( hOther.m_uData.sName );
-		break;
-	case 2:
-		SetIndex( hOther.m_uData.uiIndex );
-		break;
-	}
+	CopyOther( hOther );
 }
 
 CBaseHandle::~CBaseHandle()
+{
+	if (pEntityManager->IsClearing())
+	{
+		if (m_ucActiveData == 1 && m_uData.sName)
+			delete[] m_uData.sName;
+	}
+	else
+	{
+		OnChangeData();
+	}
+}
+
+void CBaseHandle::SetEntity( CBaseEntity *pEntity )
+{
+	OnChangeData();
+	SetEntityInternal( pEntity );
+}
+
+void CBaseHandle::SetName( const char *sName )
+{
+	OnChangeData();
+	SetNameInternal( sName );
+}
+
+void CBaseHandle::SetIndex( unsigned int uiIndex )
+{
+	OnChangeData();
+	SetIndexInternal( uiIndex );
+}
+
+CBaseEntity *CBaseHandle::FindEntity( void ) const
+{
+	CBaseEntity *pEntity = NULL;
+	switch (m_ucActiveData)
+	{
+	case 1:
+		pEntity = pEntityManager->GetEntityByName( m_uData.sName );
+		break;
+	case 2:
+		pEntity = pEntityManager->GetEntityByIndex( m_uData.uiIndex );
+		break;
+	}
+	return pEntity;
+}
+
+void CBaseHandle::OnChangeData( void )
 {
 	switch (m_ucActiveData)
 	{
@@ -45,66 +74,7 @@ CBaseHandle::~CBaseHandle()
 	case 1:
 		delete[] m_uData.sName;
 		break;
-	case 2:
-		break;
 	}
-}
-
-void CBaseHandle::SetEntity( CBaseEntity *pEntity )
-{
-	if (m_ucActiveData == 0 && m_uData.pEntity)
-	{
-		if (m_uData.pEntity == pEntity)
-			return;
-
-		m_uData.pEntity->Unreference();
-	}
-
-	if (pEntity)
-		pEntity->Reference();
-
-	m_ucActiveData = 0;
-	m_uData.pEntity = pEntity;
-}
-
-void CBaseHandle::SetName( const char *sName )
-{
-	m_ucActiveData = 1;
-	m_uData.sName = UTIL_strdup( sName );
-}
-
-void CBaseHandle::SetIndex( unsigned int uiIndex )
-{
-	m_ucActiveData = 2;
-	m_uData.uiIndex = uiIndex;
-}
-
-bool CBaseHandle::Link( void )
-{
-	if (m_ucActiveData != 0)
-	{
-		CBaseEntity *pEntity = NULL;
-		switch (m_ucActiveData)
-		{
-		case 1:
-			pEntity = pEntityManager->GetEntityByName( m_uData.sName );
-			delete[] m_uData.sName;
-			break;
-		case 2:
-			pEntity = pEntityManager->GetEntityByIndex( m_uData.uiIndex );
-			break;
-		}
-
-		if (!Verify( pEntity ))
-		{
-			SetEntity( NULL );
-			return false;
-		}
-
-		SetEntity( pEntity );
-	}
-
-	return m_uData.pEntity != NULL;
 }
 
 CBaseEntity *CBaseHandle::Get( void ) const
@@ -120,9 +90,60 @@ bool CBaseHandle::Check( void )
 	return m_uData.pEntity != NULL;
 }
 
-bool CBaseHandle::Verify( CBaseEntity *pEntity )
+bool CBaseHandle::Link( void )
+{
+	if (m_ucActiveData != 0)
+	{
+		CBaseEntity *pEntity = FindEntity();
+		if (!Verify( pEntity ))
+			pEntity = NULL;
+
+		SetEntity( pEntity );
+	}
+
+	return m_uData.pEntity != NULL;
+}
+
+bool CBaseHandle::Verify( CBaseEntity *pEntity ) const
 {
 	return pEntity != NULL;
+}
+
+void CBaseHandle::CopyOther( CBaseHandle &hOther )
+{
+	switch (hOther.m_ucActiveData)
+	{
+	case 0:
+		SetEntityInternal( hOther.m_uData.pEntity );
+		break;
+	case 1:
+		SetNameInternal( hOther.m_uData.sName );
+		break;
+	case 2:
+		SetIndexInternal( hOther.m_uData.uiIndex );
+		break;
+	}
+}
+
+void CBaseHandle::SetEntityInternal( CBaseEntity *pEntity )
+{
+	if (pEntity)
+		pEntity->Reference();
+
+	m_ucActiveData = 0;
+	m_uData.pEntity = pEntity;
+}
+
+void CBaseHandle::SetNameInternal( const char *sName )
+{
+	m_ucActiveData = 1;
+	m_uData.sName = UTIL_strdup( sName );
+}
+
+void CBaseHandle::SetIndexInternal( unsigned int uiIndex )
+{
+	m_ucActiveData = 2;
+	m_uData.uiIndex = uiIndex;
 }
 
 bool UTIL_Write( CFile *pFile, CBaseHandle &hData )

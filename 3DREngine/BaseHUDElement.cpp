@@ -36,6 +36,20 @@ CBaseHUDElement::CBaseHUDElement()
 #include <iostream>
 #include "InputManager.h"
 
+void CBaseHUDElement::CleanUp( void )
+{
+	if (IsClicked())
+		Release();
+
+	if (HasFocus())
+		LoseFocus();
+
+	if (HasHover())
+		Unhover();
+
+	BaseClass::CleanUp();
+}
+
 void CBaseHUDElement::PreRender( void )
 {
 	BaseClass::PreRender();

@@ -13,6 +13,8 @@ public:
 
 	virtual void PreThink( void );
 
+	virtual void CleanUp( void );
+
 	virtual void SetHUDCamera( CBasePlayerCamera *pHUDCamera );
 	virtual void PropagateSetHUDCamera( CBasePlayerCamera *pHUDCamera ) = 0;
 

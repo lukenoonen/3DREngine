@@ -293,17 +293,20 @@ void CGUITextData::Push( const glm::vec2 &vec2Min, const glm::vec2 &vec2Max, con
 
 void CGUITextData::CreateText( void )
 {
-	glGenVertexArrays( 1, &m_glVAO );
-	glGenBuffers( 1, &m_glVBO );
+	if (!m_verVertices.empty())
+	{
+		glGenVertexArrays( 1, &m_glVAO );
+		glGenBuffers( 1, &m_glVBO );
 
-	glBindVertexArray( m_glVAO );
-	glBindBuffer( GL_ARRAY_BUFFER, m_glVBO );
-	glBufferData( GL_ARRAY_BUFFER, (GLsizeiptr)(m_verVertices.size() * sizeof( SVertex2D )), &m_verVertices[0], GL_STATIC_DRAW );
+		glBindVertexArray( m_glVAO );
+		glBindBuffer( GL_ARRAY_BUFFER, m_glVBO );
+		glBufferData( GL_ARRAY_BUFFER, (GLsizeiptr)(m_verVertices.size() * sizeof( SVertex2D )), &m_verVertices[0], GL_STATIC_DRAW );
 
-	glEnableVertexAttribArray( 0 );
-	glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, sizeof( SVertex2D ), (void *)0 );
-	glEnableVertexAttribArray( 1 );
-	glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, sizeof( SVertex2D ), (void *)offsetof( SVertex2D, vec2TexCoords ) );
+		glEnableVertexAttribArray( 0 );
+		glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, sizeof( SVertex2D ), (void *)0 );
+		glEnableVertexAttribArray( 1 );
+		glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, sizeof( SVertex2D ), (void *)offsetof( SVertex2D, vec2TexCoords ) );
+	}
 }
 
 void CGUITextData::DeleteText( void )
@@ -322,8 +325,11 @@ void CGUITextData::DeleteText( void )
 
 void CGUITextData::Draw( void )
 {
-	glBindVertexArray( m_glVAO );
-	glDrawArrays( GL_TRIANGLES, 0, (GLsizei)m_verVertices.size() );
+	if (m_glVAO)
+	{
+		glBindVertexArray( m_glVAO );
+		glDrawArrays( GL_TRIANGLES, 0, (GLsizei)m_verVertices.size() );
+	}
 }
 
 unsigned int CGUITextData::GetDisplayTextLength( void ) const

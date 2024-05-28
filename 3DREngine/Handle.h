@@ -19,12 +19,24 @@ public:
 	void SetName( const char *sName );
 	void SetIndex( unsigned int uiIndex );
 
-	bool Link( void );
-
 	CBaseEntity *Get( void ) const;
 	bool Check( void );
 
-	virtual bool Verify( CBaseEntity *pEntity );
+	bool Link( void );
+
+protected:
+	virtual bool Verify( CBaseEntity *pEntity ) const;
+
+	void CopyOther( CBaseHandle &hOther );
+
+private:
+	CBaseEntity *FindEntity( void ) const;
+
+	void OnChangeData( void );
+
+	void SetEntityInternal( CBaseEntity *pEntity );
+	void SetNameInternal( const char *sName );
+	void SetIndexInternal( unsigned int uiIndex );
 
 private:
 	unsigned char m_ucActiveData; // TODO: maybe make this an enum
@@ -51,8 +63,6 @@ public:
 
 	T *Get( void ) const;
 
-	virtual bool Verify( CBaseEntity *pEntity );
-
 	operator T *();
 	operator T *() const;
 	bool operator ! () const;
@@ -60,6 +70,11 @@ public:
 	bool operator != ( T *val ) const;
 	CHandle<T> &operator = ( T *val );
 	T *operator -> () const;
+
+	CHandle<T> &operator = ( CHandle<T> &hOther );
+
+protected:
+	virtual bool Verify( CBaseEntity *pEntity ) const;
 };
 
 template <class T> CHandle<T>::CHandle()
@@ -82,7 +97,7 @@ template <class T> T *CHandle<T>::Get( void ) const
 	return static_cast<T *>(BaseClass::Get());
 }
 
-template <class T> bool CHandle<T>::Verify( CBaseEntity *pEntity )
+template <class T> bool CHandle<T>::Verify( CBaseEntity *pEntity ) const
 {
 	return BaseClass::Verify( pEntity ) && dynamic_cast<T *>(pEntity) != NULL;
 }
@@ -121,6 +136,12 @@ template<class T> CHandle<T> &CHandle<T>::operator = ( T *pEntity )
 template<class T> T *CHandle<T>::operator -> () const
 {
 	return Get();
+}
+
+template<class T> CHandle<T> &CHandle<T>::operator = ( CHandle<T> &hOther )
+{
+	CopyOther( hOther );
+	return *this;
 }
 
 template <class T> bool UTIL_Write( CFile *pFile, CHandle<T> &hData )

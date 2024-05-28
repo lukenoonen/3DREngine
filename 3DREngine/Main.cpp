@@ -4,6 +4,9 @@
 #include "EntityManager.h"
 #include "RenderManager.h"
 
+#include "Handle.h"
+#include <iostream>
+
 int main()
 {
 	CreateGlobals();

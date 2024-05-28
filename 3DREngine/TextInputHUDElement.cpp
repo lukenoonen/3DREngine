@@ -83,7 +83,8 @@ void CTextInputHUDElement::OnGainFocus( void )
 void CTextInputHUDElement::OnLoseFocus( void )
 {
 	pInputManager->LockKeyboard();
-	m_hGUICursor->StopBlinking();
+	if (m_hGUICursor) // TODO: try to remove this check once .Check() calls are moved to CleanUp from Remove
+		m_hGUICursor->StopBlinking();
 	BaseClass::OnLoseFocus();
 }
 

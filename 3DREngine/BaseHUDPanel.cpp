@@ -58,8 +58,10 @@ void CBaseHUDPanel::Remove( void )
 {
 	m_hDraggable->Remove();
 	m_hDraggable.Check();
+	
 	m_hTextInputLine->Remove();
 	m_hTextInputLine.Check();
+
 	m_hGUILog->Remove();
 	m_hGUILog.Check();
 
@@ -77,10 +79,7 @@ CBaseHUDElement *CBaseHUDPanel::PropagateGetMouseOver( EMouseOverType eMouseOver
 	CBaseHUDElement *pMouseOver;
 	pMouseOver = m_hDraggable->GetMouseOver( eMouseOverType );
 	if (pMouseOver)
-	{
-		Remove();
 		return pMouseOver;
-	}
 	pMouseOver = m_hTextInputLine->GetMouseOver( eMouseOverType );
 	if (pMouseOver)
 		return pMouseOver;

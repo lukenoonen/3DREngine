@@ -3,8 +3,8 @@
 
 DEFINE_DATADESC( CMasterHUDElement )
 
-	DEFINE_FIELD( LinkedDataField, CHandle<CBasePlayerCamera>, m_hHUDCamera, "hudcamera", FL_REQUIRED )
-	DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseHUDElement>, m_hHUDChildren, "hudchildren", FL_REQUIRED )
+DEFINE_FIELD( LinkedDataField, CHandle<CBasePlayerCamera>, m_hHUDCamera, "hudcamera", FL_REQUIRED )
+DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseHUDElement>, m_hHUDChildren, "hudchildren", FL_REQUIRED )
 
 END_DATADESC()
 
@@ -25,15 +25,17 @@ bool CMasterHUDElement::Init( void )
 	return true;
 }
 
-#include <iostream>
-#include "TimeManager.h"
-
 void CMasterHUDElement::PreThink( void )
 {
-	for (unsigned int i = 0; i < m_hHUDChildren.size(); i++)
+	std::vector<CHandle<CBaseHUDElement>>::iterator it = m_hHUDChildren.begin();
+	while (it != m_hHUDChildren.end())
 	{
-		if (!m_hHUDChildren[i].Check())
-			m_hHUDChildren.erase( m_hHUDChildren.begin() + i-- );
+		if (!it->Check())
+		{
+			it = m_hHUDChildren.erase( it );
+			continue;
+		}
+		it++;
 	}
 
 	if (pInputManager->IsCursorLocked())
@@ -76,8 +78,9 @@ void CMasterHUDElement::PreThink( void )
 
 void CMasterHUDElement::PropagateSetHUDCamera( CBasePlayerCamera *pHUDCamera )
 {
-	for (unsigned int i = 0; i < m_hHUDChildren.size(); i++)
-		m_hHUDChildren[i]->SetHUDCamera( pHUDCamera );
+	std::vector<CHandle<CBaseHUDElement>>::iterator it;
+	for (it = m_hHUDChildren.begin(); it != m_hHUDChildren.end(); it++)
+		(*it)->SetHUDCamera( pHUDCamera );
 }
 
 CBaseHUDElement *CMasterHUDElement::PersonalGetMouseOver( EMouseOverType eMouseOverType, CBaseHUDElement *pMouseOver )
@@ -87,9 +90,10 @@ CBaseHUDElement *CMasterHUDElement::PersonalGetMouseOver( EMouseOverType eMouseO
 
 CBaseHUDElement *CMasterHUDElement::PropagateGetMouseOver( EMouseOverType eMouseOverType )
 {
-	for (unsigned int i = 0; i < m_hHUDChildren.size(); i++)
+	std::vector<CHandle<CBaseHUDElement>>::iterator it;
+	for (it = m_hHUDChildren.begin(); it != m_hHUDChildren.end(); it++)
 	{
-		CBaseHUDElement *pMouseOver = m_hHUDChildren[i]->GetMouseOver( eMouseOverType );
+		CBaseHUDElement *pMouseOver = (*it)->GetMouseOver( eMouseOverType );
 		if (pMouseOver)
 			return pMouseOver;
 	}

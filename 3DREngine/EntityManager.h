@@ -81,6 +81,9 @@ public:
 	void DrawUnlitEntities( void );
 	void DrawLitEntities( void );
 
+	void Clear( void );
+	bool IsClearing( void ) const;
+
 	void CreateLoadGroup( void );
 
 	CBaseEntity *AddEntity( const char *sMapName, const CTextBlock *pTextBlock );
@@ -120,6 +123,8 @@ private:
 	CBaseEntity *LoadEntity( const char *sFileName );
 
 private:
+	bool m_bClearing;
+
 	std::vector<CEntityLoadGroup> m_LoadGroups;
 	CEntityLoadGroup *m_pGlobalLoadGroup;
 	CEntityLoadGroup *m_pActiveLoadGroup;

@@ -12,13 +12,21 @@ CBaseHUDParent::CBaseHUDParent()
 
 void CBaseHUDParent::PreThink( void )
 {
-	if (!m_hFocusedHUDElement.Check())
+	if (m_hFocusedHUDElement && !m_hFocusedHUDElement.Check())
 		m_pPrevFocusedHUDElement = NULL;
 
-	if (!m_hHoveredHUDElement.Check())
+	if (m_hHoveredHUDElement && !m_hHoveredHUDElement.Check())
 		m_pPrevHoveredHUDElement = NULL;
 
 	BaseClass::PreThink();
+}
+
+void CBaseHUDParent::CleanUp( void )
+{
+	m_hFocusedHUDElement.Check();
+	m_hHoveredHUDElement.Check();
+
+	BaseClass::CleanUp();
 }
 
 void CBaseHUDParent::SetHUDCamera( CBasePlayerCamera *pHUDCamera )
@@ -36,13 +44,13 @@ CBaseHUDElement *CBaseHUDParent::GetMouseOver( EMouseOverType eMouseOverType)
 	case EMouseOverType::t_focus:
 		if (m_pPrevFocusedHUDElement != m_hFocusedHUDElement)
 			m_pPrevFocusedHUDElement = m_hFocusedHUDElement;
-		if (pMouseOver != m_hFocusedHUDElement)
+		if (m_hFocusedHUDElement != pMouseOver)
 			m_hFocusedHUDElement = pMouseOver;
 		break;
 	case EMouseOverType::t_hover:
 		if (m_pPrevHoveredHUDElement != m_hHoveredHUDElement)
 			m_pPrevHoveredHUDElement = m_hHoveredHUDElement;
-		if (pMouseOver != m_hHoveredHUDElement)
+		if (m_hHoveredHUDElement != pMouseOver)
 			m_hHoveredHUDElement = pMouseOver;
 		break;
 	}

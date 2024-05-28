@@ -10,11 +10,11 @@
 
 // TODO: clean this up
 
+class CTimeManager;
 class CResourceManager;
 class CRenderManager;
 class CCommandManager;
 class CEntityManager;
-class CTimeManager;
 class CInputManager;
 class CFileManager;
 
@@ -25,8 +25,8 @@ extern CResourceManager *pResourceManager;
 extern CRenderManager *pRenderManager;
 extern CCommandManager *pCommandManager;
 extern CEntityManager *pEntityManager;
-extern CTimeManager *pTimeManager;
 extern CInputManager *pInputManager;
 extern CFileManager *pFileManager;
+extern CTimeManager *pTimeManager;
 
 #endif // GLOBAL_H

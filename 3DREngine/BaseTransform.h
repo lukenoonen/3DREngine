@@ -21,7 +21,7 @@ public:
 
 	virtual void PostThink( void );
 
-	virtual void OnRemove( void );
+	virtual void CleanUp( void );
 
 	void SetPosition( const glm::vec3 &vec3Position );
 	void SetRotation( const glm::quat &qRotation );
@@ -56,7 +56,7 @@ private:
 
 protected:
 	CHandle<CBaseTransform> m_hParent;
-	std::vector<CHandle<CBaseTransform>> m_hChildren;
+	std::list<CHandle<CBaseTransform>> m_hChildren;
 };
 
 #endif // BASETRANSFORM_H
