@@ -2,8 +2,8 @@
 
 DEFINE_DATADESC( CModel )
 
-	DEFINE_FIELD( LinkedVectorDataField, CHandle<CGeometry>, m_hGeometry, "geometry", FL_REQUIRED )
-	DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseMaterial>, m_hMaterials, "materials", FL_REQUIRED )
+	DEFINE_FIELD( LinkedIterableDataField, std::vector<CHandle<CGeometry>>, m_hGeometry, "geometry", FL_REQUIRED )
+	DEFINE_FIELD( LinkedIterableDataField, std::vector<CHandle<CBaseMaterial>>, m_hMaterials, "materials", FL_REQUIRED )
 	DEFINE_FIELD( LinkedDataField, CHandle<CRigging>, m_hRigging, "rigging", FL_NONE )
 
 END_DATADESC()

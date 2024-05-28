@@ -3,7 +3,7 @@
 DEFINE_DATADESC( CRigging )
 
 	DEFINE_FIELD( LinkedDataField, CHandle<CSkeleton>, m_hSkeleton, "skeleton", FL_REQUIRED )
-	DEFINE_FIELD( LinkedVectorDataField, CHandle<CAnimation>, m_hAnimations, "animations", FL_REQUIRED )
+	DEFINE_FIELD( LinkedIterableDataField, std::vector<CHandle<CAnimation>>, m_hAnimations, "animations", FL_REQUIRED )
 
 END_DATADESC()
 

@@ -242,19 +242,19 @@ DEFINE_FIELDTYPE( T, LinkedEmbeddedDataField, EmbeddedDataField<T> )
 
 END_FIELDTYPE()
 
-DEFINE_FIELDTYPE_NOBASE( T, VectorDataField )
+DEFINE_FIELDTYPE_NOBASE( T, IterableDataField )
 
 	DEFINE_FIELDTYPE_SAVE( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
+		T &tData = GET_DATA( pData, m_uiOffset, T );
 
-		unsigned int uiSize = (unsigned int)vecData.size();
+		unsigned int uiSize = (unsigned int)tData.size();
 		if (!pFileManager->Write( uiSize ))
 			return false;
 
-		for (unsigned int i = 0; i < uiSize; i++)
+		for (typename T::iterator it = tData.begin(); it != tData.end(); it++)
 		{
-			if (!pFileManager->Write( vecData[i] ))
+			if (!pFileManager->Write( *it ))
 				return false;
 		}
 
@@ -267,11 +267,12 @@ DEFINE_FIELDTYPE_NOBASE( T, VectorDataField )
 		if (!pFileManager->Read( uiSize ))
 			return false;
 
-		std::vector<T> &vecData = GET_DATA( pData, CBaseDataField::m_uiOffset, std::vector<T> );
-		vecData.resize( uiSize );
-		for (unsigned int i = 0; i < uiSize; i++)
+		T &tData = GET_DATA( pData, CBaseDataField::m_uiOffset, T );
+		tData.resize( uiSize );
+
+		for (typename T::iterator it = tData.begin(); it != tData.end(); it++)
 		{
-			if (!pFileManager->Read( vecData[i] ))
+			if (!pFileManager->Read( *it ))
 				return false;
 		}
 
@@ -287,11 +288,13 @@ DEFINE_FIELDTYPE_NOBASE( T, VectorDataField )
 		if (!pTextBlock->GetValue( pTextLine, 1, m_sName ))
 			return false;
 
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
-		vecData.resize( pTextLine->GetTextItemCount() );
-		for (unsigned int i = 0; i < vecData.size(); i++)
+		T &tData = GET_DATA( pData, m_uiOffset, T );
+		tData.resize( pTextLine->GetTextItemCount() );
+
+		unsigned int i = 0;
+		for (typename T::iterator it = tData.begin(); it != tData.end(); it++)
 		{
-			if (!pTextLine->GetValue( vecData[i], i ))
+			if (!pTextLine->GetValue( *it, i++ ))
 				return false;
 		}
 
@@ -303,23 +306,23 @@ DEFINE_FIELDTYPE_NOBASE( T, VectorDataField )
 		if (!m_sName)
 			return false;
 
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
-		return pKV->Get( m_sName, vecData );
+		T &tData = GET_DATA( pData, m_uiOffset, T );
+		return pKV->Get( m_sName, tData );
 	}
 
 END_FIELDTYPE()
 
-DEFINE_FIELDTYPE( T, LinkedVectorDataField, VectorDataField<T> )
+DEFINE_FIELDTYPE( T, LinkedIterableDataField, IterableDataField<T> )
 
 	DEFINE_FIELDTYPE_LINK( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, CBaseDataField::m_uiOffset, std::vector<T> );
-		if (vecData.empty())
+		T &tData = GET_DATA( pData, CBaseDataField::m_uiOffset, T );
+		if (tData.empty())
 			return false;
 
-		for (unsigned int i = 0; i < vecData.size(); i++)
+		for (typename T::iterator it = tData.begin(); it != tData.end(); it++)
 		{
-			if (!vecData[i].Link())
+			if (!it->Link())
 				return false;
 		}
 
@@ -328,18 +331,18 @@ DEFINE_FIELDTYPE( T, LinkedVectorDataField, VectorDataField<T> )
 
 END_FIELDTYPE()
 
-DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
+DEFINE_FIELDTYPE_NOBASE( T, EmbeddedIterableDataField )
 
 	DEFINE_FIELDTYPE_SAVE( pData )
 	{
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
-		unsigned int uiSize = (unsigned int)vecData.size();
+		T &tData = GET_DATA( pData, m_uiOffset, T );
+		unsigned int uiSize = (unsigned int)tData.size();
 		if (!pFileManager->Write( uiSize ))
 			return false;
 
-		for (unsigned int i = 0; i < uiSize; i++)
+		for (typename T::iterator it = tData.begin(); it != tData.end(); it++)
 		{
-			if (!UTIL_SaveData( &vecData[i] ))
+			if (!UTIL_SaveData( &(*it) ))
 				return false;
 		}
 
@@ -352,11 +355,12 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 		if (!pFileManager->Read( uiSize ))
 			return false;
 
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
-		vecData.resize( uiSize );
-		for (unsigned int i = 0; i < uiSize; i++)
+		T &tData = GET_DATA( pData, m_uiOffset, T );
+		tData.resize( uiSize );
+
+		for (typename T::iterator it = tData.begin(); it != tData.end(); it++)
 		{
-			if (!UTIL_LoadData( &vecData[i] ))
+			if (!UTIL_LoadData( &(*it) ))
 				return false;
 		}
 
@@ -372,15 +376,17 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 		if (!pTextBlock->GetValue( pTextLine, 1, m_sName ))
 			return false;
 
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
-		vecData.resize( pTextLine->GetTextItemCount() );
-		for (unsigned int i = 0; i < vecData.size(); i++)
+		T &tData = GET_DATA( pData, m_uiOffset, T );
+		tData.resize( pTextLine->GetTextItemCount() );
+
+		unsigned int i = 0;
+		for (typename T::iterator it = tData.begin(); it != tData.end(); it++)
 		{
 			CTextBlock *pEmbeddedTextBlock;
-			if (!pTextLine->GetValue( pEmbeddedTextBlock, i ))
+			if (!pTextLine->GetValue( pEmbeddedTextBlock, i++ ))
 				return false;
 
-			if (!UTIL_LoadTextData( &vecData[i], pEmbeddedTextBlock ))
+			if (!UTIL_LoadTextData( &(*it), pEmbeddedTextBlock ))
 				return false;
 		}
 
@@ -392,15 +398,17 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 		if (!m_sName)
 			return false;
 
-		std::vector<T> &vecData = GET_DATA( pData, m_uiOffset, std::vector<T> );
+		T &tData = GET_DATA( pData, m_uiOffset, T );
 		std::vector<CKeyValues *> vecKeyValues;
 		if (!pKV->Get( m_sName, vecKeyValues ))
 			return false;
 
-		vecData.resize( vecKeyValues.size() );
-		for (unsigned int i = 0; i < vecKeyValues.size(); i++)
+		tData.resize( vecKeyValues.size() );
+
+		unsigned int i = 0;
+		for (typename T::iterator it = tData.begin(); it != tData.end(); it++)
 		{
-			if (!UTIL_LoadKVData( &vecData[i], vecKeyValues[i] ))
+			if (!UTIL_LoadKVData( &(*it), vecKeyValues[i++] ))
 				return false;
 		}
 
@@ -409,17 +417,17 @@ DEFINE_FIELDTYPE_NOBASE( T, EmbeddedVectorDataField )
 
 END_FIELDTYPE()
 
-DEFINE_FIELDTYPE( T, LinkedEmbeddedVectorDataField, EmbeddedVectorDataField<T> )
+DEFINE_FIELDTYPE( T, LinkedEmbeddedIterableDataField, EmbeddedIterableDataField<T> )
 
 	DEFINE_FIELDTYPE_LINK( pData )
 	{
-		std::vector<T *> &vecData = GET_DATA( pData, CBaseDataField::m_uiOffset, std::vector<T *> );
-		if (vecData.empty())
+		T &tData = GET_DATA( pData, CBaseDataField::m_uiOffset, T );
+		if (tData.empty())
 			return false;
 
-		for (unsigned int i = 0; i < vecData.size(); i++)
+		for (typename T::iterator it = tData.begin(); it != tData.end(); it++)
 		{
-			if (!vecData[i]->Link())
+			if (!it->Link())
 				return false;
 		}
 

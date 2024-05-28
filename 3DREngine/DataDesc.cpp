@@ -74,9 +74,9 @@ void CDataMap::SetBaseMap( CDataMap *pBaseMap )
 
 bool CDataMap::Save( void *pData ) const
 {
-	for (unsigned int i = 0; i < m_pDataFields.size(); i++)
+	for (std::vector<CBaseDataField *>::const_iterator it = m_pDataFields.begin(); it != m_pDataFields.end(); it++)
 	{
-		if (!m_pDataFields[i]->Save( pData ))
+		if (!(*it)->Save( pData ))
 			return false;
 	}
 
@@ -88,9 +88,9 @@ bool CDataMap::Save( void *pData ) const
 
 bool CDataMap::Load( void *pData ) const
 {
-	for (unsigned int i = 0; i < m_pDataFields.size(); i++)
+	for (std::vector<CBaseDataField *>::const_iterator it = m_pDataFields.begin(); it != m_pDataFields.end(); it++)
 	{
-		if (!m_pDataFields[i]->Load( pData ))
+		if (!(*it)->Load(pData))
 			return false;
 	}
 
@@ -102,9 +102,9 @@ bool CDataMap::Load( void *pData ) const
 
 bool CDataMap::LoadText( void *pData, const CTextBlock *pTextBlock ) const
 {
-	for (unsigned int i = 0; i < m_pDataFields.size(); i++)
+	for (std::vector<CBaseDataField *>::const_iterator it = m_pDataFields.begin(); it != m_pDataFields.end(); it++)
 	{
-		if (!m_pDataFields[i]->LoadText( pData, pTextBlock ))
+		if (!(*it)->LoadText(pData, pTextBlock))
 			return false;
 	}
 
@@ -116,9 +116,9 @@ bool CDataMap::LoadText( void *pData, const CTextBlock *pTextBlock ) const
 
 bool CDataMap::LoadKV( void *pData, const CKeyValues *pKV ) const
 {
-	for (unsigned int i = 0; i < m_pDataFields.size(); i++)
+	for (std::vector<CBaseDataField *>::const_iterator it = m_pDataFields.begin(); it != m_pDataFields.end(); it++)
 	{
-		if (!m_pDataFields[i]->LoadKV( pData, pKV ))
+		if (!(*it)->LoadKV(pData, pKV))
 			return false;
 	}
 
@@ -130,9 +130,9 @@ bool CDataMap::LoadKV( void *pData, const CKeyValues *pKV ) const
 
 bool CDataMap::Link( void *pData ) const
 {
-	for (unsigned int i = 0; i < m_pDataFields.size(); i++)
+	for (std::vector<CBaseDataField *>::const_iterator it = m_pDataFields.begin(); it != m_pDataFields.end(); it++)
 	{
-		if (!m_pDataFields[i]->Link( pData ))
+		if (!(*it)->Link(pData))
 			return false;
 	}
 

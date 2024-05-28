@@ -39,7 +39,7 @@ public:
 
 private:
 	CBaseHUDElement *m_pPrevFocusedHUDElement;
-	CHandle<CBaseHUDElement> m_hFocusedHUDElement; // TODO: try making CHandle to account for deleted hud elements
+	CHandle<CBaseHUDElement> m_hFocusedHUDElement;
 
 	CBaseHUDElement *m_pPrevHoveredHUDElement;
 	CHandle<CBaseHUDElement> m_hHoveredHUDElement;

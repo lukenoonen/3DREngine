@@ -4,7 +4,7 @@
 #include "Global.h"
 #include "BaseReferenced.h"
 
-// TODO: consider making Referenced container classes
+// TODO: finish referenced implementation
 
 class CBaseResource : public CBaseReferenced
 {

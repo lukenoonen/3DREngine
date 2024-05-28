@@ -176,7 +176,7 @@ void CRenderManager::SetFramebuffer( CBaseFramebuffer *pFramebuffer )
 	if (!m_pActiveFramebuffer)
 	{
 		if (!pFramebuffer)
-			pFramebuffer = m_pDefaultFramebuffer; // TODO: put default framebuffer here
+			pFramebuffer = m_pDefaultFramebuffer;
 
 		m_pActiveFramebuffer = pFramebuffer;
 		SetViewportSize( m_pActiveFramebuffer->GetSize() );

@@ -4,7 +4,7 @@
 DEFINE_DATADESC( CMasterHUDElement )
 
 DEFINE_FIELD( LinkedDataField, CHandle<CBasePlayerCamera>, m_hHUDCamera, "hudcamera", FL_REQUIRED )
-DEFINE_FIELD( LinkedVectorDataField, CHandle<CBaseHUDElement>, m_hHUDChildren, "hudchildren", FL_REQUIRED )
+DEFINE_FIELD( LinkedIterableDataField, std::vector<CHandle<CBaseHUDElement>>, m_hHUDChildren, "hudchildren", FL_REQUIRED )
 
 END_DATADESC()
 

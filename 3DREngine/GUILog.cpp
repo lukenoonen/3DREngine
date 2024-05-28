@@ -4,7 +4,7 @@
 
 DEFINE_DATADESC( CGUILog )
 
-	DEFINE_FIELD( VectorDataField, char *, m_sLogs, "logs", FL_NONE )
+	DEFINE_FIELD( IterableDataField, std::vector<char *>, m_sLogs, "logs", FL_NONE )
 
 	DEFINE_FIELD( LinkedDataField, CHandle<CTextMaterial>, m_hTextMaterial, "textmaterial", FL_REQUIRED )
 
