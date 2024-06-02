@@ -21,12 +21,12 @@ bool CBaseWorld2D::Init( void )
 	return true;
 }
 
-void CBaseWorld2D::PreRender( void )
+void CBaseWorld2D::PostThink( void )
 {
 	if (PositionUpdated() || RotationUpdated() || ScaleUpdated() || (HasFlags( fl_absolute.GetFlag() ) && cv_r_windowsize.WasDispatched()))
 		UpdateModelMatrix();
 
-	BaseClass::PreRender();
+	BaseClass::PostThink();
 }
 
 const glm::mat4 &CBaseWorld2D::GetModelMatrix( void ) const

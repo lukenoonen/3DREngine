@@ -337,12 +337,12 @@ void CGUIText::PreThink( void )
 	BaseClass::PreThink();
 }
 
-void CGUIText::PreRender( void )
+void CGUIText::PostThink( void )
 {
 	if (IsTextModified())
 		CalculateText();
 
-	BaseClass::PreRender();
+	BaseClass::PostThink();
 }
 
 void CGUIText::Draw( void )

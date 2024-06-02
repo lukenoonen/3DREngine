@@ -16,7 +16,7 @@ public:
 
 	virtual bool ShouldDraw( void ) const;
 
-	virtual void PreRender( void );
+	virtual void PostThink( void );
 
 	void SetGUIText( CGUIText *pGUIText );
 

@@ -50,12 +50,12 @@ void CBaseHUDElement::CleanUp( void )
 	BaseClass::CleanUp();
 }
 
-void CBaseHUDElement::PreRender( void )
+void CBaseHUDElement::PostThink( void )
 {
-	BaseClass::PreRender();
-
 	if (ModelMatrixUpdated() || true /* TODO: CAMERA CONDITION! */)
 		UpdateBounds();
+
+	BaseClass::PostThink();
 }
 
 void CBaseHUDElement::SetHUDCamera( CBasePlayerCamera *pHUDCamera )

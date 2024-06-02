@@ -49,6 +49,7 @@ public:
 	CBaseDrawable();
 	
 	virtual void PreRender( void );
+
 	virtual void PreDraw( void );
 	virtual void Draw( void );
 	virtual void PostDraw( void );
@@ -63,8 +64,11 @@ public:
 
 	int GetDrawFlags( void ) const;
 
+	bool IsFirstPass( void ) const;
+
 private:
 	int m_iDrawFlags;
+	bool m_bFirstPass;
 };
 
 #endif // BASEDRAWABLE_H

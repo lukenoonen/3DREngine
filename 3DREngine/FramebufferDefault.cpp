@@ -59,6 +59,11 @@ void CFramebufferDefault::ClearBufferInternal( void )
 	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 }
 
+void CFramebufferDefault::AdditionalClearBufferInternal( void )
+{
+	glClear( GL_DEPTH_BUFFER_BIT );
+}
+
 bool CFramebufferDefault::SetSizeInternal( const glm::ivec2 &vec2Size )
 {
 	if (m_vec2Size != vec2Size)

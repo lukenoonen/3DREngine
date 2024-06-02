@@ -30,7 +30,7 @@ public:
 
 	virtual void CleanUp( void );
 
-	virtual void PreRender( void );
+	virtual void PostThink( void );
 
 	virtual void SetHUDCamera( CBasePlayerCamera *pHUDCamera );
 

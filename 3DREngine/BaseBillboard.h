@@ -13,10 +13,13 @@ public:
 
 	CBaseBillboard();
 
+	virtual void PreRender( void );
+
 	virtual void Draw( void );
 
 private:
 	glm::vec3 m_vec3BillboardFactors;
+	glm::mat4 m_matAdjustedModel;
 };
 
 #endif // BASEBILLBOARD_H

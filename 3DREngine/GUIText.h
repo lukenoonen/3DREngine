@@ -141,7 +141,7 @@ public:
 
 	virtual void PreThink( void );
 
-	virtual void PreRender( void );
+	virtual void PostThink( void );
 
 	virtual void Draw( void );
 	virtual bool ShouldDraw( void ) const;

@@ -30,7 +30,7 @@ bool CGUICursor::ShouldDraw( void ) const
 	return BaseClass::ShouldDraw() && m_bShouldDisplay && m_bToggleDisplay;
 }
 
-void CGUICursor::PreRender( void )
+void CGUICursor::PostThink( void )
 {
 	if (m_flNextBlink <= pTimeManager->GetTime())
 	{
@@ -45,7 +45,7 @@ void CGUICursor::PreRender( void )
 		m_vec2Offset = glm::vec2( m_pGUIText->GetCharOffset( (unsigned int)m_vec2CursorPosition.y, (unsigned int)m_vec2CursorPosition.x ), m_pGUIText->GetLineOffset( (unsigned int)m_vec2CursorPosition.y ) - m_pGUIText->GetPointSize() );
 	}
 		
-	BaseClass::PreRender();
+	BaseClass::PostThink();
 }
 
 void CGUICursor::SetGUIText( CGUIText *pGUIText )

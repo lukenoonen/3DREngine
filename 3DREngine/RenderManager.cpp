@@ -130,8 +130,6 @@ CRenderManager::CRenderManager()
 
 	m_glTextureIndex = 0;
 
-	SetBlend( true );
-
 	CreateQuad();
 }
 

@@ -1,6 +1,7 @@
 #include "BaseDrawable.h"
 #include "EntityManager.h"
 #include "BaseCamera.h"
+#include "RenderManager.h"
 
 DEFINE_DATADESC( CBaseDrawable )
 
@@ -12,12 +13,13 @@ CBaseDrawable::CBaseDrawable()
 {
 	AddFlags( fl_draw.GetFlag() );
 
+	m_bFirstPass = false;
 	m_iDrawFlags = 0;
 }
 
 void CBaseDrawable::PreRender( void )
 {
-
+	m_bFirstPass = true;
 }
  
 void CBaseDrawable::PreDraw( void )
@@ -32,7 +34,8 @@ void CBaseDrawable::Draw( void )
 
 void CBaseDrawable::PostDraw( void )
 {
-
+	if (pRenderManager->GetRenderPass() != ERenderPass::t_depth)
+		m_bFirstPass = false;
 }
 
 bool CBaseDrawable::IsDrawable( void ) const
@@ -64,4 +67,9 @@ void CBaseDrawable::RemoveDrawFlags( int iDrawFlags )
 int CBaseDrawable::GetDrawFlags( void ) const
 {
 	return m_iDrawFlags;
+}
+
+bool CBaseDrawable::IsFirstPass( void ) const
+{
+	return m_bFirstPass;
 }

@@ -76,9 +76,18 @@ void CBaseFramebuffer::ClearBuffer( void )
 		m_ulLastRender = pTimeManager->GetFrameCount();
 		ClearBufferInternal();
 	}
+	else
+	{
+		AdditionalClearBufferInternal();
+	}
 }
 
 void CBaseFramebuffer::ClearBufferInternal( void )
+{
+
+}
+
+void CBaseFramebuffer::AdditionalClearBufferInternal( void )
 {
 
 }

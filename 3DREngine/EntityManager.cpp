@@ -38,11 +38,6 @@ CEntityLoadGroup::~CEntityLoadGroup()
 		delete m_pEntitiesToRemove[i];
 }
 
-void CEntityLoadGroup::ProcessAddedEntities( void )
-{
-
-}
-
 void CEntityLoadGroup::PreThink( void )
 {
 	for (unsigned int i = 0; i < m_uiEntityCount; i++)
@@ -73,6 +68,7 @@ void CEntityLoadGroup::Render( void )
 	{
 		CBaseCamera *pCamera = m_pCameraEntities[i];
 		pEntityManager->SetCurrentCamera( pCamera );
+		pEntityManager->PreRender();
 		if (pCamera->ShouldDraw())
 			pCamera->Render();
 	}
@@ -85,6 +81,7 @@ void CEntityLoadGroup::DrawUnlitEntities( void )
 		CBaseDrawable *pDrawable = m_pDrawableEntities[i];
 		if (pDrawable->ShouldDraw())
 		{
+			pRenderManager->SetBlend( !pDrawable->IsFirstPass() );
 			pDrawable->PreDraw();
 			pDrawable->Draw();
 			pDrawable->PostDraw();
@@ -280,24 +277,47 @@ void CEntityManager::OnLoop( void )
 {
 	FlushLoadGroup();
 
-	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
-		m_LoadGroups[i].ProcessAddedEntities();
+	PreThink();
+	Think();
+	PostThink();
 
+	Render();
+
+	ProcessRemovedEntities();
+}
+
+void CEntityManager::PreThink( void )
+{
 	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
 		m_LoadGroups[i].PreThink();
+}
 
+void CEntityManager::Think( void )
+{
 	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
 		m_LoadGroups[i].Think();
+}
 
+void CEntityManager::PostThink( void )
+{
 	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
 		m_LoadGroups[i].PostThink();
+}
 
+void CEntityManager::PreRender( void )
+{
 	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
 		m_LoadGroups[i].PreRender();
+}
 
+void CEntityManager::Render( void )
+{
 	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
 		m_LoadGroups[i].Render();
+}
 
+void CEntityManager::ProcessRemovedEntities( void )
+{
 	for (unsigned int i = 0; i < m_LoadGroups.size(); i++)
 		m_LoadGroups[i].ProcessRemovedEntities();
 }
@@ -311,6 +331,8 @@ void CEntityManager::DrawEntities( void )
 	DrawUnlitEntities();
 
 	DrawLitEntities();
+
+	pRenderManager->SetBlend( false );
 }
 
 void CEntityManager::DrawUnlitEntities( void )

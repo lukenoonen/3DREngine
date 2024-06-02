@@ -20,8 +20,6 @@ public:
 	CEntityLoadGroup();
 	~CEntityLoadGroup();
 
-	void ProcessAddedEntities( void );
-
 	void PreThink( void );
 	void Think( void );
 	void PostThink( void );
@@ -29,11 +27,11 @@ public:
 	void PreRender( void );
 	void Render( void );
 
+	void ProcessRemovedEntities( void );
+
 	void DrawUnlitEntities( void );
 
 	void DrawLitEntities( void );
-
-	void ProcessRemovedEntities( void );
 
 	CBaseEntity *GetEntityByName( const char *sName ) const;
 	CBaseEntity *GetEntityByIndex( unsigned int uiIndex ) const;
@@ -74,6 +72,15 @@ public:
 	~CEntityManager();
 	
 	void OnLoop( void );
+
+	void PreThink( void );
+	void Think( void );
+	void PostThink( void );
+
+	void PreRender( void );
+	void Render( void );
+
+	void ProcessRemovedEntities( void );
 
 	void DrawEntities( void );
 	void DrawUnlitEntities( void );
