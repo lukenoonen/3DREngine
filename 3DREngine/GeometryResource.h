@@ -16,7 +16,7 @@ public:
 	void Draw( void ) const; // TODO: clarify language between "draw", "render", etc
 
 private:
-	std::vector<SVertex> m_verVertices;
+	std::vector<SVertex3D> m_verVertices;
 	std::vector<unsigned int> m_uiIndices;
 
 	GLuint m_glVAO;

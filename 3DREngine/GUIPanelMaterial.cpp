@@ -19,6 +19,8 @@ EShaderType CGUIPanelMaterial::GetShaderType( void )
 {
 	switch (pRenderManager->GetRenderPass())
 	{
+	case ERenderPass::t_depth:
+		return EShaderType::t_guidepth;
 	case ERenderPass::t_unlit:
 		return EShaderType::t_guipanel;
 	}
@@ -30,5 +32,6 @@ void CGUIPanelMaterial::Apply( void )
 {
 	BaseClass::Apply();
 
-	pRenderManager->SetUniform( "u_vecColor", m_vec3Color );
+	if (pRenderManager->GetRenderPass() == ERenderPass::t_unlit)
+		pRenderManager->SetUniform( "u_vecColor", m_vec3Color );
 }

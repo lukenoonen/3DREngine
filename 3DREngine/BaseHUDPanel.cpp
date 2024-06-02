@@ -5,7 +5,8 @@
 DEFINE_DATADESC( CBaseHUDPanel )
 
 	DEFINE_FIELD( LinkedDataField, CHandle<CTextInputLineHUDElement>, m_hTextInputLine, "textinputline", FL_REQUIRED )
-	DEFINE_FIELD( LinkedDataField, CHandle<CGUILog>, m_hGUILog, "guilog", FL_REQUIRED )
+	DEFINE_FIELD( LinkedDataField, CHandle<CGUIText>, m_hTextLog, "textlog", FL_REQUIRED )
+	DEFINE_FIELD( LinkedDataField, CHandle<CGUIPanel>, m_hBackPanel, "backpanel", FL_REQUIRED )
 
 END_DATADESC()
 
@@ -22,15 +23,20 @@ bool CBaseHUDPanel::Init( void )
 	if (!BaseClass::Init())
 		return false;
 
-	m_hTextInputLine->SetPosition( g_vec3Down * 0.1f );
+	m_hTextInputLine->SetPosition( g_vec3Down );
 	m_hTextInputLine->SetRotation( g_vec3Zero );
-	m_hTextInputLine->SetScale( g_vec3One );
+	m_hTextInputLine->SetScale( glm::vec3( 1.0f, 1.0f, 0.2f ) );
 	m_hTextInputLine->SetParentRelative( this );
 
-	m_hGUILog->SetPosition( g_vec3Zero );
-	m_hGUILog->SetRotation( g_vec3Zero );
-	m_hGUILog->SetScale( g_vec3One );
-	m_hGUILog->SetParentRelative( this );
+	m_hTextLog->SetPosition( g_vec3Zero );
+	m_hTextLog->SetRotation( g_vec3Zero );
+	m_hTextLog->SetScale( g_vec3One );
+	m_hTextLog->SetParentRelative( this );
+
+	m_hBackPanel->SetPosition( g_vec3Zero );
+	m_hBackPanel->SetRotation( g_vec3Zero );
+	m_hBackPanel->SetScale( g_vec3One );
+	m_hBackPanel->SetParentRelative( this );
 
 	m_hDraggable->SetParent( m_hParent );
 	m_hDraggable->SetPosition( GetPosition() );
@@ -47,7 +53,9 @@ void CBaseHUDPanel::PostThink( void )
 	while (m_hTextInputLine->HasEnteredText())
 	{
 		const char *sEnteredText = m_hTextInputLine->GetEnteredText();
-		m_hGUILog->AddText( sEnteredText );
+		m_hTextLog->Append( '>' );
+		m_hTextLog->Append( sEnteredText );
+		m_hTextLog->Append( '\n');
 		m_hTextInputLine->NextEnteredText();
 	}
 
@@ -62,8 +70,8 @@ void CBaseHUDPanel::Remove( void )
 	m_hTextInputLine->Remove();
 	m_hTextInputLine.Check();
 
-	m_hGUILog->Remove();
-	m_hGUILog.Check();
+	m_hTextLog->Remove();
+	m_hTextLog.Check();
 
 	BaseClass::Remove();
 }

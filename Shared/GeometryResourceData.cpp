@@ -11,7 +11,7 @@ bool UTIL_Read( CFile *pFile, SGeometryResourceData &dData )
 
 	for (unsigned int i = 0; i < uiVertexCount; i++)
 	{
-		SVertex &verVertex = dData.verVertices[i];
+		SVertex3D &verVertex = dData.verVertices[i];
 		if (!pFile->Read( verVertex.vec3Position ) || !pFile->Read( verVertex.vec3Normal ) || !pFile->Read( verVertex.vec3Tangent ) || !pFile->Read( verVertex.vec3Bitangent ) || !pFile->Read( verVertex.vec2TexCoords ))
 			return false;
 
@@ -53,7 +53,7 @@ bool UTIL_Write( CFile *pFile, SGeometryResourceData &dData )
 
 	for (unsigned int i = 0; i < uiVertexCount; i++)
 	{
-		SVertex &verVertex = dData.verVertices[i];
+		SVertex3D &verVertex = dData.verVertices[i];
 		if (!pFile->Write( verVertex.vec3Position ) || !pFile->Write( verVertex.vec3Normal ) || !pFile->Write( verVertex.vec3Tangent ) || !pFile->Write( verVertex.vec3Bitangent ) || !pFile->Write( verVertex.vec2TexCoords ))
 			return false;
 

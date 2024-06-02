@@ -3,6 +3,8 @@
 
 #include "Global.h"
 
+// TODO: consider boolean alternative for checking modified
+
 class CMonitored
 {
 public:

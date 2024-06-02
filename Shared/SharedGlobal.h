@@ -11,6 +11,8 @@
 #include "Maths.h"
 #include "Strings.h"
 
+#define INVALID_INDEX ((unsigned int)-1)
+
 #define DECLARE_CLASS( thisClass, baseClass )			typedef thisClass ThisClass; \
 														typedef baseClass BaseClass;
 

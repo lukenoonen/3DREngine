@@ -39,10 +39,20 @@ struct SGUITextChar
 	float flXPos;
 };
 
-struct SVertex2D
+class CGUITextChar
 {
-	glm::vec2 vec2Position;
-	glm::vec2 vec2TexCoords;
+public:
+	DECLARE_CLASS_NOBASE( CGUITextChar )
+
+	CGUITextChar( const glm::vec2 &vec2Offset, char cChar );
+
+	void Justify( float flJustification );
+
+	void Draw( CFont *pFont ) const;
+
+private:
+	glm::vec2 m_vec2Offset;
+	char m_cChar;
 };
 
 class CGUITextGeneration
@@ -62,12 +72,8 @@ private:
 	bool Process( CGUITextData &tFormatInfo );
 
 	float GetAdvance( char cChar );
-
-	void Write( CGUITextData &tFormatInfo );
-
 	float GetJustification( float flPosition );
-	void CalculateMinMax( char cChar, float flPosition, float flJustification, glm::vec2 &vec2Min, glm::vec2 &vec2Max, glm::vec2 &vec2TexMin, glm::vec2 &vec2TexMax );
-
+	
 private:
 	const std::vector<char> &m_cText;
 	const glm::vec2 &m_vec2Bounds;
@@ -81,7 +87,6 @@ private:
 	unsigned int m_uiCursor;
 	float m_flLineEnd;
 	unsigned int m_uiLines;
-	std::stack<SGUITextChar> m_tcText;
 };
 
 class CGUITextData
@@ -93,16 +98,13 @@ public:
 
 	void Reset( void );
 	void Return( void );
-	void Record( float flCharOffset );
+	void Record( char cChar, const glm::vec2 &vec2Offset, float flAdvance );
 
+	void SetTextScale( float flTextScale );
 	void SetLineSize( float flLineSize );
 	void Adjust( unsigned int uiLine, float flJustification );
 
-	void Push( const glm::vec2 &vec2Min, const glm::vec2 &vec2Max, const glm::vec2 &vec2TexMin, const glm::vec2 &vec2TexMax );
-
-	void CreateText( void );
-	void DeleteText( void );
-	void Draw( void );
+	void Draw( CFont *pFont );
 
 	unsigned int GetDisplayTextLength( void ) const;
 	unsigned int GetLineCount( void ) const;
@@ -113,14 +115,14 @@ public:
 	float GetPointSize( void ) const;
 
 private:
+	float m_flTextScale;
 	float m_flLineSize;
+
 	unsigned int m_uiCharOffsetsCount;
 	std::vector<std::vector<float>> m_flCharOffsets;
 
-	std::vector<SVertex2D> m_verVertices;
-
-	GLuint m_glVAO;
-	GLuint m_glVBO;
+	unsigned int m_uiTextCharsCount;
+	std::vector<std::vector<CGUITextChar>> m_tcTextChars;
 };
 
 class CGUIText : public CBaseBillboard
@@ -139,37 +141,43 @@ public:
 
 	virtual void PreThink( void );
 
+	virtual void PreRender( void );
+
 	virtual void Draw( void );
 	virtual bool ShouldDraw( void ) const;
 
+	void Append( char cChar );
 	bool Insert( char cChar, unsigned int uiIndex );
+	void Append( const char *sString );
 	bool Insert( const char *sString, unsigned int uiIndex );
 	bool Delete( unsigned int uiCount, unsigned int uiIndex );
 	bool Backspace( unsigned int uiCount, unsigned int uiIndex );
+	void SetText( const char *sText );
+	const char *GetText( void );
 
 	unsigned int GetTextLength( void ) const;
 
 	unsigned int GetDisplayTextLength( void ) const;
 	unsigned int GetLineCount( void ) const;
 	unsigned int GetCharCount( unsigned int uiLine ) const;
+
 	float GetLineOffset( unsigned int uiLine ) const;
 	float GetCharOffset( unsigned int uiLine, unsigned int uiChar ) const;
-
 	float GetPointSize( void ) const;
 
-	void SetText( const char *sText );
-	const char *GetText( void );
+	const glm::vec2 &GetBounds( void ) const;
 
 private:
-	void RecalculateText( void );
+	void ModifyText( void );
+	bool IsTextModified( void ) const;
 	void CalculateText( void );
-	void DeleteText( void );
 
 	virtual const glm::vec2 &GetAlignFactor( void ) const;
 
 private:
 	char *m_sText;
 	std::vector<char> m_cText;
+	bool m_bTextModified;
 
 	CGUITextData m_tTextInfo;
 

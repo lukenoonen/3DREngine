@@ -131,10 +131,14 @@ CRenderManager::CRenderManager()
 	m_glTextureIndex = 0;
 
 	SetBlend( true );
+
+	CreateQuad();
 }
 
 CRenderManager::~CRenderManager()
 {
+	DeleteQuad();
+
 	for (EBaseEnum i = 0; i < (EBaseEnum)EShaderType::i_count; i++)
 		delete m_pShaders[i];
 
@@ -158,6 +162,11 @@ void CRenderManager::OnLoop( void )
 {
 	m_pDefaultFramebuffer->Think();
 	m_pDefaultFramebuffer->Blit();
+	SetFramebuffer( (GLuint)0 );
+	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+	UseShader( EShaderType::t_postprocessnone );
+	SetUniform( "u_sCameraTexture", m_pDefaultFramebuffer->Bind() );
+	DrawQuad();
 	glfwSwapBuffers( m_pWindow );
 }
 
@@ -381,6 +390,40 @@ void CRenderManager::UnbindAllTextures( void )
 CBaseFramebuffer *CRenderManager::GetDefaultFramebuffer() const
 {
 	return m_pDefaultFramebuffer;
+}
+
+void CRenderManager::DrawQuad( void ) const
+{
+	glBindVertexArray( m_glQuadVAO );
+	glDrawArrays( GL_TRIANGLES, 0, (GLsizei)6 );
+}
+
+void CRenderManager::CreateQuad( void )
+{
+	m_verQuadData[0] = { glm::vec2( -1.0f, 1.0f ), glm::vec2( 0.0f, 1.0f ) };
+	m_verQuadData[1] = { glm::vec2( -1.0f, -1.0f ), glm::vec2( 0.0f, 0.0f ) };
+	m_verQuadData[2] = { glm::vec2( 1.0f, -1.0f ), glm::vec2( 1.0f, 0.0f ) };
+	m_verQuadData[3] = { glm::vec2( 1.0f, -1.0f ), glm::vec2( 1.0f, 0.0f ) };
+	m_verQuadData[4] = { glm::vec2( 1.0f, 1.0f ), glm::vec2( 1.0f, 1.0f ) };
+	m_verQuadData[5] = { glm::vec2( -1.0f, 1.0f ), glm::vec2( 0.0f, 1.0f ) };
+
+	glGenVertexArrays( 1, &m_glQuadVAO );
+	glGenBuffers( 1, &m_glQuadVBO );
+
+	glBindVertexArray( m_glQuadVAO );
+	glBindBuffer( GL_ARRAY_BUFFER, m_glQuadVBO );
+	glBufferData( GL_ARRAY_BUFFER, (GLsizeiptr)(6 * sizeof( SVertex2D )), m_verQuadData, GL_STATIC_DRAW );
+
+	glEnableVertexAttribArray( 0 );
+	glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, sizeof( SVertex2D ), (void *)0 );
+	glEnableVertexAttribArray( 1 );
+	glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, sizeof( SVertex2D ), (void *)offsetof( SVertex2D, vec2TexCoords ) );
+}
+
+void CRenderManager::DeleteQuad( void )
+{
+	glDeleteVertexArrays( 1, &m_glQuadVAO );
+	glDeleteBuffers( 1, &m_glQuadVBO );
 }
 
 void CRenderManager::CompileShaders( bool bCompileFromText )

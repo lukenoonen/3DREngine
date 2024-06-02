@@ -28,7 +28,8 @@ bool CGUIPanel::Init( void )
 	if (!m_hGUIPanelMaterial)
 		return false;
 
-	float vertices[] = {
+	// TODO: make this static o algo
+	float flVertices[] = {
 		// pos      // tex
 		0.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, -1.0f, 0.0f, 1.0f,
@@ -44,7 +45,7 @@ bool CGUIPanel::Init( void )
 
 	glBindVertexArray( m_glVAO );
 	glBindBuffer( GL_ARRAY_BUFFER, m_glVBO );
-	glBufferData( GL_ARRAY_BUFFER, sizeof( vertices ), vertices, GL_STATIC_DRAW );
+	glBufferData( GL_ARRAY_BUFFER, sizeof( flVertices ), flVertices, GL_STATIC_DRAW );
 
 	glEnableVertexAttribArray( 0 );
 	glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof( float ), (void *)0 );
@@ -59,6 +60,9 @@ void CGUIPanel::Draw( void )
 	BaseClass::Draw();
 
 	m_hGUIPanelMaterial->Apply();
+
+	pRenderManager->SetUniform( "u_vecOffset", g_vec2Zero );
+	pRenderManager->SetUniform( "u_flScale", 1.0f );
 
 	glBindVertexArray( m_glVAO );
 	glDrawArrays( GL_TRIANGLES, 0, 6 );

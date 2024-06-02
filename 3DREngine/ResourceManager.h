@@ -43,7 +43,7 @@ private:
 
 	bool LoadAnimationResource( float &flTime, std::vector<SAnimationChannel *> &pAnimationChannels );
 	bool LoadCubemapResource( unsigned char **pData, GLsizei *glWidth, GLsizei *glHeight, GLenum *tInternalFormat, GLenum *tFormat, bool &bFiltered );
-	bool LoadGeometryResource( std::vector<SVertex> &verVertices, std::vector<unsigned int> &uiIndices );
+	bool LoadGeometryResource( std::vector<SVertex3D> &verVertices, std::vector<unsigned int> &uiIndices );
 	bool LoadSkeletonResource( SSkeletonNode *&pSkeletonNode, unsigned int &uiSkeletonBonesCount );
 	bool LoadTextureResource( unsigned char *&pData, GLsizei &glWidth, GLsizei &glHeight, GLenum &tInternalFormat, GLenum &tFormat, bool &bFiltered, GLint &tTextureWrap, glm::vec4 &vec4BorderColor );
 */
@@ -58,7 +58,7 @@ public:
 #ifdef PROJECT_ENGINE
 	// TODO: check these for any possible memory leaks and also clean them up
 	bool LoadAnimation( const char *sFileName, float &flTime, std::vector<SAnimationChannel *> &pAnimationChannels );
-	bool LoadGeometry( const char *sFileName, std::vector<SVertex> &verVertices, std::vector<unsigned int> &uiIndices );
+	bool LoadGeometry( const char *sFileName, std::vector<SVertex3D> &verVertices, std::vector<unsigned int> &uiIndices );
 	bool LoadImage( const char *sFileName, std::vector<unsigned char *> &pData, std::vector<unsigned int> &uiWidth, std::vector<unsigned int> &uiHeight, std::vector<unsigned int> &uiChannels );
 	bool LoadSkeleton( const char *sFileName, SSkeletonNode *&pSkeletonNode, unsigned int &uiSkeletonBonesCount );
 #elif PROJECT_RESOURCE
@@ -68,7 +68,7 @@ public:
 private:
 #ifdef PROJECT_ENGINE
 	bool LoadAnimationInternal( float &flTime, std::vector<SAnimationChannel *> &pAnimationChannels );
-	bool LoadGeometryInternal( std::vector<SVertex> &verVertices, std::vector<unsigned int> &uiIndices );
+	bool LoadGeometryInternal( std::vector<SVertex3D> &verVertices, std::vector<unsigned int> &uiIndices );
 	bool LoadImageInternal( std::vector<unsigned char *> &pData, std::vector<unsigned int> &uiWidth, std::vector<unsigned int> &uiHeight, std::vector<unsigned int> &uiChannels );
 	bool LoadSkeletonInternal( SSkeletonNode *&pSkeletonNode, unsigned int &uiSkeletonBonesCount );
 #elif PROJECT_RESOURCE

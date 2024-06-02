@@ -268,6 +268,8 @@
     <ClInclude Include="..\Shared\SkeletonResourceData.h" />
     <ClInclude Include="..\Shared\Strings.h" />
     <ClInclude Include="..\Shared\TextureResourceData.h" />
+    <ClInclude Include="..\Shared\Vertex2D.h" />
+    <ClInclude Include="..\Shared\Vertex3D.h" />
     <ClInclude Include="2DAlign.h" />
     <ClInclude Include="AnimatedProp.h" />
     <ClInclude Include="Animation.h" />
@@ -365,6 +367,9 @@
     <ClInclude Include="UniformBufferObjects.h" />
     <ClInclude Include="UnlitMaterial.h" />
     <ClInclude Include="FramebufferColorCubemap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

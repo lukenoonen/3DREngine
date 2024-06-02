@@ -2,21 +2,11 @@
 #define GEOMETRYRESOURCEDATA_H
 
 #include "Global.h"
-
-struct SVertex
-{
-	glm::vec3 vec3Position;
-	glm::vec3 vec3Normal;
-	glm::vec3 vec3Tangent;
-	glm::vec3 vec3Bitangent;
-	glm::vec2 vec2TexCoords;
-	glm::ivec4 vec4BoneIDs;
-	glm::vec4 vec4Weights;
-};
+#include "Vertex3D.h"
 
 struct SGeometryResourceData
 {
-	std::vector<SVertex> verVertices;
+	std::vector<SVertex3D> verVertices;
 	std::vector<unsigned int> uiIndices;
 };
 

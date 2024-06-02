@@ -15,6 +15,11 @@ void CFramebufferDefault::Init( void )
 	BaseClass::Init();
 }
 
+int CFramebufferDefault::Bind( void ) const
+{
+	return pRenderManager->BindTexture( m_glTexture, GL_TEXTURE_2D );
+}
+
 void CFramebufferDefault::Think( void )
 {
 	if (cv_r_windowsize.WasDispatched())
@@ -26,7 +31,7 @@ void CFramebufferDefault::Think( void )
 
 GLuint CFramebufferDefault::GetFramebuffer( void ) const
 {
-	return m_glMSAAFBO != 0 ? m_glMSAAFBO : 0;
+	return m_glMSAAFBO != 0 ? m_glMSAAFBO : m_glTextureFBO;
 }
 
 void CFramebufferDefault::Blit( void )
@@ -34,7 +39,7 @@ void CFramebufferDefault::Blit( void )
 	if (m_glMSAAFBO != 0)
 	{
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, m_glMSAAFBO );
-		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_glTextureFBO );
 		glBlitFramebuffer( 0, 0, m_vec2Size.x, m_vec2Size.y, 0, 0, m_vec2Size.x, m_vec2Size.y, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST );
 	}
 }
@@ -74,6 +79,41 @@ bool CFramebufferDefault::SetMSAALevelInternal( unsigned char ucMSAALevel )
 	}
 
 	return false;
+}
+
+#include <iostream>
+
+void CFramebufferDefault::CreateTextureBuffers( void )
+{
+	glGenFramebuffers( 1, &m_glTextureFBO );
+	glGenRenderbuffers( 1, &m_glTextureRBO );
+	glGenTextures( 1, &m_glTexture );
+
+	glBindTexture( GL_TEXTURE_2D, m_glTexture );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8, m_vec2Size.x, m_vec2Size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT );
+
+	glBindFramebuffer( GL_FRAMEBUFFER, m_glTextureFBO );
+	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_glTexture, 0 );
+
+	glBindRenderbuffer( GL_RENDERBUFFER, m_glTextureRBO );
+	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_vec2Size.x, m_vec2Size.y );
+	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_glTextureRBO );
+
+	if (glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete" << ": " << std::hex << glCheckFramebufferStatus( GL_FRAMEBUFFER ) << std::endl;
+}
+
+void CFramebufferDefault::DestroyTextureBuffers( void )
+{
+	pRenderManager->UnbindTexture( m_glTexture );
+
+	glDeleteFramebuffers( 1, &m_glTextureFBO );
+	glDeleteRenderbuffers( 1, &m_glTextureRBO );
+	glDeleteTextures( 1, &m_glTexture );
 }
 
 void CFramebufferDefault::CreateMSAABuffers( void )

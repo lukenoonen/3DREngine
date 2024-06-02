@@ -24,9 +24,8 @@ bool CBaseTransform::Init( void )
 	if (!BaseClass::Init())
 		return false;
 
-	if (m_hParent)
+	if (m_hParent && m_hParent->AddChild( this ))
 	{
-		m_hParent->AddChild( this );
 		if (HasFlags(fl_parentposition.GetFlag()))
 			AddParentPosition( m_hParent->GetPosition() );
 		if (HasFlags( fl_parentrotation.GetFlag() ))
@@ -178,16 +177,6 @@ void CBaseTransform::SetParentRelative( CBaseTransform *pParent )
 	m_hParent = pParent;
 }
 
-void CBaseTransform::AddChild( CBaseTransform *pChild )
-{
-	m_hChildren.emplace_back( pChild );
-}
-
-void CBaseTransform::RemoveChild( CBaseTransform *pChild )
-{
-	m_hChildren.remove( pChild );
-}
-
 bool CBaseTransform::PositionUpdated( void ) const
 {
 	return m_vec3Position.Modified();
@@ -201,6 +190,29 @@ bool CBaseTransform::RotationUpdated( void ) const
 bool CBaseTransform::ScaleUpdated( void ) const
 {
 	return m_vec3Scale.Modified();
+}
+
+bool CBaseTransform::AddChild( CBaseTransform *pChild )
+{
+	if (std::find( m_hChildren.begin(), m_hChildren.end(), pChild ) == m_hChildren.end())
+	{
+		m_hChildren.emplace_back( pChild );
+		return true;
+	}
+
+	return false;
+}
+
+bool CBaseTransform::RemoveChild( CBaseTransform *pChild )
+{
+	std::list<CHandle<CBaseTransform>>::iterator it = std::find( m_hChildren.begin(), m_hChildren.end(), pChild );
+	if (it != m_hChildren.end())
+	{
+		m_hChildren.erase( it );
+		return true;
+	}
+
+	return false;
 }
 
 void CBaseTransform::AddParentPosition( const glm::vec3 &vec3Position )

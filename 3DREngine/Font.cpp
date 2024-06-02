@@ -47,3 +47,8 @@ glm::vec2 CFont::GetNormalizedSize( char cChar ) const
 {
 	return (glm::vec2)m_pFontResource->GetChar( cChar ).vec2Size / (glm::vec2)m_pFontResource->GetBitmapSize();
 }
+
+void CFont::DrawChar( char cChar ) const
+{
+	m_pFontResource->DrawChar( cChar );
+}

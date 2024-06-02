@@ -37,14 +37,15 @@ public:
 
 	void SetParent( CBaseTransform *pParent );
 	void SetParentRelative( CBaseTransform *pParent );
-	void AddChild( CBaseTransform *pChild );
-	void RemoveChild( CBaseTransform *pChild );
 
 	bool PositionUpdated( void ) const;
 	bool RotationUpdated( void ) const;
 	bool ScaleUpdated( void ) const;
 
 protected:
+	bool AddChild( CBaseTransform *pChild );
+	bool RemoveChild( CBaseTransform *pChild );
+
 	void AddParentPosition( const glm::vec3 &vec3Position );
 	void AddParentRotation( const glm::vec3 &vec3ParentPosition, const glm::quat &qParentRotation, const glm::quat &qRotationInverse, const glm::quat &qRotationDelta );
 	void AddParentScale( const glm::vec3 &vec3Scale, const glm::vec3 &vec3ParentPosition, const glm::vec3 &vec3ParentScale );

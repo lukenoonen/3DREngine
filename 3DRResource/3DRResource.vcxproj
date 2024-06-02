@@ -155,6 +155,7 @@
     <ClInclude Include="..\Shared\SkeletonResourceData.h" />
     <ClInclude Include="..\Shared\Strings.h" />
     <ClInclude Include="..\Shared\TextureResourceData.h" />
+    <ClInclude Include="..\Shared\Vertex3D.h" />
     <ClInclude Include="FileType.h" />
     <ClInclude Include="Global.h" />
   </ItemGroup>

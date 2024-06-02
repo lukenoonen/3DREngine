@@ -49,6 +49,7 @@ private:
 	void PreventHighlight( void );
 	void CalculateShouldDisplay( void );
 
+	virtual const glm::vec2 &GetAlignFactor( void ) const;
 	virtual const glm::vec2 &GetOffset( void ) const;
 
 private:

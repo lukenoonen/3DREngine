@@ -25,6 +25,8 @@ public:
 	glm::vec2 GetNormalizedPosition( char cChar ) const;
 	glm::vec2 GetNormalizedSize( char cChar ) const;
 
+	void DrawChar( char cChar ) const;
+
 private:
 	CFontResource *m_pFontResource;
 };

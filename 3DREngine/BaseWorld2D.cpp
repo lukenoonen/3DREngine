@@ -41,13 +41,14 @@ bool CBaseWorld2D::ModelMatrixUpdated( void ) const
 
 void CBaseWorld2D::UpdateModelMatrix( void )
 {
-	glm::vec2 vec2Align = UTIL_Get2DAlignOffset_ScreenSpace( m_e2DAlign );
+	const glm::vec3 &vec3Scale = GetScale();
+	glm::vec2 vec2Align = UTIL_Get2DAlignOffset_ScreenSpace( m_e2DAlign ) * GetAlignFactor() * glm::vec2( -vec3Scale.x, -vec3Scale.z );
 	glm::vec2 vec2Offset = GetOffset();
 	float flScaleFactor = HasFlags( fl_absolute.GetFlag() ) ? (float)DEFAULT_SCR_WIDTH / cv_r_windowsize.GetValue().x : 1.0f;
 	m_matModel =
 		glm::translate( g_matIdentity, GetPosition() ) *
 		glm::toMat4( GetRotation() ) *
-		glm::translate( g_matIdentity, glm::vec3( glm::vec2( -GetScale() ) * GetAlignFactor() * vec2Align * g_vec2FlipVertical, 0.0f ) + glm::vec3( vec2Offset.x, 0.0f, -vec2Offset.y ) ) * // TODO: CHECK SCALE THING HERE
+		glm::translate( g_matIdentity, glm::vec3( vec2Align.x, 0.0f, -vec2Align.y ) + glm::vec3( vec2Offset.x, 0.0f, -vec2Offset.y ) ) *
 		glm::scale( g_matIdentity, GetScale() * flScaleFactor );
 }
 

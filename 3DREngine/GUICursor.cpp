@@ -253,9 +253,16 @@ void CGUICursor::PreventHighlight( void )
 	m_vec2StartCursorPosition = m_vec2CursorPosition;
 }
 
-void CGUICursor::CalculateShouldDisplay( void )
+void CGUICursor::CalculateShouldDisplay( void ) // TODO: Make sure this is updated correctly
 {
-	m_bShouldDisplay = IsIndexWithinBounds() && IsCursorWithinBounds();
+	m_bShouldDisplay = true;
+}
+
+const glm::vec2 &CGUICursor::GetAlignFactor( void ) const
+{
+	// TODO: FIX THIS, RETURNS TEMP VARIABLE!! FIGURE OUT WHAT TO DO??? (MAKE BASE CLASS RETURN SCALE OR SOMETHING...)
+	glm::vec2 vec2Scale = glm::vec2( 2.0f / (float)cv_r_windowsize.GetValue().x, m_pGUIText->GetPointSize() );
+	return m_pGUIText->GetBounds() / vec2Scale;
 }
 
 const glm::vec2 &CGUICursor::GetOffset( void ) const

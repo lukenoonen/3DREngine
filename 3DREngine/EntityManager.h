@@ -12,8 +12,6 @@ class CBaseDrawable;
 class CBaseLight;
 class CBaseCamera;
 
-#define INVALID_INDEX ((unsigned int)-1)
-
 class CEntityLoadGroup
 {
 public:

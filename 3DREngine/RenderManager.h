@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "UniformBufferObjects.h"
 #include "BaseFramebuffer.h"
+#include "Vertex2D.h"
 
 #define DEFAULT_SCR_WIDTH	(1920)
 #define DEFAULT_SCR_HEIGHT	(1080)
@@ -93,7 +94,12 @@ public:
 
 	CBaseFramebuffer *GetDefaultFramebuffer() const;
 
+	void DrawQuad( void ) const;
+
 private:
+	void CreateQuad( void );
+	void DeleteQuad( void );
+
 	void CompileShaders( bool bCompileFromText );
 
 private:
@@ -121,6 +127,10 @@ private:
 	std::unordered_map<GLint, GLuint> m_mapIndexToTextureID;
 	GLint m_glTextureIndex;
 	GLint m_glMaxTextures;
+
+	SVertex2D m_verQuadData[6];
+	GLuint m_glQuadVAO;
+	GLuint m_glQuadVBO;
 };
 
 #endif // RENDERMANAGER_H

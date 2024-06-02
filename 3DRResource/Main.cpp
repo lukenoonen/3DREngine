@@ -397,7 +397,7 @@ bool UTIL_ProcessGeometry( const char *sName, const aiScene *pScene, std::vector
 
 		for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
 		{
-			SVertex &verVertex = sGeometryData.verVertices[i];
+			SVertex3D &verVertex = sGeometryData.verVertices[i];
 			verVertex.vec3Position.x = pMesh->mVertices[i].x;
 			verVertex.vec3Position.y = pMesh->mVertices[i].y;
 			verVertex.vec3Position.z = pMesh->mVertices[i].z;

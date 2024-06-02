@@ -775,5 +775,14 @@
     <ClInclude Include="TextInputLineHUDElement.h">
       <Filter>Header Files\Entity\HUD</Filter>
     </ClInclude>
+    <ClInclude Include="..\Shared\Vertex2D.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Vertex3D.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -81,6 +81,9 @@
     <ClInclude Include="..\Shared\FontResourceData.h">
       <Filter>Header Files\Resource\Data</Filter>
     </ClInclude>
+    <ClInclude Include="..\Shared\Vertex3D.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Global.cpp">

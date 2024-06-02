@@ -6,6 +6,7 @@
 #include "DraggableHUDElement.h"
 #include "TextInputLineHUDElement.h"
 #include "GUILog.h"
+#include "GUIPanel.h"
 
 class CBaseHUDPanel : public CBaseHUDParent
 {
@@ -31,7 +32,8 @@ public:
 private:
 	CHandle<CDraggableHUDElement> m_hDraggable;
 	CHandle<CTextInputLineHUDElement> m_hTextInputLine;
-	CHandle<CGUILog> m_hGUILog;
+	CHandle<CGUIText> m_hTextLog;
+	CHandle<CGUIPanel> m_hBackPanel;
 };
 
 #endif // BASEHUDPANEL_H

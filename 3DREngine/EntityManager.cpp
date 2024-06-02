@@ -387,26 +387,6 @@ CBaseEntity *CEntityManager::AddEntity( const char *sMapName, const CTextBlock *
 	return pEntity;
 }
 
-/*
-void CEntityManager::ClearEntities( void ) // TODO: FIX THIS!
-{
-	for (unsigned int i = 0; i < m_pEntities.size(); i++)
-		delete m_pEntities[i];
-
-	for (unsigned int i = 0; i < m_pEntitiesToRemove.size(); i++)
-		delete m_pEntitiesToRemove[i];
-
-	m_pEntities.clear();
-	m_uiEntityCount = 0;
-
-	m_pEntitiesToRemove.clear();
-
-	m_pPlayerEntities.clear();
-	m_pLightEntities.clear();
-	m_pCameraEntities.clear();
-	m_pDrawableEntities.clear();
-}*/
-
 CBaseEntity *CEntityManager::GetEntityByName( const char *sName ) const
 {
 	if (!m_pActiveLoadGroup)

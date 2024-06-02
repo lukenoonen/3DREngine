@@ -1,5 +1,7 @@
 #include "2DAlign.h"
 
+#include <iostream>
+
 glm::vec2 UTIL_Get2DAlignOffset_ScreenSpace( E2DAlign e2DAlign )
 {
 	switch (e2DAlign)
